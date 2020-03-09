@@ -1,18 +1,17 @@
 package com.neu.prattle;
 
 
-import static org.junit.Assert.assertTrue;
-
-import java.util.Optional;
-
+import com.neu.prattle.model.User;
 import com.neu.prattle.service.UserService;
 import com.neu.prattle.service.UserServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.neu.prattle.model.User;
+import java.util.Optional;
 
-public class SimpleTestExample {
+import static org.junit.Assert.assertTrue;
+
+public class TestExample {
 
 	private UserService as;
 	
@@ -33,6 +32,7 @@ public class SimpleTestExample {
 	public void getUserTest(){
 		Optional<User> user = as.findUserByName("Mike");
 		assertTrue(user.isPresent());
+		assertTrue(false);
 	}
 	
 	// Performance testing to benchmark our number of users that can be added 

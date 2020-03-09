@@ -3,10 +3,12 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>java-websocket</artifactId>
+	<modules>
+	</modules>
 	<groupId>com.neu</groupId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>revamped-prattle</name>
-	<packaging>war</packaging>
+	<packaging>pom</packaging>
 	<build>
 		<plugins>
 			<plugin>
