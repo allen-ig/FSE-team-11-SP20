@@ -9,6 +9,7 @@
 	<packaging>war</packaging>
 	<build>
 		<plugins>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -93,7 +94,7 @@
 						<plugin>
 							<groupId>org.jacoco</groupId>
 							<artifactId>jacoco-maven-plugin</artifactId>
-							<version>0.7.8</version>
+							<version>0.8.2</version>
 						</plugin>
 					</plugins>
 				</pluginManagement>
