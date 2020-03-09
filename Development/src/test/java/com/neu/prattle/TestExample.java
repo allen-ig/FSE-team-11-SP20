@@ -12,7 +12,7 @@ import org.junit.Test;
 
 import com.neu.prattle.model.User;
 
-public class SimpleTestExample {
+public class TestExample {
 
 	private UserService as;
 	
@@ -33,6 +33,7 @@ public class SimpleTestExample {
 	public void getUserTest(){
 		Optional<User> user = as.findUserByName("Mike");
 		assertTrue(user.isPresent());
+		assertTrue(true);
 	}
 	
 	// Performance testing to benchmark our number of users that can be added 
