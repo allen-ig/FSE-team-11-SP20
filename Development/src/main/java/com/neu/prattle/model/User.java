@@ -2,6 +2,14 @@ package com.neu.prattle.model;
 
 import java.util.Objects;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name="user")
 /***
  * A User object represents a basic account information for a user.
  *
@@ -9,6 +17,12 @@ import java.util.Objects;
  * @version dated 2019-10-06
  */
 public class User {
+
+  private static final long serialVersionUID = 1L;
+
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private int id;
 
 	public String getName() {
 		return name;
