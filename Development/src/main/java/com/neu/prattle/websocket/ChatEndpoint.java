@@ -119,7 +119,8 @@ public class ChatEndpoint {
     @OnMessage
     public void onMessage(Session session, Message message) {
         message.setFrom(users.get(session.getId()));
-        broadcast(message);
+        //broadcast(message);
+        sendMessage(message);
     }
 
     /**
@@ -176,6 +177,24 @@ public class ChatEndpoint {
                 }
             }
         });
+    }
+
+    private static void sendMessage(Message message) {
+      chatEndpoints.forEach(endpoint -> {
+        synchronized (endpoint) {
+          if (users.get(endpoint.session.getId()).equals(message.getTo())) {
+            try {
+              endpoint.session.getBasicRemote()
+                  .sendObject(message);
+            } catch (IOException | EncodeException e) {
+              /* note: in production, who exactly is looking at the console.  This exception's
+               *       output should be moved to a logger.
+               */
+              e.printStackTrace();
+            }
+          }
+        }
+      });
     }
 }
 
