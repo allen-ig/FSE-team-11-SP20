@@ -12,7 +12,7 @@ import org.junit.Test;
 
 import com.neu.prattle.model.User;
 
-public class SimpleTestExample {
+public class SimpleTest {
 
 	private UserService as;
 	
