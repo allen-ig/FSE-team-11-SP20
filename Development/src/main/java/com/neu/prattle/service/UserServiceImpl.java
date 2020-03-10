@@ -7,6 +7,13 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+import javax.persistence.NoResultException;
+import javax.persistence.Persistence;
+import javax.persistence.TypedQuery;
+
 /***
  * Implementation of {@link UserService}
  *
@@ -21,10 +28,9 @@ public class UserServiceImpl implements UserService {
     /***
      * UserServiceImpl is a Singleton class.
      */
-    private UserServiceImpl() {
-
-    }
-
+    private UserServiceImpl() { }
+    private static final EntityManagerFactory ENTITY_MANAGER_FACTORY =
+            Persistence.createEntityManagerFactory("prattle");
     private static UserService accountService;
 
     static {
@@ -39,27 +45,45 @@ public class UserServiceImpl implements UserService {
         return accountService;
     }
 
-    private Set<User> userSet = new HashSet<>();
-
     /***
      *
      * @param name -> The name of the user.
      * @return An optional wrapper supplying the user.
      */
     @Override
-    public Optional<User> findUserByName(String name) {
-        final User user = new User(name);
-        if (userSet.contains(user))
+    public Optional<User>  findUserByName(String name){
+        EntityManager em = ENTITY_MANAGER_FACTORY.createEntityManager();
+        String strQuery = "SELECT u FROM User u  WHERE u.name = :name";
+        TypedQuery<User> tq = em.createQuery(strQuery, User.class);
+        tq.setParameter("name", name);
+        User user;
+        try {
+            // Get matching User object and output
+            user = tq.getSingleResult();
             return Optional.of(user);
-        else
+        }
+        catch(NoResultException ex) {
             return Optional.empty();
+        }
     }
 
     @Override
-    public synchronized void addUser(User user) {
-        if (userSet.contains(user))
-            throw new UserAlreadyPresentException(String.format("User already present with name: %s", user.getName()));
+    public synchronized void addUser(User user){
+        EntityManager em = ENTITY_MANAGER_FACTORY.createEntityManager();
+        EntityTransaction et = null;
 
-        userSet.add(user);
+        try {
+            et = em.getTransaction();
+            et.begin();
+            em.persist(user);
+            et.commit();
+        } catch (Exception e){
+            if (et != null){
+                et.rollback();
+            }
+            e.printStackTrace();
+        } finally{
+            em.close();
+        }
     }
 }

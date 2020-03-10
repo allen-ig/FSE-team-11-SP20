@@ -1,9 +1,6 @@
 package com.neu.prattle.managers;
 
-
 import com.neu.prattle.model.User;
-
-import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -13,10 +10,12 @@ import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 
 public class UserManager {
+
+    private UserManager(){}
     private static final EntityManagerFactory ENTITY_MANAGER_FACTORY =
             Persistence.createEntityManagerFactory("prattle");
 
-    public static void findUser(String username){
+    public static User findUser(String username){
         EntityManager em = ENTITY_MANAGER_FACTORY.createEntityManager();
         String strQuery = "SELECT u FROM User u  WHERE u.name = :name";
         TypedQuery<User> tq = em.createQuery(strQuery, User.class);
@@ -25,10 +24,10 @@ public class UserManager {
         try {
             // Get matching User object and output
             user = tq.getSingleResult();
-            System.out.println(user.getName());
+            return user;
         }
         catch(NoResultException ex) {
-            System.out.println("Could not find user");
+            return null;
         }
     }
 
