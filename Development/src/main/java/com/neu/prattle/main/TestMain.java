@@ -5,6 +5,9 @@ public class TestMain {
 
   public static void main(String[] args){
     UserManager.addUser("Thomas");
-    System.out.println(UserManager.class);
+    UserManager.addUser("Sarah");
+    UserManager.findUser("Thomas");
+    UserManager.findUser("Sarah");
+    UserManager.findUser("Amy");
   }
 }
