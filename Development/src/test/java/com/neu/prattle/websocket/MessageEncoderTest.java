@@ -34,6 +34,22 @@ public class MessageEncoderTest {
   }
   
   @Test
+  public void testEncodeThrowException() {
+    obj = Mockito.mock(ObjectMapper.class);
+    try {
+      Mockito.when(obj.writeValueAsString(message)).thenThrow(IOException.class);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    try {
+      assertEquals("{}", messageEncoder.encode(message));
+    } catch (EncodeException e) {
+      e.printStackTrace();
+    }
+  }
+  
+  @Test
   public void testEncode() {
     try {
       assertEquals("{\"from\":\"User1\",\"to\":\"User2\",\"content\":\"Hello world\"}", messageEncoder.encode(message));
@@ -62,32 +78,3 @@ public class MessageEncoderTest {
     messageEncoder.destroy();
   }
 }
-
-/*
-//    Field privateField = null;
-//    try {
-//      privateField = MessageEncoder.class.getDeclaredField("objectMapper");
-//    } catch (NoSuchFieldException e) {
-//      e.printStackTrace();
-//    }
-//    privateField.setAccessible(true);
-//
-//
-//    try {
-//      obj = (ObjectMapper) privateField.get(messageEncoder);
-//      when(obj.writeValueAsString(null)).thenReturn("{}");
-//    } catch (IllegalAccessException | IOException e) {
-//      e.printStackTrace();
-//    }
-
-
-//    try {
-//      System.out.println(obj.writeValueAsString(message));
-//      when(obj.writeValueAsString(message)).thenReturn("{}");
-//      when(this.mockSession.getId()).thenReturn("sessionId");
-//    } catch (IOException e) {
-//      e.printStackTrace();
-//    }
- 
-
- */
