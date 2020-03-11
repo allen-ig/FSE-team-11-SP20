@@ -1,10 +1,12 @@
 package com.neu.prattle;
 
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Optional;
 
+import com.neu.prattle.main.PrattleApplication;
 import com.neu.prattle.service.UserService;
 import com.neu.prattle.service.UserServiceImpl;
 import org.junit.Before;
@@ -15,10 +17,12 @@ import com.neu.prattle.model.User;
 public class SimpleTest {
 
 	private UserService as;
+	private PrattleApplication prattleApplication;
 	
 	@Before
 	public void setUp() {
 		as = UserServiceImpl.getInstance();
+		prattleApplication = new PrattleApplication();
 	}
 	
 	
@@ -43,5 +47,10 @@ public class SimpleTest {
 		for(int i=0; i < 1000; i++) {
 			as.addUser(new User("Mike"+i));
 		}
+	}
+	
+	@Test
+	public void testPrattleApplication() {
+		assertEquals(1, prattleApplication.getClasses().size());
 	}
 }
