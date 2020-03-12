@@ -1,10 +1,12 @@
 package com.neu.prattle;
 
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Optional;
 
+import com.neu.prattle.main.PrattleApplication;
 import com.neu.prattle.service.UserService;
 import com.neu.prattle.service.UserServiceImpl;
 import org.junit.Before;
@@ -12,13 +14,15 @@ import org.junit.Test;
 
 import com.neu.prattle.model.User;
 
-public class TestExample {
+public class TestSimple {
 
 	private UserService as;
+	private PrattleApplication prattleApplication;
 	
 	@Before
 	public void setUp() {
 		as = UserServiceImpl.getInstance();
+		prattleApplication = new PrattleApplication();
 	}
 	
 	
@@ -33,7 +37,6 @@ public class TestExample {
 	public void getUserTest(){
 		Optional<User> user = as.findUserByName("Mike");
 		assertTrue(user.isPresent());
-		assertTrue(true);
 	}
 	
 	// Performance testing to benchmark our number of users that can be added 
@@ -44,5 +47,10 @@ public class TestExample {
 		for(int i=0; i < 1000; i++) {
 			as.addUser(new User("Mike"+i));
 		}
+	}
+	
+	@Test
+	public void testPrattleApplication() {
+		assertEquals(1, prattleApplication.getClasses().size());
 	}
 }

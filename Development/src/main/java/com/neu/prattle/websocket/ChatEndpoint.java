@@ -65,21 +65,21 @@ public class ChatEndpoint {
   }
   
   /**
-     * On open.
-     * 
-     * Handles opening a new session (websocket connection). If the user is a known
-     * user (user management), the session added to the pool of sessions and an
-     * announcement to that pool is made informing them of the new user.
-     * 
-     * If the user is not known, the pool is not augmented and an error is sent to
-     * the originator.
-     *
-     * @param session  the web-socket (the connection)
-     * @param username the name of the user (String) used to find the associated
-     *                 UserService object
-     * @throws IOException     Signals that an I/O exception has occurred.
-     * @throws EncodeException the encode exception
-     */
+	 * On open.
+	 * 
+	 * Handles opening a new session (websocket connection). If the user is a known
+	 * user (user management), the session added to the pool of sessions and an
+	 * announcement to that pool is made informing them of the new user.
+	 * 
+	 * If the user is not known, the pool is not augmented and an error is sent to
+	 * the originator.
+	 *
+	 * @param session  the web-socket (the connection)
+	 * @param username the name of the user (String) used to find the associated
+	 *                 UserService object
+	 * @throws IOException     Signals that an I/O exception has occurred.
+	 * @throws EncodeException the encode exception
+	 */
     @OnOpen
     public void onOpen(Session session, @PathParam("username") String username) throws IOException, EncodeException {
 
@@ -186,9 +186,9 @@ public class ChatEndpoint {
                     endpoint.session.getBasicRemote()
                             .sendObject(message);
                 } catch (IOException | EncodeException e) {
-                    /* note: in production, who exactly is looking at the console.  This exception's
-                     *       output should be moved to a logger.
-                     */
+                	/* note: in production, who exactly is looking at the console.  This exception's
+                	 *       output should be moved to a logger.
+                	 */
                   logger.log(Level.SEVERE, e.getMessage());
                 }
             }

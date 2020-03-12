@@ -38,31 +38,4 @@ public class TestController {
      Assert.assertEquals(responce2.getStatus(), Response.status(409).build().getStatus());
   }
 
-  /**
-   * Integration test. Works with Tomcat running. This should be commented out if it throws errors.
-   */
-  @Test
-  public void testResponce() {
-    /*
-    HttpUriRequest request = new HttpGet("http://localhost:8080/prattle/rest/user/create/" + "testController");
-    */
-    JsonObject name = new JsonObject();
-    name.addProperty("name", "tim");
-
-    try {
-      StringEntity womboCombo = new StringEntity(name.toString(), ContentType.APPLICATION_JSON);
-
-      HttpClient client = HttpClientBuilder.create().build();
-      HttpPost request = new HttpPost("http://localhost:8080/prattle/rest/user/create");
-      request.setEntity(womboCombo);
-      HttpResponse response = client.execute(request);
-      HttpResponse response2 = client.execute(request);
-
-      Assert.assertEquals(response2.getStatusLine().getStatusCode(), HttpStatus.SC_CONFLICT);
-    } catch (java.io.IOException exception) {
-      Assert.fail();
-    }
-
-  }
-
 }
