@@ -68,7 +68,7 @@ public class Message {
 
         public MessageBuilder()    {
             message = new Message();
-            message.setFrom("Not set");
+            message.setFrom("Service");
         }
 
         public MessageBuilder setFrom(String from)    {
