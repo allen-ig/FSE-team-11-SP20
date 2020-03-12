@@ -1,8 +1,8 @@
 package com.neu.prattle.websocket;
 
 import com.neu.prattle.model.Message;
-import com.neu.prattle.model.User;
 import com.neu.prattle.service.UserService;
+import com.neu.prattle.service.UserServiceImpl;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -10,13 +10,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Optional;
-import java.util.Set;
 
 import javax.websocket.EncodeException;
 import javax.websocket.RemoteEndpoint;
@@ -32,6 +29,7 @@ public class ChatEndpointTest {
   
   @InjectMocks
   private ChatEndpoint chatEndpoint;
+  
   private Message message;
   
   @Mock
@@ -40,21 +38,12 @@ public class ChatEndpointTest {
   @Mock
   private RemoteEndpoint.Basic mockBasic;
   
-  @Mock
-  private UserService userService;
-  
-  @Mock
-  private Set<ChatEndpoint> chatEndpoints;
-  
-  private User user;
-  
   @Before
   public void setUp() {
     MockitoAnnotations.initMocks(this);
+    
     chatEndpoint = new ChatEndpoint();
     message = Message.messageBuilder().setFrom("User1").setTo("User2").setMessageContent("Hello World").build();
-    user = new User();
-    user.setName("User1");
   }
   
   @Test
@@ -73,7 +62,7 @@ public class ChatEndpointTest {
     
     Message message = null;
     try {
-      message = (Message) privateMethod.invoke(chatEndpoint, new String(username));
+      message = (Message) privateMethod.invoke(chatEndpoint, username);
     } catch (IllegalAccessException | InvocationTargetException e) {
       e.printStackTrace();
     }
@@ -85,19 +74,6 @@ public class ChatEndpointTest {
   public void testOnOpenUserNotFound(){
     Mockito.when(this.mockSession.getId()).thenReturn("sessionId");
     Mockito.when(this.mockSession.getBasicRemote()).thenReturn(this.mockBasic);
-    
-    try {
-      chatEndpoint.onOpen(mockSession, username);
-    } catch (IOException | EncodeException e) {
-      e.printStackTrace();
-    }
-  }
-  
-  @Test
-  public void testOnOpenUserFound(){
-    Mockito.when(this.mockSession.getId()).thenReturn("sessionId");
-    Mockito.when(this.mockSession.getBasicRemote()).thenReturn(this.mockBasic);
-    Mockito.when(userService.findUserByName(username)).thenReturn(Optional.of(new User(username)));
     
     try {
       chatEndpoint.onOpen(mockSession, username);
@@ -186,6 +162,38 @@ public class ChatEndpointTest {
     privateMethod.setAccessible(true);
     try {
       privateMethod.invoke(chatEndpoint, message);
+    } catch (IllegalAccessException | InvocationTargetException e) {
+      e.printStackTrace();
+    }
+  }
+  
+  @Test
+  public void testPrivateSetterUserService() {
+    Method privateMethod = null;
+    try {
+      privateMethod = ChatEndpoint.class.getDeclaredMethod("setAccountService", UserService.class);
+    } catch (NoSuchMethodException e) {
+      e.printStackTrace();
+    }
+    privateMethod.setAccessible(true);
+    try {
+      privateMethod.invoke(chatEndpoint, UserServiceImpl.getInstance());
+    } catch (IllegalAccessException | InvocationTargetException e) {
+      e.printStackTrace();
+    }
+  }
+  
+  @Test
+  public void testPrivateSetterSession() {
+    Method privateMethod = null;
+    try {
+      privateMethod = ChatEndpoint.class.getDeclaredMethod("setSession", Session.class);
+    } catch (NoSuchMethodException e) {
+      e.printStackTrace();
+    }
+    privateMethod.setAccessible(true);
+    try {
+      privateMethod.invoke(chatEndpoint, mockSession);
     } catch (IllegalAccessException | InvocationTargetException e) {
       e.printStackTrace();
     }
