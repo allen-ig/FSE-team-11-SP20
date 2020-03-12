@@ -10,8 +10,9 @@ package com.neu.prattle.websocket;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.websocket.EncodeException;
 import javax.websocket.OnClose;
@@ -42,10 +43,13 @@ public class ChatEndpoint {
     private Session session;
     
     /** The Constant chatEndpoints. */
-    private static final Set<ChatEndpoint> chatEndpoints = new CopyOnWriteArraySet<>();
+    private static final ConcurrentHashMap<String, ChatEndpoint> chatEndpoints = new ConcurrentHashMap<>();
     
     /** The users. */
     private static HashMap<String, String> users = new HashMap<>();
+
+    /** The logger. */
+    private static Logger logger = Logger.getLogger(ChatEndpoint.class.getName());
 
     /**
 	 * On open.
@@ -103,7 +107,7 @@ public class ChatEndpoint {
      */
     private void addEndpoint(Session session, String username) {
         this.session = session;
-        chatEndpoints.add(this);
+        chatEndpoints.put(username, this);
         /* users is a hashmap between session ids and users */
         users.put(session.getId(), username);
     }
@@ -164,37 +168,34 @@ public class ChatEndpoint {
      * @param message 
      */
     private static void broadcast(Message message) {
-        chatEndpoints.forEach(endpoint -> {
+        chatEndpoints.forEach((user, endpoint) -> {
             synchronized (endpoint) {
                 try {
                     endpoint.session.getBasicRemote()
                             .sendObject(message);
                 } catch (IOException | EncodeException e) {
-                	/* note: in production, who exactly is looking at the console.  This exception's
-                	 *       output should be moved to a logger.
-                	 */
-                    e.printStackTrace();
+                	logger.log(Level.SEVERE, e.getMessage());
                 }
             }
         });
     }
 
+    /**
+     * User to user message.
+     *
+     * Send a Message to a particular user. 
+     * @param message to be sent
+     */
     private static void sendMessage(Message message) {
-      chatEndpoints.forEach(endpoint -> {
-        synchronized (endpoint) {
-          if (users.get(endpoint.session.getId()).equals(message.getTo())) {
-            try {
-              endpoint.session.getBasicRemote()
-                  .sendObject(message);
-            } catch (IOException | EncodeException e) {
-              /* note: in production, who exactly is looking at the console.  This exception's
-               *       output should be moved to a logger.
-               */
-              e.printStackTrace();
+        ChatEndpoint userEndpoint = chatEndpoints.get(message.getTo());
+        synchronized (userEndpoint){
+            try{
+                userEndpoint.session.getBasicRemote()
+                        .sendObject(message);
+            }catch (IOException | EncodeException e){
+                logger.log(Level.SEVERE, e.getMessage());
             }
-          }
         }
-      });
     }
 }
 
