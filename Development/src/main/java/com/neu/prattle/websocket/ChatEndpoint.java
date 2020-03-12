@@ -2,7 +2,7 @@ package com.neu.prattle.websocket;
 
 /**
  * A simple chat client based on websockets.
- * 
+ *
  * @author https://github.com/eugenp/tutorials/java-websocket/src/main/java/com/baeldung/websocket/ChatEndpoint.java
  * @version dated 2017-03-05
  */
@@ -10,10 +10,9 @@ package com.neu.prattle.websocket;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.websocket.EncodeException;
 import javax.websocket.OnClose;
@@ -31,42 +30,44 @@ import com.neu.prattle.service.UserServiceImpl;
 
 /**
  * The Class ChatEndpoint.
- * 
+ *
  * This class handles Messages that arrive on the server.
  */
 @ServerEndpoint(value = "/chat/{username}", decoders = MessageDecoder.class, encoders = MessageEncoder.class)
 public class ChatEndpoint {
-    
+
     /** The account service. */
-    private UserService accountService = UserServiceImpl.getInstance();;
-    
+
+    private UserService accountService = UserServiceImpl.getInstance();
+
     /** The session. */
     private Session session;
-    
-    /** The Constant chatEndpoints. */
-    private static final Set<ChatEndpoint> chatEndpoints = new CopyOnWriteArraySet<>();
-    
+
+    /** The Constant chatEndpoints.
+     * Have to make it not final for the mock test. */
+    private static ConcurrentHashMap<String, ChatEndpoint> chatEndpoints = new ConcurrentHashMap<>();
+
     /** The users. */
     private static HashMap<String, String> users = new HashMap<>();
-  
+
     /** The logger. */
     private static Logger logger = Logger.getLogger(ChatEndpoint.class.getName());
-  
+
   private void setAccountService(UserService accountService) {
     this.accountService = accountService;
   }
-  
+
   private void setSession(Session session) {
     this.session = session;
   }
-  
+
   /**
 	 * On open.
-	 * 
+	 *
 	 * Handles opening a new session (websocket connection). If the user is a known
 	 * user (user management), the session added to the pool of sessions and an
 	 * announcement to that pool is made informing them of the new user.
-	 * 
+	 *
 	 * If the user is not known, the pool is not augmented and an error is sent to
 	 * the originator.
 	 *
@@ -116,14 +117,14 @@ public class ChatEndpoint {
      */
     private void addEndpoint(Session session, String username) {
         this.session = session;
-        chatEndpoints.add(this);
+        chatEndpoints.put(username, this);
         /* users is a hashmap between session ids and users */
         users.put(session.getId(), username);
     }
 
     /**
-     * On message.   
-     * 
+     * On message.
+     *
      * When a message arrives, broadcast it to all connected users.
      *
      * @param session the session originating the message
@@ -132,20 +133,24 @@ public class ChatEndpoint {
     @OnMessage
     public void onMessage(Session session, Message message) {
         message.setFrom(users.get(session.getId()));
-        broadcast(message);
+        if (message.getTo() == null) {
+            broadcast(message);
+        }else{
+            sendMessage(message);
+        }
     }
 
     /**
-     * On close.  
-     * 
-     * Closes the session by removing it from the pool of sessions and 
+     * On close.
+     *
+     * Closes the session by removing it from the pool of sessions and
      * broadcasting the news to everyone else.
      *
      * @param session the session
      */
     @OnClose
     public void onClose(Session session) {
-        chatEndpoints.remove(this);
+        chatEndpoints.values().remove(this);
         Message message = new Message();
         message.setFrom(users.get(session.getId()));
         message.setContent("Disconnected!");
@@ -156,7 +161,7 @@ public class ChatEndpoint {
      * On error.
      *
      * Handles situations when an error occurs.  Not implemented.
-     * 
+     *
      * @param session the session with the problem
      * @param throwable the action to be taken.
      */
@@ -167,7 +172,7 @@ public class ChatEndpoint {
 
     /**
      * Broadcast.
-     * 
+     *
      * Send a Message to each session in the pool of sessions.
      * The Message sending action is synchronized.  That is, if another
      * Message tries to be sent at the same time to the same endpoint,
@@ -176,19 +181,34 @@ public class ChatEndpoint {
      * @param message to be broadcasted
      */
     private static void broadcast(Message message) {
-        chatEndpoints.forEach(endpoint -> {
+        chatEndpoints.forEach((user, endpoint) -> {
             synchronized (endpoint) {
                 try {
                     endpoint.session.getBasicRemote()
                             .sendObject(message);
                 } catch (IOException | EncodeException e) {
-                	/* note: in production, who exactly is looking at the console.  This exception's
-                	 *       output should be moved to a logger.
-                	 */
-                  logger.log(Level.SEVERE, e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage());
                 }
             }
         });
+    }
+
+    /**
+     * User to user message.
+     *
+     * Send a Message to a particular user.
+     * @param message to be sent
+     */
+    private static void sendMessage(Message message) {
+        ChatEndpoint userEndpoint = chatEndpoints.get(message.getTo());
+        synchronized (userEndpoint){
+            try{
+                userEndpoint.session.getBasicRemote()
+                        .sendObject(message);
+            }catch (IOException | EncodeException e){
+                logger.log(Level.SEVERE, e.getMessage());
+            }
+        }
     }
 }
 
