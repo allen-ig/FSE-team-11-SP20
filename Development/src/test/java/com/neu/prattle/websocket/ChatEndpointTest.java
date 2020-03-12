@@ -4,6 +4,8 @@ import com.neu.prattle.model.Message;
 import com.neu.prattle.service.UserService;
 import com.neu.prattle.service.UserServiceImpl;
 
+import com.neu.prattle.service.UserServiceWithGroups;
+import com.neu.prattle.service.UserServiceWithGroupsImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -110,18 +112,53 @@ public class ChatEndpointTest {
   public void testOnMessage(){
     this.mockSession = Mockito.mock(Session.class);
     Mockito.when(this.mockSession.getId()).thenReturn("sessionId");
+    Mockito.when(this.mockSession.getBasicRemote()).thenReturn(this.mockBasic);
+
+    Method privateMethod = null;
+
+    try {
+      privateMethod = ChatEndpoint.class.getDeclaredMethod("addEndpoint", Session.class, String.class);
+    } catch (NoSuchMethodException e) {
+      e.printStackTrace();
+    }
+
+    privateMethod.setAccessible(true);
+
+    try {
+      privateMethod.invoke(chatEndpoint, mockSession, username);
+    } catch (IllegalAccessException | InvocationTargetException e) {
+      e.printStackTrace();
+    }
     
     chatEndpoint.onMessage(mockSession, message);
-    verify(mockSession, times(1)).getId();
+    verify(mockSession, times(2)).getId();
   }
   
   @Test
   public void testOnClose(){
     this.mockSession = Mockito.mock(Session.class);
     Mockito.when(this.mockSession.getId()).thenReturn("sessionId");
-    
+
+    Method privateMethod = null;
+
+    try {
+      privateMethod = ChatEndpoint.class.getDeclaredMethod("addEndpoint", Session.class, String.class);
+    } catch (NoSuchMethodException e) {
+      e.printStackTrace();
+    }
+
+    privateMethod.setAccessible(true);
+
+    try {
+      privateMethod.invoke(chatEndpoint, mockSession, username);
+    } catch (IllegalAccessException | InvocationTargetException e) {
+      e.printStackTrace();
+    }
+
+
+
     chatEndpoint.onClose(mockSession);
-    verify(mockSession, times(1)).getId();
+    verify(mockSession, times(3)).getId();
   }
   
   @Test
@@ -171,13 +208,13 @@ public class ChatEndpointTest {
   public void testPrivateSetterUserService() {
     Method privateMethod = null;
     try {
-      privateMethod = ChatEndpoint.class.getDeclaredMethod("setAccountService", UserService.class);
+      privateMethod = ChatEndpoint.class.getDeclaredMethod("setAccountService", UserServiceWithGroups.class);
     } catch (NoSuchMethodException e) {
       e.printStackTrace();
     }
     privateMethod.setAccessible(true);
     try {
-      privateMethod.invoke(chatEndpoint, UserServiceImpl.getInstance());
+      privateMethod.invoke(chatEndpoint, UserServiceWithGroupsImpl.getInstance());
     } catch (IllegalAccessException | InvocationTargetException e) {
       e.printStackTrace();
     }

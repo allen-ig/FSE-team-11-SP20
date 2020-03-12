@@ -5,6 +5,8 @@ import com.neu.prattle.model.User;
 import com.neu.prattle.service.UserService;
 import com.neu.prattle.service.UserServiceImpl;
 
+import com.neu.prattle.service.UserServiceWithGroups;
+import com.neu.prattle.service.UserServiceWithGroupsImpl;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -22,7 +24,7 @@ import javax.ws.rs.core.Response;
 public class UserController {
 
     // Usually Dependency injection will be used to inject the service at run-time
-    private UserService accountService = UserServiceImpl.getInstance();
+    private UserServiceWithGroups accountService = UserServiceWithGroupsImpl.getInstance();
 
     /***
      * Handles a HTTP POST request for user creation
