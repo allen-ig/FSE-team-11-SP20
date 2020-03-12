@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.websocket.EncodeException;
 import javax.websocket.OnClose;
@@ -36,7 +38,7 @@ import com.neu.prattle.service.UserServiceImpl;
 public class ChatEndpoint {
     
     /** The account service. */
-    private UserService accountService = UserServiceImpl.getInstance();
+    private UserService accountService = UserServiceImpl.getInstance();;
     
     /** The session. */
     private Session session;
@@ -46,8 +48,19 @@ public class ChatEndpoint {
     
     /** The users. */
     private static HashMap<String, String> users = new HashMap<>();
-
-    /**
+  
+    /** The logger. */
+    private static Logger logger = Logger.getLogger(ChatEndpoint.class.getName());
+  
+  private void setAccountService(UserService accountService) {
+    this.accountService = accountService;
+  }
+  
+  private void setSession(Session session) {
+    this.session = session;
+  }
+  
+  /**
 	 * On open.
 	 * 
 	 * Handles opening a new session (websocket connection). If the user is a known
@@ -160,7 +173,7 @@ public class ChatEndpoint {
      * Message tries to be sent at the same time to the same endpoint,
      * it is blocked until this Message finishes being sent..
      *
-     * @param message 
+     * @param message to be broadcasted
      */
     private static void broadcast(Message message) {
         chatEndpoints.forEach(endpoint -> {
@@ -172,7 +185,7 @@ public class ChatEndpoint {
                 	/* note: in production, who exactly is looking at the console.  This exception's
                 	 *       output should be moved to a logger.
                 	 */
-                    e.printStackTrace();
+                  logger.log(Level.SEVERE, e.getMessage());
                 }
             }
         });
