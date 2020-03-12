@@ -38,7 +38,7 @@ import com.neu.prattle.service.UserServiceImpl;
 public class ChatEndpoint {
     
     /** The account service. */
-    private UserService accountService;
+    private UserService accountService = UserServiceImpl.getInstance();;
     
     /** The session. */
     private Session session;
@@ -51,10 +51,6 @@ public class ChatEndpoint {
   
     /** The logger. */
     private static Logger logger = Logger.getLogger(ChatEndpoint.class.getName());
-  
-    ChatEndpoint() {
-      accountService = UserServiceImpl.getInstance();
-    }
   
   private void setAccountService(UserService accountService) {
     this.accountService = accountService;
@@ -179,7 +175,7 @@ public class ChatEndpoint {
      *
      * @param message to be broadcasted
      */
-    private void broadcast(Message message) {
+    private static void broadcast(Message message) {
         chatEndpoints.forEach(endpoint -> {
             synchronized (endpoint) {
                 try {
