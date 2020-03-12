@@ -2,7 +2,7 @@ package com.neu.prattle.websocket;
 
 /**
  * A simple chat client based on websockets.
- *
+ * 
  * @author https://github.com/eugenp/tutorials/java-websocket/src/main/java/com/baeldung/websocket/ChatEndpoint.java
  * @version dated 2017-03-05
  */
@@ -31,46 +31,46 @@ import com.neu.prattle.service.UserServiceImpl;
 
 /**
  * The Class ChatEndpoint.
- *
+ * 
  * This class handles Messages that arrive on the server.
  */
 @ServerEndpoint(value = "/chat/{username}", decoders = MessageDecoder.class, encoders = MessageEncoder.class)
 public class ChatEndpoint {
-
+    
     /** The account service. */
     private UserService accountService;
-
+    
     /** The session. */
     private Session session;
-
+    
     /** The Constant chatEndpoints. */
     private static final Set<ChatEndpoint> chatEndpoints = new CopyOnWriteArraySet<>();
-
+    
     /** The users. */
     private static HashMap<String, String> users = new HashMap<>();
-
+  
     /** The logger. */
     private static Logger logger = Logger.getLogger(ChatEndpoint.class.getName());
-
+  
     ChatEndpoint() {
-        accountService = UserServiceImpl.getInstance();
+      accountService = UserServiceImpl.getInstance();
     }
-
-    private void setAccountService(UserService accountService) {
-        this.accountService = accountService;
-    }
-
-    private void setSession(Session session) {
-        this.session = session;
-    }
-
-    /**
+  
+  private void setAccountService(UserService accountService) {
+    this.accountService = accountService;
+  }
+  
+  private void setSession(Session session) {
+    this.session = session;
+  }
+  
+  /**
      * On open.
-     *
+     * 
      * Handles opening a new session (websocket connection). If the user is a known
      * user (user management), the session added to the pool of sessions and an
      * announcement to that pool is made informing them of the new user.
-     *
+     * 
      * If the user is not known, the pool is not augmented and an error is sent to
      * the originator.
      *
@@ -126,8 +126,8 @@ public class ChatEndpoint {
     }
 
     /**
-     * On message.
-     *
+     * On message.   
+     * 
      * When a message arrives, broadcast it to all connected users.
      *
      * @param session the session originating the message
@@ -140,9 +140,9 @@ public class ChatEndpoint {
     }
 
     /**
-     * On close.
-     *
-     * Closes the session by removing it from the pool of sessions and
+     * On close.  
+     * 
+     * Closes the session by removing it from the pool of sessions and 
      * broadcasting the news to everyone else.
      *
      * @param session the session
@@ -160,7 +160,7 @@ public class ChatEndpoint {
      * On error.
      *
      * Handles situations when an error occurs.  Not implemented.
-     *
+     * 
      * @param session the session with the problem
      * @param throwable the action to be taken.
      */
@@ -171,7 +171,7 @@ public class ChatEndpoint {
 
     /**
      * Broadcast.
-     *
+     * 
      * Send a Message to each session in the pool of sessions.
      * The Message sending action is synchronized.  That is, if another
      * Message tries to be sent at the same time to the same endpoint,
@@ -189,7 +189,7 @@ public class ChatEndpoint {
                     /* note: in production, who exactly is looking at the console.  This exception's
                      *       output should be moved to a logger.
                      */
-                    logger.log(Level.SEVERE, e.getMessage());
+                  logger.log(Level.SEVERE, e.getMessage());
                 }
             }
         });
