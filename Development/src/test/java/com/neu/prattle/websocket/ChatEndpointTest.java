@@ -109,8 +109,19 @@ public class ChatEndpointTest {
   }
 
   @Test
-  public void testOnMessage(){
+  public void testOnMessageBroadcast(){
     Message broadcastMessage = Message.messageBuilder().setFrom("User1").setMessageContent("Hello World").build();
+
+    this.mockSession = Mockito.mock(Session.class);
+    Mockito.when(this.mockSession.getId()).thenReturn("sessionId");
+
+    chatEndpoint.onMessage(mockSession, broadcastMessage);
+    verify(mockSession, times(1)).getId();
+  }
+
+  @Test
+  public void testOnMessageBroadcast2(){
+    Message broadcastMessage = Message.messageBuilder().setFrom("User1").setTo("").setMessageContent("Hello World").build();
 
     this.mockSession = Mockito.mock(Session.class);
     Mockito.when(this.mockSession.getId()).thenReturn("sessionId");
@@ -196,6 +207,24 @@ public class ChatEndpointTest {
     Method privateMethod = null;
     try {
       privateMethod = ChatEndpoint.class.getDeclaredMethod("broadcast", Message.class);
+    } catch (NoSuchMethodException e) {
+      e.printStackTrace();
+    }
+    privateMethod.setAccessible(true);
+    try {
+      privateMethod.invoke(chatEndpoint, message);
+    } catch (IllegalAccessException | InvocationTargetException e) {
+      e.printStackTrace();
+    }
+  }
+
+  @Test
+  public void testPrivateSendMessageException(){
+    Mockito.when(this.mockSession.getId()).thenReturn("sessionId");
+
+    Method privateMethod = null;
+    try {
+      privateMethod = ChatEndpoint.class.getDeclaredMethod("sendMessage", Message.class);
     } catch (NoSuchMethodException e) {
       e.printStackTrace();
     }

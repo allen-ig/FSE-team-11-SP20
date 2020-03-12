@@ -133,7 +133,7 @@ public class ChatEndpoint {
     @OnMessage
     public void onMessage(Session session, Message message) {
         message.setFrom(users.get(session.getId()));
-        if (message.getTo() == null) {
+        if (message.getTo() == null || message.getTo().length() == 0) {
             broadcast(message);
         }else{
             sendMessage(message);
@@ -186,7 +186,7 @@ public class ChatEndpoint {
                 try {
                     endpoint.session.getBasicRemote()
                             .sendObject(message);
-                } catch (IOException | EncodeException e) {
+                } catch (IOException | EncodeException | NullPointerException e) {
                     logger.log(Level.SEVERE, e.getMessage());
                 }
             }
@@ -205,7 +205,7 @@ public class ChatEndpoint {
             try{
                 userEndpoint.session.getBasicRemote()
                         .sendObject(message);
-            }catch (IOException | EncodeException e){
+            }catch (IOException | EncodeException | NullPointerException e){
                 logger.log(Level.SEVERE, e.getMessage());
             }
         }
