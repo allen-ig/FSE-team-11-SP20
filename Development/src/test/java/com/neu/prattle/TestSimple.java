@@ -14,7 +14,7 @@ import org.junit.Test;
 
 import com.neu.prattle.model.User;
 
-public class SimpleTest {
+public class TestSimple {
 
 	private UserService as;
 	private PrattleApplication prattleApplication;

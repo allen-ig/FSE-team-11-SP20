@@ -50,7 +50,7 @@ public class ChatEndpoint {
     private static HashMap<String, String> users = new HashMap<>();
   
     /** The logger. */
-    private Logger logger = Logger.getLogger(this.getClass().getName());
+    private static Logger logger = Logger.getLogger(ChatEndpoint.class.getName());
   
     ChatEndpoint() {
       accountService = UserServiceImpl.getInstance();
