@@ -26,9 +26,9 @@ public class TestSimple {
 		as = UserServiceImpl.getInstance();
 		prattleApplication = new PrattleApplication();
 	}
-	
+
 	// This method just tries to add 
-	@Test(timeout=30000)
+	@Test(timeout=40000)
 	public void setUserTest(){
 		assertEquals(Optional.empty(), as.findUserByName("Mike"));
 		as.addUser(new User("Mike"));
