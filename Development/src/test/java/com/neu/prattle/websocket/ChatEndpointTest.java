@@ -172,16 +172,60 @@ public class ChatEndpointTest {
 
     ConcurrentHashMap<String, ChatEndpoint> chatEndpoints = new ConcurrentHashMap<>();
     chatEndpoints.put("User2", chatEndpoint);
+    chatEndpoints.put("User1", chatEndpoint);
 
-    Field privateField = null;
+    Field privateEndpoints = null;
+    Field privateSession = null;
     try{
-      privateField = this.chatEndpoint.getClass().getDeclaredField("chatEndpoints");
+      privateEndpoints = this.chatEndpoint.getClass().getDeclaredField("chatEndpoints");
+      privateSession = this.chatEndpoint.getClass().getDeclaredField("session");
     }catch (NoSuchFieldException e){
       e.printStackTrace();
     }
-    privateField.setAccessible(true);
+    privateEndpoints.setAccessible(true);
+    privateSession.setAccessible(true);
     try{
-      privateField.set(chatEndpoint, chatEndpoints);
+      privateEndpoints.set(chatEndpoint, chatEndpoints);
+      privateSession.set(chatEndpoint, this.mockSession);
+    }catch (IllegalArgumentException | IllegalAccessException e){
+      e.printStackTrace();
+    }
+
+    Method privateMethod = null;
+    try {
+      privateMethod = ChatEndpoint.class.getDeclaredMethod("sendMessage", Message.class);
+    } catch (NoSuchMethodException e) {
+      e.printStackTrace();
+    }
+    privateMethod.setAccessible(true);
+    try {
+      privateMethod.invoke(chatEndpoint, message);
+    } catch (IllegalAccessException | InvocationTargetException e) {
+      e.printStackTrace();
+    }
+  }
+
+  @Test
+  public void testPrivateSendMessageUserDoesNotExist(){
+    Mockito.when(this.mockSession.getId()).thenReturn("sessionId");
+    Mockito.when(this.mockSession.getBasicRemote()).thenReturn(this.mockBasic);
+
+    ConcurrentHashMap<String, ChatEndpoint> chatEndpoints = new ConcurrentHashMap<>();
+    chatEndpoints.put("User1", chatEndpoint);
+
+    Field privateEndpoints = null;
+    Field privateSession = null;
+    try{
+      privateEndpoints = this.chatEndpoint.getClass().getDeclaredField("chatEndpoints");
+      privateSession = this.chatEndpoint.getClass().getDeclaredField("session");
+    }catch (NoSuchFieldException e){
+      e.printStackTrace();
+    }
+    privateEndpoints.setAccessible(true);
+    privateSession.setAccessible(true);
+    try{
+      privateEndpoints.set(chatEndpoint, chatEndpoints);
+      privateSession.set(chatEndpoint, this.mockSession);
     }catch (IllegalArgumentException | IllegalAccessException e){
       e.printStackTrace();
     }
@@ -221,6 +265,7 @@ public class ChatEndpointTest {
   @Test
   public void testPrivateSendMessageException(){
     Mockito.when(this.mockSession.getId()).thenReturn("sessionId");
+    Message messageWithWrongToAndFrom = Message.messageBuilder().setFrom("ghost").setTo("phantom").setMessageContent("Hello World").build();
 
     Method privateMethod = null;
     try {
@@ -230,7 +275,26 @@ public class ChatEndpointTest {
     }
     privateMethod.setAccessible(true);
     try {
-      privateMethod.invoke(chatEndpoint, message);
+      privateMethod.invoke(chatEndpoint, messageWithWrongToAndFrom);
+    } catch (IllegalAccessException | InvocationTargetException e) {
+      e.printStackTrace();
+    }
+  }
+
+  @Test
+  public void testPrivateSendMessageException2(){
+    Mockito.when(this.mockSession.getId()).thenReturn("sessionId");
+    Message messageWithWrongFrom = Message.messageBuilder().setFrom("phantom").setTo("User2").setMessageContent("Hello World").build();
+
+    Method privateMethod = null;
+    try {
+      privateMethod = ChatEndpoint.class.getDeclaredMethod("sendMessage", Message.class);
+    } catch (NoSuchMethodException e) {
+      e.printStackTrace();
+    }
+    privateMethod.setAccessible(true);
+    try {
+      privateMethod.invoke(chatEndpoint, messageWithWrongFrom);
     } catch (IllegalAccessException | InvocationTargetException e) {
       e.printStackTrace();
     }

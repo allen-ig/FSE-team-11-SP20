@@ -199,15 +199,28 @@ public class ChatEndpoint {
      * Send a Message to a particular user.
      * @param message to be sent
      */
-    private static void sendMessage(Message message) {
-        ChatEndpoint userEndpoint = chatEndpoints.get(message.getTo());
-        synchronized (userEndpoint){
-            try{
-                userEndpoint.session.getBasicRemote()
-                        .sendObject(message);
+    private static synchronized void sendMessage(Message message) {
+        ChatEndpoint recipientEndpoint = chatEndpoints.get(message.getTo());
+        ChatEndpoint senderEndpoint = chatEndpoints.get(message.getFrom());
+        if (!chatEndpoints.containsKey(message.getTo())){
+            Message errorMessage = new Message();
+            errorMessage.setFrom("SYSTEM");
+            errorMessage.setContent("The recipient does not exist or is currently offline");
+            try {
+                senderEndpoint.session.getBasicRemote()
+                        .sendObject(errorMessage);
             }catch (IOException | EncodeException | NullPointerException e){
                 logger.log(Level.SEVERE, e.getMessage());
             }
+            return;
+        }
+        try{
+            recipientEndpoint.session.getBasicRemote()
+                    .sendObject(message);
+            senderEndpoint.session.getBasicRemote()
+                    .sendObject(message);
+        }catch (IOException | EncodeException | NullPointerException e){
+            logger.log(Level.SEVERE, e.getMessage());
         }
     }
 }
