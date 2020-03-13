@@ -35,7 +35,7 @@ public class TestSimple {
 
 	
 	// This method just tries to add 
-	@Test(timeout=20000)
+	@Test(timeout=30000)
 	public void setUserTest(){
 		assertEquals(Optional.empty(), as.findUserByName("Mike"));
 		as.addUser(new User("Mike"));
@@ -48,7 +48,7 @@ public class TestSimple {
 	// Performance testing to benchmark our number of users that can be added 
 	// in 2 sec
 	
-	@Test(timeout = 20000)
+	@Test(timeout = 30000)
 	public void checkPrefTest(){
 		for(int i=0; i < 5; i++) {
 			as.addUser(new User("TEST_NAME"+i));
