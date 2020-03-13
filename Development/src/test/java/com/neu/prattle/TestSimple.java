@@ -2,8 +2,6 @@ package com.neu.prattle;
 
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import java.util.Date;
 
 import java.util.Optional;
 
@@ -45,12 +43,14 @@ public class TestSimple {
 	@Test(timeout = 30000)
 	public void checkPrefTest(){
 		for(int i=0; i < 5; i++) {
-			Date now = new Date();
-			String str_now = now.toString();
-			as.addUser(new User(str_now));
+			as.addUser(new User("TEST_NAME"+i));
+		}
+		for (int i=0; i< 5; i++){
+			as.deleteUser(as.findUserByName("TEST_NAME"+i).get());
 		}
 	}
-	
+
+
 	public void testPrattleApplication() {
 		assertEquals(1, prattleApplication.getClasses().size());
 	}
