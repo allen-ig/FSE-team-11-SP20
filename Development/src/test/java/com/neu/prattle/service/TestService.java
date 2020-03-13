@@ -1,14 +1,12 @@
-package com.neu.prattle;
+package com.neu.prattle.service;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import com.neu.prattle.exceptions.UserAlreadyPresentException;
+import com.neu.prattle.exceptions.UserNotFoundException;
 import com.neu.prattle.model.User;
 import java.util.Optional;
 
-import com.neu.prattle.service.UserService;
-import com.neu.prattle.service.UserServiceImpl;
-import javax.swing.text.html.Option;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -43,5 +41,34 @@ public class TestService {
   public void testAddUser(){
     us.addUser(new User("TestAddUser"));
     us.addUser(new User("TestAddUser"));
+  }
+  
+  @Test
+  public void testSetUserStatus() {
+    User test = new User("User2");
+    us.addUser(test);
+    
+    us.setUserStatus("User2", "Hello world");
+    assertEquals("Hello world", us.getUserStatus("User2"));
+  }
+  
+  @Test(expected = UserNotFoundException.class)
+  public void testSetUserStatusUserDoesNotExist() {
+    us.setUserStatus("User3", "Hello world");
+  }
+  
+  @Test
+  public void testGetUserStatus() {
+    User test = new User("User4");
+    us.addUser(test);
+    
+    assertEquals("", us.getUserStatus("User4"));
+    us.setUserStatus("User4", "Hello world");
+    assertEquals("Hello world", us.getUserStatus("User4"));
+  }
+  
+  @Test(expected = UserNotFoundException.class)
+  public void testGetUserStatusUserDoesNotExist() {
+    us.getUserStatus("Test2");
   }
 }

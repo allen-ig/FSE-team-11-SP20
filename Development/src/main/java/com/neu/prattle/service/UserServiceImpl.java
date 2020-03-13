@@ -1,6 +1,7 @@
 package com.neu.prattle.service;
 
 import com.neu.prattle.exceptions.UserAlreadyPresentException;
+import com.neu.prattle.exceptions.UserNotFoundException;
 import com.neu.prattle.model.User;
 
 import java.util.HashSet;
@@ -61,5 +62,28 @@ public class UserServiceImpl implements UserService {
             throw new UserAlreadyPresentException(String.format("User already present with name: %s", user.getName()));
 
         userSet.add(user);
+    }
+    
+    @Override
+    public String getUserStatus(String username) {
+        for(User u : userSet) {
+          if(u.getName().equals(username)) {
+            return u.getStatus();
+          }
+        }
+        
+        throw new UserNotFoundException("User not found");
+    }
+    
+    @Override
+    public void setUserStatus(String username, String status) {
+      for(User user : userSet) {
+        if(user.getName().equals(username)) {
+          user.setStatus(status);
+          return;
+        }
+      }
+  
+      throw new UserNotFoundException("User not found");
     }
 }
