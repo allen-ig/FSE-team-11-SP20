@@ -50,6 +50,7 @@ public class TestSimple {
 			as.deleteUser(as.findUserByName("TEST_NAME"+i).get());
 		}
 	}
+	
 
 	public void testPrattleApplication() {
 		assertEquals(1, prattleApplication.getClasses().size());
