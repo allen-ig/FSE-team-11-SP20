@@ -42,7 +42,7 @@ pipeline {
      steps {
       withSonarQubeEnv('SonarQube') {
         sh 'mvn -f Development/pom.xml clean install'
-        sh 'mvn -f Development/pom.xml sonar:sonar -Dsonar.projectKey=${jobBaseName} -Dsonar.projectName=${jobBaseName}'
+        sh 'mvn -f Development/pom.xml sonar:sonar -Dsonar.projectKey=${jobBaseName} -Dsonar.projectName=${jobBaseName} -Dsonar.exclusions=**/*.js'
       }
 
       sh 'sleep 30'
