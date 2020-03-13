@@ -18,7 +18,9 @@ function connect() {
 
 function send() {
     var content = document.getElementById("msg").value;
+    var recipient = document.getElementById("usr").value;
     var json = JSON.stringify({
+        "to":recipient,
         "content":content
     });
 
