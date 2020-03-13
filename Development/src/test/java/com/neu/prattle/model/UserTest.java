@@ -1,6 +1,5 @@
-package com.neu.prattle.testmodels;
+package com.neu.prattle.model;
 
-import com.neu.prattle.model.User;
 import org.junit.Test;
 
 import java.util.Objects;
@@ -53,5 +52,13 @@ public class UserTest {
     public void testEqualsNotUser(){
         User alice = new User("alice");
         assertFalse(alice.equals("alice"));
+    }
+    
+    @Test
+    public void testGetAndSetUserStatus(){
+        User alice = new User("alice");
+        assertEquals("", alice.getStatus());
+        alice.setStatus("Hello world");
+        assertEquals("Hello world", alice.getStatus());
     }
 }

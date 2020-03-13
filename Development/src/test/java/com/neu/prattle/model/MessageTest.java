@@ -1,6 +1,5 @@
-package com.neu.prattle.testmodels;
+package com.neu.prattle.model;
 
-import com.neu.prattle.model.Message;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -8,7 +7,7 @@ import static org.junit.Assert.*;
 
 public class MessageTest {
 
-    Message.MessageBuilder messageBuilder;
+    private Message.MessageBuilder messageBuilder;
 
     @Before
     public void setUp(){

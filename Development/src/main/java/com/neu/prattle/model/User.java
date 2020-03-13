@@ -19,6 +19,8 @@ public class User {
 	}
 
 	private String name;
+	
+	private String status;
 
 	public User() {
 
@@ -26,6 +28,7 @@ public class User {
 
     public User(String name) {
         this.name = name;
+        this.status = "";
     }
 
     /***
@@ -59,4 +62,12 @@ public class User {
         User user = (User) obj;
         return user.name.equals(this.name);
     }
+  
+  public String getStatus() {
+    return status;
+  }
+  
+  public void setStatus(String status) {
+    this.status = status;
+  }
 }
