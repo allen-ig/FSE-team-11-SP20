@@ -9,6 +9,8 @@ import java.util.Optional;
 import com.neu.prattle.main.PrattleApplication;
 import com.neu.prattle.service.UserService;
 import com.neu.prattle.service.UserServiceImpl;
+
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -23,33 +25,39 @@ public class TestSimple {
 	public void setUp() {
 		as = UserServiceImpl.getInstance();
 		prattleApplication = new PrattleApplication();
+		as.addUser(new User("TEST_USER"));
 	}
-	
+
+	@After
+	public void tearDown(){
+		as.deleteUser(as.findUserByName("TEST_USER").get());
+	}
+
 	
 	// This method just tries to add 
-	@Test
+	@Test(timeout=20000)
 	public void setUserTest(){
-	   as.addUser(new User("Mike"));
+		assertEquals(Optional.empty(), as.findUserByName("Mike"));
+		as.addUser(new User("Mike"));
+		User mike = as.findUserByName("Mike").get();
+		assertEquals("Mike", mike.getName());
+		as.deleteUser(mike);
 	}
-	
-	// This method just tries to add 
-	@Test
-	public void getUserTest(){
-		Optional<User> user = as.findUserByName("Mike");
-		assertTrue(user.isPresent());
-	}
-	
+
+
 	// Performance testing to benchmark our number of users that can be added 
-	// in 1 sec	
+	// in 2 sec
 	
-	@Test(timeout = 1000)
+	@Test(timeout = 20000)
 	public void checkPrefTest(){
-		for(int i=0; i < 1000; i++) {
-			as.addUser(new User("Mike"+i));
+		for(int i=0; i < 5; i++) {
+			as.addUser(new User("TEST_NAME"+i));
+		}
+		for (int i=0; i< 5; i++){
+			as.deleteUser(as.findUserByName("TEST_NAME"+i).get());
 		}
 	}
-	
-	@Test
+
 	public void testPrattleApplication() {
 		assertEquals(1, prattleApplication.getClasses().size());
 	}

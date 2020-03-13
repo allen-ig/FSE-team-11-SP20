@@ -1,5 +1,6 @@
 package com.neu.prattle.service;
 
+import com.neu.prattle.exceptions.UserAlreadyPresentException;
 import com.neu.prattle.model.User;
 
 import java.util.Optional;
@@ -7,9 +8,13 @@ import java.util.Optional;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
+import javax.persistence.NamedQuery;
 import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 /***
  * Implementation of {@link UserService}
@@ -68,7 +73,9 @@ public class UserServiceImpl implements UserService {
     public synchronized void addUser(User user){
         EntityManager em = ENTITY_MANAGER_FACTORY.createEntityManager();
         EntityTransaction et = null;
-
+        if (findUserByName(user.getName()).isPresent()){
+            throw new UserAlreadyPresentException(String.format("User already present with name: %s", user.getName()));
+        }
         try {
             et = em.getTransaction();
             et.begin();
@@ -78,9 +85,18 @@ public class UserServiceImpl implements UserService {
             if (et != null){
                 et.rollback();
             }
-            e.printStackTrace();
         } finally{
             em.close();
         }
+    }
+
+    public synchronized void deleteUser(User user){
+        EntityManager em = ENTITY_MANAGER_FACTORY.createEntityManager();
+        EntityTransaction et = em.getTransaction();
+        User u = em.find(User.class, user.getId());
+        et.begin();
+        em.remove(u);
+        et.commit();
+        em.close();
     }
 }
