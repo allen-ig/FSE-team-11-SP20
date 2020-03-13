@@ -30,7 +30,12 @@ public class TestSimple {
 
 	@After
 	public void tearDown(){
-		as.deleteUser(as.findUserByName("TEST_USER").get());
+		try{
+			as.deleteUser(as.findUserByName("TEST_USER").get());
+		} catch (Exception e){
+
+		}
+		
 	}
 
 	
