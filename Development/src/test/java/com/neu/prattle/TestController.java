@@ -29,12 +29,12 @@ public class TestController {
   public void setUp() {
     us = UserServiceImpl.getInstance();
     uc = new UserController();
-    newUser = new User("TEST_USER");
+    newUser = new User("TEST_USER_2");
   }
 
   @After
   public void tearDown(){
-    User user = us.findUserByName("TEST_USER").get();
+    User user = us.findUserByName("TEST_USER_2").get();
     us.deleteUser(user);
   }
 
