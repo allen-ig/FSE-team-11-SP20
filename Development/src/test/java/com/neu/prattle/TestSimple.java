@@ -25,19 +25,7 @@ public class TestSimple {
 	public void setUp() {
 		as = UserServiceImpl.getInstance();
 		prattleApplication = new PrattleApplication();
-		as.addUser(new User("TEST_USER"));
 	}
-
-	@After
-	public void tearDown(){
-		try{
-			as.deleteUser(as.findUserByName("TEST_USER").get());
-		} catch (Exception e){
-
-		}
-
-	}
-
 	
 	// This method just tries to add 
 	@Test(timeout=30000)
