@@ -2,22 +2,39 @@ package com.neu.prattle.model;
 
 import java.util.Objects;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+
 /***
  * A User object represents a basic account information for a user.
  *
  * @author CS5500 Fall 2019 Teaching staff
  * @version dated 2019-10-06
  */
+@Entity
+@Table(name="user")
 public class User {
+
+
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private int id;
 
 	public String getName() {
 		return name;
 	}
+	public int getId(){return id;}
 
 	public void setName(String name) {
 		this.name = name;
 	}
 
+  @Column(name = "name", unique = true)
 	private String name;
 
 	public User() {
