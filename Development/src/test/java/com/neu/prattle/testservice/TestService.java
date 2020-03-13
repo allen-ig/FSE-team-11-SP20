@@ -1,4 +1,4 @@
-package com.neu.prattle;
+package com.neu.prattle.testservice;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -44,4 +44,6 @@ public class TestService {
     us.addUser(new User("TestAddUser"));
     us.addUser(new User("TestAddUser"));
   }
+
+
 }

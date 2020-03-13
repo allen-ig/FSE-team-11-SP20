@@ -243,9 +243,9 @@ public class ChatEndpoint {
       synchronized (chatEndpoints.get(message.getFrom())) {
         try {
 
-          StringBuilder content = new StringBuilder().append("user: ").append(message.getTo())
-              .append(" not found :(");
-          Message response = Message.messageBuilder().setMessageContent(content.toString())
+          String content = "user: " + message.getTo()
+              + " not found :(";
+          Message response = Message.messageBuilder().setMessageContent(content)
               .setTo(message.getFrom()).build();
           chatEndpoints.get(message.getFrom()).session.getBasicRemote().sendObject(response);
         } catch (IOException | EncodeException e) {
@@ -296,7 +296,7 @@ public class ChatEndpoint {
    * Adds a group to the UserServiceWithGroup groupSet.
    *
    * @param message - received message. Group specifications in body. Space separated: name then
-   *                members. Groups are stores as a HashMap<User, HashMap<Group Name, Group>>.
+   * members. Groups are stores as a HashMap<User, HashMap<Group Name, Group>>.
    */
   private void addGroup(Message message) {
     User user = new User(message.getFrom());
@@ -316,13 +316,33 @@ public class ChatEndpoint {
       }
     }
 
+    StringBuilder usersNotExist = new StringBuilder();
+
     //Build group, add specified members
     ArrayList<User> add = new ArrayList<>();
     for (int i = 0; i < content.length - 1; i++) {
-      add.add(new User(content[i+1]));
+      add.add(new User(content[i + 1]));
+      if (!accountService.findUserByName(content[i + 1]).isPresent()) {
+        usersNotExist.append(content[i + 1]);
+        usersNotExist.append(" ");
+      }
     }
     BasicGroup group = BasicGroup.groupBuilder().setName(name).setMembers(add).build();
 
+    //Notify user if members added do not exist
+    if (!usersNotExist.toString().equalsIgnoreCase("")) {
+      synchronized (chatEndpoints.get(message.getFrom())) {
+        try {
+          chatEndpoints.get(message.getFrom()).session.getBasicRemote()
+              .sendObject(Message.messageBuilder().setTo(message.getFrom())
+                  .setMessageContent("Members not found in service: " + usersNotExist).build());
+        } catch (IOException | EncodeException e) {
+          logger.log(Level.SEVERE, e.getMessage());
+        }
+      }
+    }
+
+    //try to add group
     try {
       synchronized (accountService) {
         //Add the group

@@ -66,6 +66,12 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
     }
   }
 
+  /**
+   * Adds a group to a user. If users in group do not exist, simply does not send to them.
+   * Needs Doing: Check user existence. Add moderator support. Add other users in the group.
+   * @param user - User.class
+   * @param group - Group.class
+   */
   @Override
   public void addGroup(User user, BasicGroup group) {
     if (groupSet.containsKey(user)) {
@@ -77,6 +83,7 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
     } else {
       groupSet.put(user, new HashMap<>());
       groupSet.get(user).put(group.getName(), group.copy());
+      //add something that communicates to other users.
     }
   }
 }
