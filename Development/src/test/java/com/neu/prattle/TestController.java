@@ -45,5 +45,4 @@ public class TestController {
      Response responce2 = uc.createUserAccount(newUser);
      Assert.assertEquals(responce2.getStatus(), Response.status(409).build().getStatus());
   }
-
 }
