@@ -2,7 +2,6 @@ package com.neu.prattle;
 
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.util.Optional;
 
@@ -25,22 +24,10 @@ public class TestSimple {
 	public void setUp() {
 		as = UserServiceImpl.getInstance();
 		prattleApplication = new PrattleApplication();
-		as.addUser(new User("TEST_USER"));
 	}
 
-	@After
-	public void tearDown(){
-		try{
-			as.deleteUser(as.findUserByName("TEST_USER").get());
-		} catch (Exception e){
-
-		}
-
-	}
-
-	
 	// This method just tries to add 
-	@Test(timeout=30000)
+	@Test(timeout=40000)
 	public void setUserTest(){
 		assertEquals(Optional.empty(), as.findUserByName("Mike"));
 		as.addUser(new User("Mike"));
@@ -62,6 +49,7 @@ public class TestSimple {
 			as.deleteUser(as.findUserByName("TEST_NAME"+i).get());
 		}
 	}
+
 
 	public void testPrattleApplication() {
 		assertEquals(1, prattleApplication.getClasses().size());
