@@ -47,4 +47,16 @@ public class TestController {
      Assert.assertEquals(responce2.getStatus(), Response.status(409).build().getStatus());
   }
 
+  @Test
+  public void testFindUserEndpoint(){
+    uc.createUserAccount(newUser);
+    Response response = uc.findUserByName("TEST_USER_2");
+    Assert.assertEquals(response.getStatus(), Response.status(200).build().getStatus());
+  }
+
+  @Test
+  public void testFindUserEndpointDoesNotExist(){
+    Response response = uc.findUserByName("TEST_USER_DOES_NOT_EXIST");
+    Assert.assertEquals(response.getStatus(), Response.status(404).build().getStatus());
+  }
 }
