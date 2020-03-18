@@ -30,11 +30,13 @@ function send() {
 function search(){
     let addFriendBtn = document.getElementById("addFriend");
     let userToSearch = document.getElementById("search").value;
-    addFriendBtn.classList.remove("dontShow");
     fetch(`http://${document.location.host}${document.location.pathname}rest/user/${userToSearch}`)
         .then(response => response.json())
         .then(response => {
-            if (response.name) alert(`you can add ${response.name} as a friend!`);
+            if (response.name) {
+                alert(`you can add ${response.name} as a friend!`);
+                addFriendBtn.classList.remove("dontShow");
+            }
             else alert("the user you searched does not exist!");
         }, err => {
             console.log(err);
