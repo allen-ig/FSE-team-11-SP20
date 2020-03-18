@@ -5,11 +5,15 @@ import com.neu.prattle.model.User;
 import com.neu.prattle.service.UserService;
 import com.neu.prattle.service.UserServiceImpl;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
+import org.codehaus.jackson.map.ObjectMapper;
+
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /***
  * A Resource class responsible for handling CRUD operations
@@ -23,6 +27,8 @@ public class UserController {
 
     // Usually Dependency injection will be used to inject the service at run-time
     private UserService accountService = UserServiceImpl.getInstance();
+
+    private static Logger logger = Logger.getLogger(UserController.class.getName());
 
     /***
      * Handles a HTTP POST request for user creation
@@ -41,5 +47,22 @@ public class UserController {
         }
 
         return Response.ok().build();
+    }
+
+    @GET
+    @Path("/{name}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response findUserByName(@PathParam("name") String name){
+        Optional<User> res = accountService.findUserByName(name);
+        ObjectMapper mapper = new ObjectMapper();
+        if (!res.isPresent()) return Response.status(404).build();
+        User user = res.get();
+        String jsonString = "";
+        try {
+            jsonString = mapper.writeValueAsString(user);
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, e.getMessage());
+        }
+        return Response.ok().type(MediaType.APPLICATION_JSON).entity(jsonString).build();
     }
 }
