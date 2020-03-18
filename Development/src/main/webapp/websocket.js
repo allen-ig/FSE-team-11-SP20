@@ -26,3 +26,25 @@ function send() {
 
     ws.send(json);
 }
+
+function search(){
+    let addFriendBtn = document.getElementById("addFriend");
+    let userToSearch = document.getElementById("search").value;
+    addFriendBtn.classList.remove("dontShow");
+    fetch(`http://${document.location.host}${document.location.pathname}rest/user/${userToSearch}`)
+        .then(response => response.json())
+        .then(response => {
+            if (response.name) alert(`you can add ${response.name} as a friend!`);
+            else alert("the user you searched does not exist!");
+        }, err => {
+            console.log(err);
+        })
+}
+
+function addFriend(){
+    let addFriendBtn = document.getElementById("addFriend");
+    addFriendBtn.classList.add("dontShow");
+    let searchField = document.getElementById("search");
+    searchField.value = "";
+    alert("friend request sent!");
+}
