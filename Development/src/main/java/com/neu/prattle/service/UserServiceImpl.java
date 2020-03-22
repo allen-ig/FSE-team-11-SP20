@@ -5,17 +5,16 @@ import com.neu.prattle.model.User;
 
 import java.util.Optional;
 
-import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.NamedQuery;
 import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
+//import javax.persistence.Query;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
-
+import org.hibernate.SessionFactory;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.service.ServiceRegistry;
+import org.hibernate.query.Query;
 /***
  * Implementation of {@link UserService}
  *
@@ -26,6 +25,10 @@ import org.hibernate.Transaction;
  * @version dated 2019-10-06
  */
 public class UserServiceImpl implements UserService {
+
+  private Configuration config = new Configuration().configure("hibernate.cfg.xml").addAnnotatedClass(User.class);
+  private ServiceRegistry registry = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
+  private SessionFactory sessionFactory = config.buildSessionFactory(registry);
 
     /***
      * UserServiceImpl is a Singleton class.
@@ -50,53 +53,77 @@ public class UserServiceImpl implements UserService {
     /***
      *
      * @param name -> The name of the user.
-     * @return An optional wrapper supplying the user.
+     * @return An optional wrapper supplying the User if it exists empty if it does not.
      */
     @Override
     public Optional<User>  findUserByName(String name){
-        EntityManager em = ENTITY_MANAGER_FACTORY.createEntityManager();
-        String strQuery = "SELECT u FROM User u  WHERE u.name = :name";
-        TypedQuery<User> tq = em.createQuery(strQuery, User.class);
-        tq.setParameter("name", name);
-        User user;
-        try {
-            // Get matching User object and output
-            user = tq.getSingleResult();
-            return Optional.of(user);
-        }
-        catch(NoResultException ex) {
-            return Optional.empty();
-        }
+      Session session = sessionFactory.openSession();
+      session.beginTransaction();
+      String strQuery = "SELECT u FROM User u  WHERE u.name = :name";
+      Query query = session.createQuery(strQuery);
+      query.setParameter("name", name);
+      try{
+        User result = (User) query.getSingleResult();
+        return Optional.of(result);
+      } catch (NoResultException ex) {
+        return Optional.empty();
+      } finally {
+        session.disconnect();
+        session.close();
+      }
+//        EntityManager em = ENTITY_MANAGER_FACTORY.createEntityManager();
+//        String strQuery = "SELECT u FROM User u  WHERE u.name = :name";
+//        TypedQuery<User> tq = em.createQuery(strQuery, User.class);
+//        tq.setParameter("name", name);
+//        User user;
+//        try {
+//            // Get matching User object and output
+//            user = tq.getSingleResult();
+//            return Optional.of(user);
+//        }
+//        catch(NoResultException ex) {
+//            return Optional.empty();
+//        }
     }
 
     @Override
     public synchronized void addUser(User user){
-        EntityManager em = ENTITY_MANAGER_FACTORY.createEntityManager();
-        EntityTransaction et = null;
+        //EntityManager em = ENTITY_MANAGER_FACTORY.createEntityManager();
+        //EntityTransaction et = null;
         if (findUserByName(user.getName()).isPresent()){
             throw new UserAlreadyPresentException(String.format("User already present with name: %s", user.getName()));
         }
+      Session session = sessionFactory.openSession();
+      session.beginTransaction();
         try {
-            et = em.getTransaction();
-            et.begin();
-            em.persist(user);
-            et.commit();
+          session.save(user);
+          session.getTransaction().commit();
         } catch (Exception e){
-            if (et != null){
-                et.rollback();
-            }
+            System.out.println(e.getMessage());
         } finally{
-            em.close();
+            session.disconnect();
+            session.close();
         }
     }
 
     public synchronized void deleteUser(User user){
-        EntityManager em = ENTITY_MANAGER_FACTORY.createEntityManager();
-        EntityTransaction et = em.getTransaction();
-        User u = em.find(User.class, user.getId());
-        et.begin();
-        em.remove(u);
-        et.commit();
-        em.close();
+        //EntityManager em = ENTITY_MANAGER_FACTORY.createEntityManager();
+       // EntityTransaction et = em.getTransaction();
+      Session session = sessionFactory.openSession();
+      session.beginTransaction();
+      try{
+        session.delete(user);
+        session.getTransaction().commit();
+      } catch(Exception e){
+        System.out.println(e.getMessage());
+      } finally{
+        session.disconnect();
+        session.close();
+      }
+//        User u = em.find(User.class, user.getId());
+//        et.begin();
+//        em.remove(u);
+//        et.commit();
+//        em.close();
     }
 }
