@@ -51,6 +51,7 @@ public class ChatEndpointTest {
 
   @After
   public void tearDown(){
+    chatEndpoint = null;
     System.setProperty("testing", "false");
   }
 
