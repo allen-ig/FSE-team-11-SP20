@@ -8,7 +8,6 @@ import java.util.Optional;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
-//import javax.persistence.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
@@ -37,9 +36,18 @@ public class UserServiceImpl implements UserService {
     private static final EntityManagerFactory ENTITY_MANAGER_FACTORY =
             Persistence.createEntityManagerFactory("prattle");
     private static UserService accountService;
-
+    private static UserServiceImpl testingUserService;
     static {
         accountService = new UserServiceImpl();
+    }
+
+    static {
+      testingUserService = new UserServiceImpl();
+      Configuration testingConfig = new Configuration().configure("testing-hibernate.cfg.xml").addAnnotatedClass(User.class);
+      testingUserService.config = testingConfig;
+      ServiceRegistry testingRegistry = new StandardServiceRegistryBuilder().applySettings(testingConfig.getProperties()).build();
+      testingUserService.registry = testingRegistry;
+      testingUserService.sessionFactory = testingConfig.buildSessionFactory(testingRegistry);
     }
 
     /**
@@ -47,10 +55,20 @@ public class UserServiceImpl implements UserService {
      * @return this
      */
     public static UserService getInstance() {
+      if (System.getProperty("testing").equals("true")){
+        return testingUserService;
+      }
         return accountService;
     }
 
-    /***
+  /**
+   * Allows updating the Configuration of the Session for testing, specifically
+   * if we are using a UserServiceImpl in a unit test, we map to a config file
+   * that specifies an in-memory DB
+   */
+
+
+  /***
      *
      * @param name -> The name of the user.
      * @return An optional wrapper supplying the User if it exists empty if it does not.
@@ -71,25 +89,10 @@ public class UserServiceImpl implements UserService {
         session.disconnect();
         session.close();
       }
-//        EntityManager em = ENTITY_MANAGER_FACTORY.createEntityManager();
-//        String strQuery = "SELECT u FROM User u  WHERE u.name = :name";
-//        TypedQuery<User> tq = em.createQuery(strQuery, User.class);
-//        tq.setParameter("name", name);
-//        User user;
-//        try {
-//            // Get matching User object and output
-//            user = tq.getSingleResult();
-//            return Optional.of(user);
-//        }
-//        catch(NoResultException ex) {
-//            return Optional.empty();
-//        }
     }
 
     @Override
     public synchronized void addUser(User user){
-        //EntityManager em = ENTITY_MANAGER_FACTORY.createEntityManager();
-        //EntityTransaction et = null;
         if (findUserByName(user.getName()).isPresent()){
             throw new UserAlreadyPresentException(String.format("User already present with name: %s", user.getName()));
         }
@@ -107,8 +110,6 @@ public class UserServiceImpl implements UserService {
     }
 
     public synchronized void deleteUser(User user){
-        //EntityManager em = ENTITY_MANAGER_FACTORY.createEntityManager();
-       // EntityTransaction et = em.getTransaction();
       Session session = sessionFactory.openSession();
       session.beginTransaction();
       try{
@@ -120,10 +121,5 @@ public class UserServiceImpl implements UserService {
         session.disconnect();
         session.close();
       }
-//        User u = em.find(User.class, user.getId());
-//        et.begin();
-//        em.remove(u);
-//        et.commit();
-//        em.close();
     }
 }
