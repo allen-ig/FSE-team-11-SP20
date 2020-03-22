@@ -28,6 +28,7 @@ public class UserServiceImpl implements UserService {
   private Configuration config = new Configuration().configure("hibernate.cfg.xml").addAnnotatedClass(User.class);
   private ServiceRegistry registry = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
   private SessionFactory sessionFactory = config.buildSessionFactory(registry);
+  private boolean isTest;
 
     /***
      * UserServiceImpl is a Singleton class.
@@ -35,10 +36,11 @@ public class UserServiceImpl implements UserService {
     private UserServiceImpl() { }
     private static final EntityManagerFactory ENTITY_MANAGER_FACTORY =
             Persistence.createEntityManagerFactory("prattle");
-    private static UserService accountService;
+    private static UserServiceImpl accountService;
     private static UserServiceImpl testingUserService;
     static {
         accountService = new UserServiceImpl();
+        accountService.isTest = false;
     }
 
     static {
@@ -48,6 +50,7 @@ public class UserServiceImpl implements UserService {
       ServiceRegistry testingRegistry = new StandardServiceRegistryBuilder().applySettings(testingConfig.getProperties()).build();
       testingUserService.registry = testingRegistry;
       testingUserService.sessionFactory = testingConfig.buildSessionFactory(testingRegistry);
+      testingUserService.isTest = true;
     }
 
     /**
@@ -122,4 +125,9 @@ public class UserServiceImpl implements UserService {
         session.close();
       }
     }
+
+  @Override
+  public boolean isTest() {
+    return isTest;
+  }
 }

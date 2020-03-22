@@ -2,6 +2,7 @@ package com.neu.prattle;
 
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Optional;
 
@@ -25,6 +26,7 @@ public class TestSimple {
 		System.setProperty("testing", "true");
 		as = UserServiceImpl.getInstance();
 		prattleApplication = new PrattleApplication();
+		assertTrue(as.isTest());
 	}
 
 	@After
