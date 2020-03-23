@@ -31,7 +31,7 @@ public class ChatEndpointTest {
   private static final String username = "User1";
 
   @InjectMocks
-  private ChatEndpoint chatEndpoint;
+  private ChatEndpoint chatEndpoint = new ChatEndpoint();
 
   private Message message;
 
@@ -43,8 +43,8 @@ public class ChatEndpointTest {
 
   @Before
   public void setUp() {
-    MockitoAnnotations.initMocks(this);
     System.setProperty("testing", "true");
+    MockitoAnnotations.initMocks(this);
     chatEndpoint = new ChatEndpoint();
     message = Message.messageBuilder().setFrom("User1").setTo("User2").setMessageContent("Hello World").build();
   }

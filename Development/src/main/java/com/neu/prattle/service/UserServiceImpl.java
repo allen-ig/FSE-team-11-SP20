@@ -34,8 +34,7 @@ public class UserServiceImpl implements UserService {
      * UserServiceImpl is a Singleton class.
      */
     private UserServiceImpl() { }
-    private static final EntityManagerFactory ENTITY_MANAGER_FACTORY =
-            Persistence.createEntityManagerFactory("prattle");
+
     private static UserServiceImpl accountService;
     private static UserServiceImpl testingUserService;
     static {
@@ -63,13 +62,6 @@ public class UserServiceImpl implements UserService {
       }
         return accountService;
     }
-
-  /**
-   * Allows updating the Configuration of the Session for testing, specifically
-   * if we are using a UserServiceImpl in a unit test, we map to a config file
-   * that specifies an in-memory DB
-   */
-
 
   /***
      *
