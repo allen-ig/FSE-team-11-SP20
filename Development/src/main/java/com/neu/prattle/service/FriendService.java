@@ -11,5 +11,5 @@ public interface FriendService {
 
     void approveFriendRequest(int friendId, boolean isApproved);
 
-    Collection<Friend> findAllFriends(User user);
+    Collection<Friend> findAllFriends(String username);
 }

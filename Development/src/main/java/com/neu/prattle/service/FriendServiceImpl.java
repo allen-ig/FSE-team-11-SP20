@@ -24,7 +24,6 @@ public class FriendServiceImpl implements FriendService{
 
     @Override
     public void sendFriendRequest(Friend friend) {
-//        Friend friend = new Friend(sender, recipient);
         EntityManager em = ENTITY_MANAGER_FACTORY.createEntityManager();
         EntityTransaction et = null;
         try{
@@ -57,12 +56,13 @@ public class FriendServiceImpl implements FriendService{
     }
 
     @Override
-    public Collection<Friend> findAllFriends(User user) {
+    public Collection<Friend> findAllFriends(String username) {
         Collection<Friend> friends = new ArrayList<>();
         EntityManager em = ENTITY_MANAGER_FACTORY.createEntityManager();
-        String strQuery = "SELECT f FROM Friend f WHERE f.status = :status";
+        String strQuery = "SELECT f FROM Friend f WHERE f.status = :status and (f.recipient.name = :username or f.sender.name = :username)";
         TypedQuery<Friend> tq = em.createQuery(strQuery, Friend.class);
-        tq.setParameter("status", true);
+        tq.setParameter("status", "APPROVED");
+        tq.setParameter("username", username);
         try{
             friends = tq.getResultList();
         }catch (Exception e){
