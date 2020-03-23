@@ -57,10 +57,14 @@ public class UserServiceImpl implements UserService {
      * @return this
      */
     public static UserService getInstance() {
-      if (System.getProperty("testing").equals("true")){
-        return testingUserService;
-      }
+      try{
+        if (System.getProperty("testing").equals("true")){
+          return testingUserService;
+        }
+      } catch (NullPointerException e){
         return accountService;
+      }
+      return accountService;
     }
 
   /***
