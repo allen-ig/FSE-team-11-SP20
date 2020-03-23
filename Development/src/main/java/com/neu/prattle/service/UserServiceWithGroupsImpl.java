@@ -5,29 +5,62 @@ import com.neu.prattle.model.BasicGroup;
 import com.neu.prattle.model.User;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import javax.persistence.NoResultException;
+import javax.swing.text.html.Option;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.query.Query;
+import org.hibernate.service.ServiceRegistry;
 
 public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
+
+  private Configuration config = new Configuration().configure("hibernate.cfg.xml").addAnnotatedClass(User.class);
+  private ServiceRegistry registry = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
+  private SessionFactory sessionFactory = config.buildSessionFactory(registry);
+  private boolean isTest;
+
   /***
    * UserServiceImpl is a Singleton class.
    */
-  private UserServiceWithGroupsImpl() {
+  private UserServiceWithGroupsImpl() {  }
 
-  }
-
-  private static UserServiceWithGroups accountService;
+  private static UserServiceWithGroupsImpl accountService;
+  private static UserServiceWithGroupsImpl testingUserService;
 
   static {
     accountService = new UserServiceWithGroupsImpl();
+    accountService.isTest = false;
+  }
+
+  static {
+    testingUserService = new UserServiceWithGroupsImpl();
+    Configuration testingConfig = new Configuration().configure("testing-hibernate.cfg.xml").addAnnotatedClass(User.class);
+    testingUserService.config = testingConfig;
+    ServiceRegistry testingRegistry = new StandardServiceRegistryBuilder().applySettings(testingConfig.getProperties()).build();
+    testingUserService.registry = testingRegistry;
+    testingUserService.sessionFactory = testingConfig.buildSessionFactory(testingRegistry);
+    testingUserService.isTest = true;
   }
 
   /**
    * Call this method to return an instance of this service.
+   *
    * @return this
    */
   public static UserServiceWithGroups getInstance() {
+    try {
+      if (System.getProperty("testing").equals("true")) {
+        return testingUserService;
+      }
+    } catch (NullPointerException e) {
+      return accountService;
+    }
     return accountService;
   }
 
@@ -37,23 +70,63 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
   /***
    *
    * @param name -> The name of the user.
-   * @return An optional wrapper supplying the user.
+   * @return An optional wrapper supplying the User if it exists empty if it does not.
    */
   @Override
   public Optional<User> findUserByName(String name) {
-    final User user = new User(name);
-    if (userSet.contains(user))
-      return Optional.of(user);
-    else
+    Session session = sessionFactory.openSession();
+    session.beginTransaction();
+    String strQuery = "SELECT u FROM User u  WHERE u.name = :name";
+    Query query = session.createQuery(strQuery);
+    query.setParameter("name", name);
+    try {
+      User result = (User) query.getSingleResult();
+      return Optional.of(result);
+    } catch (NoResultException ex) {
       return Optional.empty();
+    } finally {
+      session.disconnect();
+      session.close();
+    }
   }
 
   @Override
   public synchronized void addUser(User user) {
-    if (userSet.contains(user))
-      throw new UserAlreadyPresentException(String.format("User already present with name: %s", user.getName()));
+    if (findUserByName(user.getName()).isPresent()) {
+      throw new UserAlreadyPresentException(
+          String.format("User already present with name: %s", user.getName()));
+    }
+    Session session = sessionFactory.openSession();
+    session.beginTransaction();
+    try {
+      session.save(user);
+      session.getTransaction().commit();
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+    } finally {
+      session.disconnect();
+      session.close();
+    }
+  }
 
-    userSet.add(user);
+  public synchronized void deleteUser(User user) {
+    Session session = sessionFactory.openSession();
+    session.beginTransaction();
+    try {
+      session.delete(user);
+      session.getTransaction().commit();
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+    } finally {
+      session.disconnect();
+      session.close();
+    }
+  }
+
+
+  @Override
+  public boolean isTest() {
+    return isTest;
   }
 
   @Override
@@ -69,21 +142,37 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
   /**
    * Adds a group to a user. If users in group do not exist, simply does not send to them.
    * Needs Doing: Check user existence. Add moderator support. Add other users in the group.
-   * @param user - User.class
    * @param group - Group.class
    */
   @Override
-  public void addGroup(User user, BasicGroup group) {
-    if (groupSet.containsKey(user)) {
-      if (groupSet.get(user).containsKey(group.getName())) {
-        throw new UserAlreadyPresentException(String.format("Group already present with name: %s", group.getName()));
-      } else {
-        groupSet.get(user).put(group.getName(), group.copy());
+  public void addGroup(BasicGroup group) {
+    List<String> members = group.getMembers();
+    List<String> moderators = group.getModerators();
+
+    //check if there are users
+    if (moderators.isEmpty()) {
+      if (members.isEmpty()) {
+        throw new IllegalArgumentException(String.format("no members in group %s", group.getName()));
       }
-    } else {
-      groupSet.put(user, new HashMap<>());
-      groupSet.get(user).put(group.getName(), group.copy());
-      //add something that communicates to other users.
+      moderators.add(members.get(0));
+    }
+
+    for (String member : members) {
+      Optional<User> foundUser = findUserByName(member);
+      if (foundUser.isPresent()) {
+        if (groupSet.containsKey(foundUser.get())) {
+          if (groupSet.get(foundUser.get()).containsKey(group.getName())) {
+            throw new UserAlreadyPresentException(
+                String.format("Group already present with name: %s", group.getName()));
+          } else {
+            groupSet.get(foundUser.get()).put(group.getName(), group.copy());
+          }
+        } else {
+          groupSet.put(foundUser.get(), new HashMap<>());
+          groupSet.get(foundUser.get()).put(group.getName(), group.copy());
+        }
+      }
     }
   }
+
 }

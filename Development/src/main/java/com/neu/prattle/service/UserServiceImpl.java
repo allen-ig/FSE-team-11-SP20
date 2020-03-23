@@ -3,9 +3,17 @@ package com.neu.prattle.service;
 import com.neu.prattle.exceptions.UserAlreadyPresentException;
 import com.neu.prattle.model.User;
 
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
+
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.NoResultException;
+import javax.persistence.Persistence;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.service.ServiceRegistry;
+import org.hibernate.query.Query;
 
 /***
  * Implementation of {@link UserService}
@@ -18,48 +26,113 @@ import java.util.Set;
  */
 public class UserServiceImpl implements UserService {
 
-    /***
-     * UserServiceImpl is a Singleton class.
-     */
-    private UserServiceImpl() {
+  private Configuration config = new Configuration().configure("hibernate.cfg.xml")
+      .addAnnotatedClass(User.class);
+  private ServiceRegistry registry = new StandardServiceRegistryBuilder()
+      .applySettings(config.getProperties()).build();
+  private SessionFactory sessionFactory = config.buildSessionFactory(registry);
+  private boolean isTest;
 
+  /***
+   * UserServiceImpl is a Singleton class.
+   */
+  private UserServiceImpl() {
+  }
+
+  private static UserServiceImpl accountService;
+  private static UserServiceImpl testingUserService;
+
+  static {
+    accountService = new UserServiceImpl();
+    accountService.isTest = false;
+  }
+
+  static {
+    testingUserService = new UserServiceImpl();
+    Configuration testingConfig = new Configuration().configure("testing-hibernate.cfg.xml")
+        .addAnnotatedClass(User.class);
+    testingUserService.config = testingConfig;
+    ServiceRegistry testingRegistry = new StandardServiceRegistryBuilder()
+        .applySettings(testingConfig.getProperties()).build();
+    testingUserService.registry = testingRegistry;
+    testingUserService.sessionFactory = testingConfig.buildSessionFactory(testingRegistry);
+    testingUserService.isTest = true;
+  }
+
+  /**
+   * Call this method to return an instance of this service.
+   *
+   * @return this
+   */
+  public static UserService getInstance() {
+    try {
+      if (System.getProperty("testing").equals("true")) {
+        return testingUserService;
+      }
+    } catch (NullPointerException e) {
+      return accountService;
     }
+    return accountService;
+  }
 
-    private static UserService accountService;
-
-    static {
-        accountService = new UserServiceImpl();
+  /***
+   *
+   * @param name -> The name of the user.
+   * @return An optional wrapper supplying the User if it exists empty if it does not.
+   */
+  @Override
+  public Optional<User> findUserByName(String name) {
+    Session session = sessionFactory.openSession();
+    session.beginTransaction();
+    String strQuery = "SELECT u FROM User u  WHERE u.name = :name";
+    Query query = session.createQuery(strQuery);
+    query.setParameter("name", name);
+    try {
+      User result = (User) query.getSingleResult();
+      return Optional.of(result);
+    } catch (NoResultException ex) {
+      return Optional.empty();
+    } finally {
+      session.disconnect();
+      session.close();
     }
+  }
 
-    /**
-     * Call this method to return an instance of this service.
-     * @return this
-     */
-    public static UserService getInstance() {
-        return accountService;
+  @Override
+  public synchronized void addUser(User user) {
+    if (findUserByName(user.getName()).isPresent()) {
+      throw new UserAlreadyPresentException(
+          String.format("User already present with name: %s", user.getName()));
     }
-
-    private Set<User> userSet = new HashSet<>();
-
-    /***
-     *
-     * @param name -> The name of the user.
-     * @return An optional wrapper supplying the user.
-     */
-    @Override
-    public Optional<User> findUserByName(String name) {
-        final User user = new User(name);
-        if (userSet.contains(user))
-            return Optional.of(user);
-        else
-            return Optional.empty();
+    Session session = sessionFactory.openSession();
+    session.beginTransaction();
+    try {
+      session.save(user);
+      session.getTransaction().commit();
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+    } finally {
+      session.disconnect();
+      session.close();
     }
+  }
 
-    @Override
-    public synchronized void addUser(User user) {
-        if (userSet.contains(user))
-            throw new UserAlreadyPresentException(String.format("User already present with name: %s", user.getName()));
-
-        userSet.add(user);
+  public synchronized void deleteUser(User user) {
+    Session session = sessionFactory.openSession();
+    session.beginTransaction();
+    try {
+      session.delete(user);
+      session.getTransaction().commit();
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+    } finally {
+      session.disconnect();
+      session.close();
     }
+  }
+
+  @Override
+  public boolean isTest() {
+    return isTest;
+  }
 }

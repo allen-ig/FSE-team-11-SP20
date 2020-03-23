@@ -5,10 +5,14 @@ import static org.junit.Assert.assertTrue;
 import com.neu.prattle.exceptions.UserAlreadyPresentException;
 import com.neu.prattle.model.BasicGroup;
 import com.neu.prattle.model.User;
+import com.neu.prattle.service.UserServiceImpl;
 import com.neu.prattle.service.UserServiceWithGroups;
 import com.neu.prattle.service.UserServiceWithGroupsImpl;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -17,8 +21,15 @@ public class TestUserServiceWithGroups {
   private UserServiceWithGroups us;
 
   @Before
-  public void setUp(){
+  public void setUp() {
+    System.setProperty("testing", "true");
     us = UserServiceWithGroupsImpl.getInstance();
+    assertTrue(us.isTest());
+  }
+
+  @After
+  public void tearDown() {
+    System.setProperty("testing", "false");
   }
 
   @Test
@@ -26,12 +37,15 @@ public class TestUserServiceWithGroups {
     UserServiceWithGroups newUserService;
     newUserService = UserServiceWithGroupsImpl.getInstance();
 
-    User testU = new User("Test");
-    BasicGroup testG = new BasicGroup.GroupBuilder().setName("Test").build();
-    us.addUser(testU);
-    us.addGroup(testU, testG);
+    User testU = new User("TestGroups");
+    List<User> members = new ArrayList<>();
+    members.add(testU);
 
-    Optional<User> testGet = newUserService.findUserByName("Test");
+    BasicGroup testG = new BasicGroup.GroupBuilder().setName("Test").setMembers(members).build();
+    us.addUser(testU);
+    us.addGroup(testG);
+
+    Optional<User> testGet = newUserService.findUserByName("TestGroups");
     Optional<BasicGroup> testGetG = newUserService.findGroupByName(testU.getName(), testG.getName());
     assertTrue(testGet.isPresent());
     assertTrue(testGetG.isPresent());
@@ -63,15 +77,26 @@ public class TestUserServiceWithGroups {
 
   @Test(expected = UserAlreadyPresentException.class)
   public void testAddGroup(){
-    us.addGroup(new User("ThisIsANewUser"), BasicGroup.groupBuilder().setName("ThisIsANewGroup").build());
-    us.addGroup(new User("ThisIsANewUser"), BasicGroup.groupBuilder().setName("ThisIsANewGroup").build());
+    User nU = new User("ThisIsANewUser");
+    us.addUser(nU);
+
+    List<User> mems = new ArrayList<>();
+    mems.add(nU);
+
+    us.addGroup(BasicGroup.groupBuilder().setName("ThisIsANewGroup").setMembers(mems).build());
+    us.addGroup(BasicGroup.groupBuilder().setName("ThisIsANewGroup").setMembers(mems).build());
   }
 
   @Test
   public void testAddSecondGroup(){
-    User secondTimeWereUsingthisUser = new User("ThisIsANewUser");
-    BasicGroup newGroup = BasicGroup.groupBuilder().setName("ThisIsASecondGroup").build();
-    us.addGroup(secondTimeWereUsingthisUser, newGroup);
+    User secondTimeWereUsingthisUser = new User("ThisIsAnEvenNewerUser");
+    us.addUser(secondTimeWereUsingthisUser);
+
+    List<User> mems = new ArrayList<>();
+    mems.add(secondTimeWereUsingthisUser);
+
+    BasicGroup newGroup = BasicGroup.groupBuilder().setName("ThisIsASecondGroup").setMembers(mems).build();
+    us.addGroup(newGroup);
     Optional<BasicGroup> found = us.findGroupByName(secondTimeWereUsingthisUser.getName(), newGroup.getName());
     assertTrue(found.isPresent());
     assertEquals(Optional.of(newGroup).get(), found.get());

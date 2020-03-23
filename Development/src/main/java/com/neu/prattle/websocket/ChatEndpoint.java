@@ -15,8 +15,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.concurrent.ConcurrentHashMap;
@@ -36,7 +34,11 @@ import com.neu.prattle.model.BasicGroup;
 
 /**
  * The Class ChatEndpoint.
+<<<<<<< HEAD
  * <p>
+=======
+ *
+>>>>>>> a36d5801ca418236010d3088db75edd5f7e4cbaa
  * This class handles Messages that arrive on the server.
  */
 @ServerEndpoint(value = "/chat/{username}", decoders = MessageDecoder.class, encoders = MessageEncoder.class)
@@ -187,6 +189,7 @@ public class ChatEndpoint {
     broadcast(message);
   }
 
+
   /**
    * On error.
    * <p>
@@ -292,7 +295,11 @@ public class ChatEndpoint {
     }
   }
 
+
   /**
+   *
+   * Depreciated. Using GroupController to add a group.
+   *
    * Adds a group to the UserServiceWithGroup groupSet.
    *
    * @param message - received message. Group specifications in body. Space separated: name then
@@ -346,7 +353,7 @@ public class ChatEndpoint {
     try {
       synchronized (accountService) {
         //Add the group
-        accountService.addGroup(user, group);
+        accountService.addGroup(group);
 
         //Send Feedback to the user
         synchronized (chatEndpoints.get(message.getFrom())) {
