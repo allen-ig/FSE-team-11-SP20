@@ -31,7 +31,7 @@ public class ChatEndpointTest {
   private static final String username = "User1";
 
   @InjectMocks
-  private ChatEndpoint chatEndpoint = new ChatEndpoint();
+  private ChatEndpoint chatEndpoint;
 
   private Message message;
 
