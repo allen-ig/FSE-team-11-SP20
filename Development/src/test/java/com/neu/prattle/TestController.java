@@ -20,6 +20,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.assertTrue;
+
 public class TestController {
   private UserService us;
   private UserController uc;
@@ -27,7 +29,9 @@ public class TestController {
 
   @Before
   public void setUp() {
+    System.setProperty("testing", "true");
     us = UserServiceImpl.getInstance();
+    assertTrue(us.isTest());
     uc = new UserController();
     newUser = new User("TEST_USER_2");
   }
@@ -36,6 +40,7 @@ public class TestController {
   public void tearDown(){
     User user = us.findUserByName("TEST_USER_2").get();
     us.deleteUser(user);
+    System.setProperty("testing", "false");
   }
 
   @Test
