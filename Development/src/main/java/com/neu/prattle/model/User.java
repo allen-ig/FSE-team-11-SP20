@@ -1,13 +1,9 @@
 package com.neu.prattle.model;
 
+import java.util.Collection;
 import java.util.Objects;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 
 /***
@@ -37,7 +33,29 @@ public class User {
   @Column(name = "name", unique = true)
 	private String name;
 
-	public User() {
+	@OneToMany(mappedBy = "sender")
+    private Collection<Friend> friendList;
+
+	@OneToMany(mappedBy = "recipient")
+    private Collection<Friend> friendByList;
+
+    public Collection<Friend> getFriendList() {
+        return friendList;
+    }
+
+    public void setFriendList(Collection<Friend> friendList) {
+        this.friendList = friendList;
+    }
+
+    public Collection<Friend> getFriendByList() {
+        return friendByList;
+    }
+
+    public void setFriendByList(Collection<Friend> friendByList) {
+        this.friendByList = friendByList;
+    }
+
+    public User() {
 
 	}
 

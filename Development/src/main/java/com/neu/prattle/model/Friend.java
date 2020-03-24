@@ -6,7 +6,9 @@ import javax.persistence.*;
 @Table(name = "friend")
 public class Friend {
 
-    public Friend() {}
+    public Friend() {
+        this.status = "pending";
+    }
 
     public Friend(User sender, User recipient) {
         this.sender = sender;
