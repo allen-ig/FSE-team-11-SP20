@@ -1,6 +1,10 @@
 package com.neu.prattle.testmodels;
 
 import com.neu.prattle.model.Message;
+import com.neu.prattle.service.MessageService;
+import com.neu.prattle.service.MessageServiceImpl;
+
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -9,10 +13,19 @@ import static org.junit.Assert.*;
 public class MessageTest {
 
     Message.MessageBuilder messageBuilder;
+    private MessageService messageService;
 
     @Before
     public void setUp(){
+        System.setProperty("testing", "true");
+        messageService = MessageServiceImpl.getInstance();
         messageBuilder = Message.messageBuilder();
+        assertTrue(messageService.isTest());
+    }
+
+    @After
+    public void tearDown(){
+        System.setProperty("testing", "false");
     }
 
     @Test
@@ -20,6 +33,7 @@ public class MessageTest {
         messageBuilder.setFrom("user1");
         Message msg = messageBuilder.build();
         assertEquals("user1", msg.getFrom());
+        assertTrue(msg.getId()>0);
     }
 
     @Test

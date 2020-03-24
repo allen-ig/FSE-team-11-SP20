@@ -5,9 +5,7 @@ import com.neu.prattle.model.User;
 
 import java.util.Optional;
 
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
-import javax.persistence.Persistence;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
@@ -17,8 +15,9 @@ import org.hibernate.query.Query;
 /***
  * Implementation of {@link UserService}
  *
- * It stores the user accounts in-memory, which means any user accounts
- * created will be deleted once the application has been restarted.
+ * It stores the user accounts in a MYSQL database
+ * It is capable of storing data in an actual database or a temporary,
+ * im-memory database that will be deleted upon completion of code execution
  *
  * @author CS5500 Fall 2019 Teaching staff
  * @version dated 2019-10-06
@@ -31,7 +30,7 @@ public class UserServiceImpl implements UserService {
   private boolean isTest;
 
     /***
-     * UserServiceImpl is a Singleton class.
+     * UserServiceImpl is a "Singleton" class.
      */
     private UserServiceImpl() { }
 
@@ -57,7 +56,10 @@ public class UserServiceImpl implements UserService {
      * @return this
      */
     public static UserService getInstance() {
-      if (System.getProperty("testing").equals("true")){
+      if (System.getProperty("testing") == null){
+        return accountService;
+      }
+      else if (System.getProperty("testing").equals("true")){
         return testingUserService;
       }
         return accountService;
