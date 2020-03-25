@@ -13,7 +13,7 @@ import javax.persistence.*;
  * @version dated 2019-10-06
  */
 @Entity
-@Table(name="user")
+@Table(name="nuslack_user")
 public class User {
 
 

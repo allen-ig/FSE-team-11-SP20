@@ -18,9 +18,8 @@ import org.codehaus.jackson.map.util.JSONPObject;
 import org.junit.*;
 import org.junit.runners.MethodSorters;
 
-import java.io.IOException;
-import java.util.Optional;
-@FixMethodOrder(MethodSorters.JVM)
+import static org.junit.Assert.assertTrue;
+
 public class TestController {
   private UserService us;
   private UserController uc;
@@ -28,15 +27,18 @@ public class TestController {
 
   @Before
   public void setUp() {
+    System.setProperty("testing", "true");
     us = UserServiceImpl.getInstance();
+    assertTrue(us.isTest());
     uc = new UserController();
     newUser = new User("TEST_USER_2");
   }
 
   @After
   public void tearDown(){
-    Optional<User> user = us.findUserByName("TEST_USER_2");
-    user.ifPresent(value -> us.deleteUser(value));
+    User user = us.findUserByName("TEST_USER_2").get();
+    us.deleteUser(user);
+    System.setProperty("testing", "false");
   }
 
   @Test

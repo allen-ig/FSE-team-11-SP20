@@ -4,6 +4,7 @@ import com.neu.prattle.model.Message;
 import com.neu.prattle.service.UserService;
 import com.neu.prattle.service.UserServiceImpl;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -42,10 +43,16 @@ public class ChatEndpointTest {
 
   @Before
   public void setUp() {
+    System.setProperty("testing", "true");
     MockitoAnnotations.initMocks(this);
-
     chatEndpoint = new ChatEndpoint();
     message = Message.messageBuilder().setFrom("User1").setTo("User2").setMessageContent("Hello World").build();
+  }
+
+  @After
+  public void tearDown(){
+    chatEndpoint = null;
+    System.setProperty("testing", "false");
   }
 
   @Test
