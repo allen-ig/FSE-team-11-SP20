@@ -13,7 +13,7 @@ import java.util.List;
 
 public class MessageServiceImpl implements MessageService {
 
-  private Configuration config = new Configuration().configure("hibernate.cfg.xml").addAnnotatedClass(User.class);
+  private Configuration config = new Configuration().configure("hibernate.cfg.xml").addAnnotatedClass(Message.class);
   private ServiceRegistry registry = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
   private SessionFactory sessionFactory = config.buildSessionFactory(registry);
   private boolean isTest;

@@ -3,6 +3,7 @@ package com.neu.prattle.websocket;
 import com.neu.prattle.model.Message;
 
 import org.codehaus.jackson.map.ObjectMapper;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -21,6 +22,7 @@ import javax.websocket.EncodeException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class MessageEncoderTest {
   @Spy
@@ -34,14 +36,21 @@ public class MessageEncoderTest {
   
   @Before
   public void setUp() {
+    System.setProperty("testing", "true");
     MockitoAnnotations.initMocks(this);
     message = Message.messageBuilder().setFrom("User1").setTo("User2").setMessageContent("Hello world").build();
   }
+
+  @After
+  public void tearDown(){
+    System.setProperty("testing", "false");
+  }
+
   
   @Test
   public void testEncode() {
     try {
-      assertEquals("{\"from\":\"User1\",\"to\":\"User2\",\"content\":\"Hello world\"}", messageEncoder.encode(message));
+      assertTrue( messageEncoder.encode(message).contains("\"from\":\"User1\",\"to\":\"User2\",\"content\":\"Hello world\"}"));
     } catch (EncodeException e) {
       e.printStackTrace();
     }
@@ -51,7 +60,7 @@ public class MessageEncoderTest {
   public void testEncodeNoMessage() {
     Message sampleMessage = new Message();
     try {
-      assertEquals("{\"from\":null,\"to\":null,\"content\":null}", messageEncoder.encode(sampleMessage));
+      assertTrue(messageEncoder.encode(sampleMessage).contains("\"from\":null,\"to\":null,\"content\":null}"));
     } catch (EncodeException e) {
       e.printStackTrace();
     }

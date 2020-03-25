@@ -29,7 +29,7 @@ public class Message {
     /***
      * The name of the user who sent this message.
      */
-    private String fromUser;
+    private String from;
     /***
      * The name of the user to whom the message is sent.
      */
@@ -42,18 +42,18 @@ public class Message {
     @Override
     public String toString() {
         return new StringBuilder()
-                .append("From: ").append(fromUser)
+                .append("From: ").append(from)
                 .append("To: ").append(to)
                 .append("Content: ").append(content)
                 .toString();
     }
 
     public String getFrom() {
-        return fromUser;
+        return from;
     }
 
     public void setFrom(String from) {
-        this.fromUser = from;
+        this.from = from;
     }
 
     public String getTo() {

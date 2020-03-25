@@ -58,4 +58,12 @@ public class MessageTest {
         Message msg = messageBuilder.build();
         assertEquals("From: user1To: user2Content: hello", msg.toString());
     }
+
+    @Test
+    public void testProductionMessageService(){
+      System.setProperty("testing", "false");
+      messageService = MessageServiceImpl.getInstance();
+      assertFalse(messageService.isTest());
+      System.setProperty("testing", "true");
+    }
 }
