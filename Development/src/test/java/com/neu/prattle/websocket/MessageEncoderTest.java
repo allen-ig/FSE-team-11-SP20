@@ -39,6 +39,7 @@ public class MessageEncoderTest {
     System.setProperty("testing", "true");
     MockitoAnnotations.initMocks(this);
     message = Message.messageBuilder().setFrom("User1").setTo("User2").setMessageContent("Hello world").build();
+
   }
 
   @After
