@@ -1,5 +1,6 @@
 package com.neu.prattle.model;
 
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -38,10 +39,10 @@ public class User {
 	private String name;
 
 	@ManyToMany(mappedBy = "members")
-  private Set<BasicGroup> groups;
+  private Set<BasicGroup> groups = new HashSet<>();
 
   @ManyToMany(mappedBy = "moderators")
-  private Set<BasicGroup> moderatorFor;
+  private Set<BasicGroup> moderatorFor = new HashSet<>();
 	
 	public User() {
 
@@ -81,5 +82,21 @@ public class User {
     }
     User user = (User) obj;
     return user.name.equals(this.name);
+  }
+  
+  public Set<BasicGroup> getGroups() {
+    return groups;
+  }
+  
+  public void setGroups(Set<BasicGroup> groups) {
+    this.groups = groups;
+  }
+  
+  public Set<BasicGroup> getModeratorFor() {
+    return moderatorFor;
+  }
+  
+  public void setModeratorFor(Set<BasicGroup> moderatorFor) {
+    this.moderatorFor = moderatorFor;
   }
 }
