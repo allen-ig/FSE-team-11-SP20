@@ -1,4 +1,5 @@
 var ws;
+var friendId;
 
 function connect() {
     var username = document.getElementById("username").value;
@@ -12,7 +13,15 @@ function connect() {
     var log = document.getElementById("log");
         console.log(event.data);
         var message = JSON.parse(event.data);
-        log.innerHTML += message.from + " : " + message.content + "\n";
+        var searchAndFriend = document.getElementById("searchAndFriend");
+        if (message.type) log.innerHTML += message.from + " : " + message.content + "\n";
+        else {
+            friendId = message.friendId;
+            searchAndFriend.innerHTML +=
+                `<div id="friendRequest"><span>${message.from} just send you a friend request!</span>
+                <button id="approveFriendRequest" onclick="handleFriendRequest('approve');">Approve</button>
+                <button id="denyFriendRequest" onclick="handleFriendRequest('deny');">Deny</button> </div>`;
+        }
     };
 }
 
@@ -47,6 +56,23 @@ function addFriend(){
     let addFriendBtn = document.getElementById("addFriend");
     addFriendBtn.classList.add("dontShow");
     let searchField = document.getElementById("search");
+    let recipient = searchField.value;
     searchField.value = "";
     alert("friend request sent!");
+    ws.send({
+        "type": "friendRequest",
+        "to": recipient
+    });
+}
+
+function handleFriendRequest(friendId, response) {
+    fetch(`http://${document.location.host}${document.location.pathname}rest/friend/${friendId}/${response}`,
+        {method: "PATCH",
+                body: JSON.stringify({
+                    response: response
+                })})
+        .then(() => {
+            let friendRequest = document.getElementById("friendRequest");
+            friendRequest.parentNode.removeChild(friendRequest);
+        })
 }

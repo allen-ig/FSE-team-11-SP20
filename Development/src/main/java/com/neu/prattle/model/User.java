@@ -36,6 +36,9 @@ public class User {
 	@OneToMany(mappedBy = "sender")
     private Collection<Friend> friendList;
 
+//	@ElementCollection
+//	private Collection<String> listAsSender;
+
 	@OneToMany(mappedBy = "recipient")
     private Collection<Friend> friendByList;
 
