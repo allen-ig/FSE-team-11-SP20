@@ -79,4 +79,9 @@ public class MessageServiceImpl implements MessageService {
   public boolean isTest() {
     return isTest;
   }
+
+  @Override
+  public List<Message> getUserMessages() {
+    return null;
+  }
 }
