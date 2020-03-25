@@ -2,10 +2,10 @@ package com.neu.prattle.testservice;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import com.neu.prattle.exceptions.GroupAlreadyPresentException;
 import com.neu.prattle.exceptions.UserAlreadyPresentException;
 import com.neu.prattle.model.BasicGroup;
 import com.neu.prattle.model.User;
-import com.neu.prattle.service.UserServiceImpl;
 import com.neu.prattle.service.UserServiceWithGroups;
 import com.neu.prattle.service.UserServiceWithGroupsImpl;
 import java.util.ArrayList;
@@ -40,8 +40,11 @@ public class TestUserServiceWithGroups {
     User testU = new User("TestGroups");
     List<User> members = new ArrayList<>();
     members.add(testU);
+    List<User> moderators = new ArrayList<>();
+    moderators.add(testU);
 
-    BasicGroup testG = new BasicGroup.GroupBuilder().setName("Test").setMembers(members).build();
+    BasicGroup testG = new BasicGroup.GroupBuilder().setName("Test").setMembers(members)
+      .setModerators(moderators).build();
     us.addUser(testU);
     us.addGroup(testG);
 
@@ -75,7 +78,7 @@ public class TestUserServiceWithGroups {
     us.addUser(new User("TestAddUser"));
   }
 
-  @Test(expected = UserAlreadyPresentException.class)
+  @Test(expected = GroupAlreadyPresentException.class)
   public void testAddGroup(){
     User nU = new User("ThisIsANewUser");
     us.addUser(nU);
@@ -89,15 +92,15 @@ public class TestUserServiceWithGroups {
 
   @Test
   public void testAddSecondGroup(){
-    User secondTimeWereUsingthisUser = new User("ThisIsAnEvenNewerUser");
-    us.addUser(secondTimeWereUsingthisUser);
+    User secondTimeWeAreUsingThisUser = new User("ThisIsAnEvenNewerUser");
+    us.addUser(secondTimeWeAreUsingThisUser);
 
     List<User> mems = new ArrayList<>();
-    mems.add(secondTimeWereUsingthisUser);
+    mems.add(secondTimeWeAreUsingThisUser);
 
     BasicGroup newGroup = BasicGroup.groupBuilder().setName("ThisIsASecondGroup").setMembers(mems).build();
     us.addGroup(newGroup);
-    Optional<BasicGroup> found = us.findGroupByName(secondTimeWereUsingthisUser.getName(), newGroup.getName());
+    Optional<BasicGroup> found = us.findGroupByName(secondTimeWeAreUsingThisUser.getName(), newGroup.getName());
     assertTrue(found.isPresent());
     assertEquals(Optional.of(newGroup).get(), found.get());
   }

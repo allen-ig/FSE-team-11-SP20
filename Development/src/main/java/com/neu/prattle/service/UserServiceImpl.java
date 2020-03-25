@@ -1,13 +1,12 @@
 package com.neu.prattle.service;
 
 import com.neu.prattle.exceptions.UserAlreadyPresentException;
+import com.neu.prattle.model.BasicGroup;
 import com.neu.prattle.model.User;
 
 import java.util.Optional;
 
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
-import javax.persistence.Persistence;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
@@ -27,7 +26,7 @@ import org.hibernate.query.Query;
 public class UserServiceImpl implements UserService {
 
   private Configuration config = new Configuration().configure("hibernate.cfg.xml")
-      .addAnnotatedClass(User.class);
+    .addAnnotatedClass(User.class).addAnnotatedClass(BasicGroup.class);
   private ServiceRegistry registry = new StandardServiceRegistryBuilder()
       .applySettings(config.getProperties()).build();
   private SessionFactory sessionFactory = config.buildSessionFactory(registry);
@@ -50,7 +49,7 @@ public class UserServiceImpl implements UserService {
   static {
     testingUserService = new UserServiceImpl();
     Configuration testingConfig = new Configuration().configure("testing-hibernate.cfg.xml")
-        .addAnnotatedClass(User.class);
+        .addAnnotatedClass(User.class).addAnnotatedClass(BasicGroup.class);
     testingUserService.config = testingConfig;
     ServiceRegistry testingRegistry = new StandardServiceRegistryBuilder()
         .applySettings(testingConfig.getProperties()).build();

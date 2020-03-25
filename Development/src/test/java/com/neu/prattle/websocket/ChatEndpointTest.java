@@ -206,8 +206,8 @@ public class ChatEndpointTest {
       e.printStackTrace();
     }
 
-    BasicGroup exisitngGroup = BasicGroup.groupBuilder().setName("eg").setMembers(members).build();
-    us.addGroup(exisitngGroup);
+    BasicGroup existingGroup = BasicGroup.groupBuilder().setName("eg").setMembers(members).build();
+    us.addGroup(existingGroup);
 
     Message message2 = Message.messageBuilder().setFrom(omu.getName()).setTo("neWgRoup")
         .setMessageContent("ng1 onMessageUser onMessageUser2").build();

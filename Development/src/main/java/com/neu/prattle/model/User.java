@@ -1,12 +1,14 @@
 package com.neu.prattle.model;
 
 import java.util.Objects;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 
@@ -27,7 +29,6 @@ public class User {
 	public String getName() {
 		return name;
 	}
-	public int getId(){return id;}
 
 	public void setName(String name) {
 		this.name = name;
@@ -36,6 +37,12 @@ public class User {
   @Column(name = "name", unique = true)
 	private String name;
 
+	@ManyToMany(mappedBy = "members")
+  private Set<BasicGroup> groups;
+
+  @ManyToMany(mappedBy = "moderators")
+  private Set<BasicGroup> moderatorFor;
+	
 	public User() {
 
 	}

@@ -48,7 +48,7 @@ public class TestService {
 
   @Test
   public void testGetNoneUser() {
-    Optional<User> noneUser = us.findUserByName("ThisUserDoesntExist");
+    Optional<User> noneUser = us.findUserByName("ThisUserDoesntExist2");
     assertEquals(noneUser, Optional.empty());
   }
 
