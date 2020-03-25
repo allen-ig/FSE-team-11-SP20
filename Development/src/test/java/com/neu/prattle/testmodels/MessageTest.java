@@ -8,6 +8,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.sql.Timestamp;
+import java.time.Instant;
+
 import static org.junit.Assert.*;
 
 public class MessageTest {
@@ -65,5 +68,16 @@ public class MessageTest {
       messageService = MessageServiceImpl.getInstance();
       assertFalse(messageService.isTest());
       System.setProperty("testing", "true");
+    }
+
+    @Test
+    public void testTimestamp(){
+        Timestamp now = Timestamp.from(Instant.now());
+        messageBuilder.setTo("you");
+        messageBuilder.setFrom("me");
+        messageBuilder.setMessageContent("hello");
+        Message savedMessage = messageBuilder.build();
+        assertTrue(savedMessage.getTimestamp().getTime()-now.getTime()<3000);
+        assertTrue(savedMessage.getId()>0);
     }
 }

@@ -114,7 +114,8 @@ public class Message {
         }
 
         public Message build()  {
-            return messageService.createMessage(message);
+             Message savedMessage = messageService.createMessage(message);
+            return savedMessage;
         }
     }
 }
