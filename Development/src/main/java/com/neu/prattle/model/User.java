@@ -1,8 +1,8 @@
 package com.neu.prattle.model;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -39,10 +39,10 @@ public class User {
 	private String name;
 
 	@ManyToMany(mappedBy = "members")
-  private Set<BasicGroup> groups = new HashSet<>();
+  private List<BasicGroup> groups = new ArrayList<>();
 
   @ManyToMany(mappedBy = "moderators")
-  private Set<BasicGroup> moderatorFor = new HashSet<>();
+  private List<BasicGroup> moderatorFor = new ArrayList<>();
 	
 	public User() {
 
@@ -84,19 +84,19 @@ public class User {
     return user.name.equals(this.name);
   }
   
-  public Set<BasicGroup> getGroups() {
+  public List<BasicGroup> getGroups() {
     return groups;
   }
   
-  public void setGroups(Set<BasicGroup> groups) {
+  public void setGroups(List<BasicGroup> groups) {
     this.groups = groups;
   }
   
-  public Set<BasicGroup> getModeratorFor() {
+  public List<BasicGroup> getModeratorFor() {
     return moderatorFor;
   }
   
-  public void setModeratorFor(Set<BasicGroup> moderatorFor) {
+  public void setModeratorFor(List<BasicGroup> moderatorFor) {
     this.moderatorFor = moderatorFor;
   }
 }

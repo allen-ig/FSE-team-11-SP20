@@ -191,16 +191,16 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
         "The group must contain at least one member.");
     }
     
-    if (findGroupByName(group.getMembers().get(0), group.getName()).isPresent()) {
+    if (findGroupByName(group.getMembers().get(0).getName(), group.getName()).isPresent()) {
       throw new GroupAlreadyPresentException(
         String.format("Group already present with name: %s", group.getName()));
     }
     
     if(group.getModerators().isEmpty()) {
       List<User> moderators = new ArrayList<>();
-      Optional op = findUserByName(group.getMembers().get(0));
+      Optional<User> op = findUserByName(group.getMembers().get(0).getName());
       if(op.isPresent()) {
-        moderators.add((User) op.get());
+        moderators.add(op.get());
         group.setModerators(moderators);
       }
     }

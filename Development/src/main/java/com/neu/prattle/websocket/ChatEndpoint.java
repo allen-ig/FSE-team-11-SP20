@@ -7,13 +7,11 @@ package com.neu.prattle.websocket;
  * @version dated 2017-03-05
  */
 
-import com.neu.prattle.exceptions.UserAlreadyPresentException;
 import com.neu.prattle.service.UserServiceWithGroups;
 import com.neu.prattle.service.UserServiceWithGroupsImpl;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -273,13 +271,13 @@ public class ChatEndpoint {
         Optional<BasicGroup> group = accountService
             .findGroupByName(message.getFrom(), instructions[i + 1]);
         if (group.isPresent()) {
-          for (String mem : group.get().getMembers()) {
-            Message m = Message.messageBuilder().setFrom(message.getFrom()).setTo(mem)
+          for (User mem : group.get().getMembers()) {
+            Message m = Message.messageBuilder().setFrom(message.getFrom()).setTo(mem.getName())
                 .setMessageContent(message.getContent()).build();
-            if (chatEndpoints.containsKey(mem)) {
-              synchronized (chatEndpoints.get(mem)) {
+            if (chatEndpoints.containsKey(mem.getName())) {
+              synchronized (chatEndpoints.get(mem.getName())) {
                 try {
-                  chatEndpoints.get(mem).session.getBasicRemote().sendObject(m);
+                  chatEndpoints.get(mem.getName()).session.getBasicRemote().sendObject(m);
                 } catch (IOException | EncodeException e) {
                   /* note: in production, who exactly is looking at the console.  This exception's
                    *       output should be moved to a logger.
