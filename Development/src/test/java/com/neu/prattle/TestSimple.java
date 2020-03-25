@@ -2,6 +2,7 @@ package com.neu.prattle;
 
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Optional;
 
@@ -22,8 +23,15 @@ public class TestSimple {
 	
 	@Before
 	public void setUp() {
+		System.setProperty("testing", "true");
 		as = UserServiceImpl.getInstance();
 		prattleApplication = new PrattleApplication();
+		assertTrue(as.isTest());
+	}
+
+	@After
+	public void tearDown(){
+		System.setProperty("testing", "false");
 	}
 
 	// This method just tries to add 
@@ -39,7 +47,6 @@ public class TestSimple {
 
 	// Performance testing to benchmark our number of users that can be added 
 	// in 2 sec
-	
 	@Test(timeout = 30000)
 	public void checkPrefTest(){
 		for(int i=0; i < 5; i++) {
@@ -50,8 +57,8 @@ public class TestSimple {
 		}
 	}
 
-
-	public void testPrattleApplication() {
+	@Test
+	public void prattleApplicationTest() {
 		assertEquals(1, prattleApplication.getClasses().size());
 	}
 }
