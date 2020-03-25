@@ -33,7 +33,7 @@ public class Message {
     /***
      * The name of the user to whom the message is sent.
      */
-    private String to;
+    private String toUser;
     /***
      * It represents the contents of the message.
      */
@@ -43,7 +43,7 @@ public class Message {
     public String toString() {
         return new StringBuilder()
                 .append("From: ").append(fromUser)
-                .append("To: ").append(to)
+                .append("To: ").append(toUser)
                 .append("Content: ").append(content)
                 .toString();
     }
@@ -57,13 +57,13 @@ public class Message {
     }
 
     public String getTo() {
-        return to;
+        return toUser;
     }
 
     public int getId(){return this.id;}
 
     public void setTo(String to) {
-        this.to = to;
+        this.toUser = to;
     }
 
     public Timestamp getTimestamp(){
