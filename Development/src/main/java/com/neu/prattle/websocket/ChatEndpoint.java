@@ -25,8 +25,10 @@ import javax.websocket.server.ServerEndpoint;
 
 import com.neu.prattle.model.Message;
 import com.neu.prattle.model.User;
+import com.neu.prattle.service.MessageService;
 import com.neu.prattle.service.UserService;
 import com.neu.prattle.service.UserServiceImpl;
+import com.neu.prattle.service.MessageServiceImpl;
 
 /**
  * The Class ChatEndpoint.
@@ -39,6 +41,7 @@ public class ChatEndpoint {
     /** The account service. */
 
     private UserService accountService = UserServiceImpl.getInstance();
+    private MessageService messageService = MessageServiceImpl.getInstance();
 
     /** The session. */
     private Session session;
@@ -133,6 +136,7 @@ public class ChatEndpoint {
     @OnMessage
     public void onMessage(Session session, Message message) {
         message.setFrom(users.get(session.getId()));
+        messageService.createMessage(message);
         if (message.getTo() == null || message.getTo().length() == 0) {
             broadcast(message);
         }else{
@@ -186,6 +190,7 @@ public class ChatEndpoint {
                 try {
                     endpoint.session.getBasicRemote()
                             .sendObject(message);
+
                 } catch (IOException | EncodeException | NullPointerException e) {
                     logger.log(Level.SEVERE, e.getMessage());
                 }
