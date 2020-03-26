@@ -1,11 +1,10 @@
 package com.neu.prattle.service;
 
 import com.neu.prattle.model.BasicGroup;
-import com.neu.prattle.model.User;
 import java.util.Optional;
 
 public interface UserServiceWithGroups extends UserService {
-  Optional<BasicGroup> findGroupByName(String user, String name);
+  Optional<BasicGroup> findGroupByName(String user, String groupName);
 
   void addGroup(BasicGroup group);
 
@@ -23,6 +22,6 @@ public interface UserServiceWithGroups extends UserService {
 
   //if user in request and moderator
   void removeModerator(User sender, User user, BasicGroup group);
-
-
+  
+  void addMembersToGroup(BasicGroup group);
 }

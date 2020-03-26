@@ -20,7 +20,7 @@ mapped to database tables. Database driver, location, userid and pw
         <class>com.neu.prattle.model.BasicGroup</class>
         <properties>
             <!-- Driver for DB database -->
-            <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />
+            <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver" />
             <!-- URL for DB -->
             <property name="javax.persistence.jdbc.url" value="jdbc:mysql://db4free.net:3306/fseproject" />
             <!-- Username -->
