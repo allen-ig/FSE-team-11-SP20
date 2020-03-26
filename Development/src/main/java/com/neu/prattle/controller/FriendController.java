@@ -29,15 +29,6 @@ public class FriendController {
     @Path("/create")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response sendFriendRequest(Friend friend){
-//        Optional<User> sender = userService.findUserByName(friendKey.getSender());
-//        Optional<User> recipient = userService.findUserByName(friendKey.getRecipient());
-//        if (sender.isPresent() && recipient.isPresent())
-//        {
-//            Friend friend = new Friend(sender.get(), recipient.get());
-//            friend.setId(friendKey);
-//            friendService.sendFriendRequest(friend);
-//            return Response.ok().build();
-//        }
         friendService.sendFriendRequest(friend);
         return Response.ok().build();
     }
@@ -71,7 +62,6 @@ public class FriendController {
             friendService.approveFriendRequest(senderOp.get(), recipientOp.get(), isApproved.equals("approve"));
             return Response.ok().build();
         }
-//        friendService.approveFriendRequest(new Friend.FriendKey(sender, recipient), isApproved.equals("approve"));
         return Response.status(404).build();
     }
 }

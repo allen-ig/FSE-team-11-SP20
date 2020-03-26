@@ -1,4 +1,4 @@
-package com.neu.prattle;
+package com.neu.prattle.testcontroller;
 
 import com.neu.prattle.controller.UserController;
 import com.neu.prattle.model.User;

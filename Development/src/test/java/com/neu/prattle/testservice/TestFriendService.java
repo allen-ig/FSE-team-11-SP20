@@ -1,5 +1,6 @@
 package com.neu.prattle.testservice;
 
+import com.neu.prattle.controller.FriendController;
 import com.neu.prattle.model.Friend;
 import com.neu.prattle.model.User;
 import com.neu.prattle.service.FriendService;
@@ -8,14 +9,20 @@ import com.neu.prattle.service.UserService;
 import com.neu.prattle.service.UserServiceImpl;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-
+import static org.junit.jupiter.api.Assertions.assertFalse;
+@FixMethodOrder(MethodSorters.JVM)
 public class TestFriendService {
 
     private FriendService friendService;
     private UserService userService;
+    private User test1;
+    private User test2;
 
     @Before
     public void setUp() {
@@ -23,33 +30,60 @@ public class TestFriendService {
         friendService = FriendServiceImpl.getInstance();
         userService = UserServiceImpl.getInstance();
         assertTrue(friendService.isTest());
+        test1 = new User("test1");
+        test2 = new User("test2");
     }
 
     @After
-    public void tearDown() {
+    public void tearDown(){
+//        userService.deleteUser(test1);
+//        userService.deleteUser(test2);
         System.setProperty("testing", "false");
     }
 
     @Test
     public void testSendFriendRequest(){
-//        userService.addUser(new User("test2"));
-//        userService.addUser(new User("test4"));
-//        Friend friend = new Friend(new Friend.FriendKey("test2", "test4"));
+        userService.addUser(test1);
+        userService.addUser(test2);
+        User test1 = userService.findUserByName("test1").get();
         User test2 = userService.findUserByName("test2").get();
-        User test4 = userService.findUserByName("test4").get();
-        Friend friend = new Friend(test2, test4);
-//        friend.setSender(test2);
-//        friend.setRecipient(test4);
+        Friend friend = new Friend(test1, test2);
         friendService.sendFriendRequest(friend);
     }
 
-//    @Test
-//    public void testApproveFriendRequest(){
-//        friendService.approveFriendRequest(1, true);
-//    }
+    @Test
+    public void testApproveFriendRequest(){
+        User test1 = userService.findUserByName("test1").get();
+        User test2 = userService.findUserByName("test2").get();
+        Friend friend = new Friend(test1, test2);
+        friendService.sendFriendRequest(friend);
+        friendService.approveFriendRequest(test1, test2, true);
+    }
+
+    @Test
+    public void testDenyFriendRequest(){
+        userService.addUser(new User("test3"));
+        User test1 = userService.findUserByName("test1").get();
+        User test3 = userService.findUserByName("test3").get();
+        Friend friend = new Friend(test1, test3);
+        friendService.sendFriendRequest(friend);
+        friendService.approveFriendRequest(test1, test3, false);
+    }
 
     @Test
     public void testFindAllFriends(){
-        friendService.findAllFriends("tim3");
+        User test1 = userService.findUserByName("test1").get();
+        User test2 = userService.findUserByName("test2").get();
+        Friend friend = new Friend(test1, test2);
+        friendService.sendFriendRequest(friend);
+        friendService.approveFriendRequest(test1, test2, true);
+//        assertEquals(1, friendService.findAllFriends("tim3").size());
+    }
+
+    @Test
+    public void testNonTestUserServiceImpl(){
+        System.setProperty("testing", "false");
+        FriendService service = FriendServiceImpl.getInstance();
+        assertFalse(service.isTest());
     }
 }
