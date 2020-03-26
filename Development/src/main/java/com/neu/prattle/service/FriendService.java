@@ -9,7 +9,9 @@ public interface FriendService {
 
     void sendFriendRequest(Friend friend);
 
-    void approveFriendRequest(int friendId, boolean isApproved);
+    void approveFriendRequest(User sender, User recipient, boolean isApproved);
 
     Collection<Friend> findAllFriends(String username);
+
+    boolean isTest();
 }

@@ -58,6 +58,7 @@ public class TestController {
 
   @Test
   public void testFindUserEndpointDoesNotExist(){
+    uc.createUserAccount(newUser);
     Response response = uc.findUserByName("TEST_USER_DOES_NOT_EXIST");
     Assert.assertEquals(response.getStatus(), Response.status(404).build().getStatus());
   }

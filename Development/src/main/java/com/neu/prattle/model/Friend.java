@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "friendRequest")
+@Table(name = "friend")
 //@IdClass(Friend.FriendKey.class)
 public class Friend {
 
@@ -21,21 +21,45 @@ public class Friend {
     }
 
 //    @EmbeddedId
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//
 //    private FriendKey id;
 
-    private String status = "pending";;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
-    @ManyToOne
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    private String status = "pending";
+
+    @ManyToOne(targetEntity = User.class)
     private User sender;
 
-    @ManyToOne
+    @ManyToOne(targetEntity = User.class)
     private User recipient;
-//
+
 //    public FriendKey getFriendKey() {
 //        return id;
 //    }
 //
+//    public FriendKey getId() {
+//        return id;
+//    }
+
+    public void setSender(User sender) {
+        this.sender = sender;
+    }
+
+    public void setRecipient(User recipient) {
+        this.recipient = recipient;
+    }
+
 //    public void setId(FriendKey id) {
 //        this.id = id;
 //    }
@@ -52,20 +76,12 @@ public class Friend {
         return sender;
     }
 
-    public void setSender(User sender) {
-        this.sender = sender;
-    }
-
     public User getRecipient() {
         return recipient;
     }
 
-    public void setRecipient(User recipient) {
-        this.recipient = recipient;
-    }
-
 //    @Embeddable
-//    public class FriendKey implements Serializable {
+//    public static class FriendKey implements Serializable {
 //        private String sender;
 //        private String recipient;
 //

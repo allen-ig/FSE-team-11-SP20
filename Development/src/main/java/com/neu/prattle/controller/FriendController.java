@@ -29,6 +29,15 @@ public class FriendController {
     @Path("/create")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response sendFriendRequest(Friend friend){
+//        Optional<User> sender = userService.findUserByName(friendKey.getSender());
+//        Optional<User> recipient = userService.findUserByName(friendKey.getRecipient());
+//        if (sender.isPresent() && recipient.isPresent())
+//        {
+//            Friend friend = new Friend(sender.get(), recipient.get());
+//            friend.setId(friendKey);
+//            friendService.sendFriendRequest(friend);
+//            return Response.ok().build();
+//        }
         friendService.sendFriendRequest(friend);
         return Response.ok().build();
     }
@@ -50,12 +59,19 @@ public class FriendController {
     }
 
     @PATCH
-    @Path("/{friendId}/{isApproved}")
+    @Path("/{sender}/{recipient}/{isApproved}")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response respondToFriendRequest(
-            @PathParam("friendId") int friendId,
+            @PathParam("sender") String sender,
+            @PathParam("recipient") String recipient,
             @PathParam("isApproved") String isApproved){
-        friendService.approveFriendRequest(friendId, isApproved.equals("approve"));
-        return Response.ok().build();
+        Optional<User> senderOp = userService.findUserByName(sender);
+        Optional<User> recipientOp = userService.findUserByName(recipient);
+        if (senderOp.isPresent() && recipientOp.isPresent()){
+            friendService.approveFriendRequest(senderOp.get(), recipientOp.get(), isApproved.equals("approve"));
+            return Response.ok().build();
+        }
+//        friendService.approveFriendRequest(new Friend.FriendKey(sender, recipient), isApproved.equals("approve"));
+        return Response.status(404).build();
     }
 }

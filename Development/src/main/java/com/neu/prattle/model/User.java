@@ -1,6 +1,10 @@
 package com.neu.prattle.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 import javax.persistence.*;
@@ -34,27 +38,24 @@ public class User {
 	private String name;
 
 	@OneToMany(mappedBy = "sender")
-    private Collection<Friend> friendList;
-
-//	@ElementCollection
-//	private Collection<String> listAsSender;
+    private List<Friend> friendList = new ArrayList<>();
 
 	@OneToMany(mappedBy = "recipient")
-    private Collection<Friend> friendByList;
+    private List<Friend> friendByList = new ArrayList<>();
 
-    public Collection<Friend> getFriendList() {
+    public List<Friend> getFriendList() {
         return friendList;
     }
 
-    public void setFriendList(Collection<Friend> friendList) {
+    public void setFriendList(List<Friend> friendList) {
         this.friendList = friendList;
     }
 
-    public Collection<Friend> getFriendByList() {
+    public List<Friend> getFriendByList() {
         return friendByList;
     }
 
-    public void setFriendByList(Collection<Friend> friendByList) {
+    public void setFriendByList(List<Friend> friendByList) {
         this.friendByList = friendByList;
     }
 

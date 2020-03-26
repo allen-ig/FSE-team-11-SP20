@@ -1,6 +1,7 @@
 package com.neu.prattle.service;
 
 import com.neu.prattle.exceptions.UserAlreadyPresentException;
+import com.neu.prattle.model.Friend;
 import com.neu.prattle.model.User;
 
 import java.util.Optional;
@@ -8,6 +9,8 @@ import java.util.Optional;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
+import javax.transaction.Transactional;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
@@ -25,7 +28,8 @@ import org.hibernate.query.Query;
  */
 public class UserServiceImpl implements UserService {
 
-  private Configuration config = new Configuration().configure("hibernate.cfg.xml").addAnnotatedClass(User.class);
+  private Configuration config = new Configuration().configure("hibernate.cfg.xml")
+          .addAnnotatedClass(User.class).addAnnotatedClass(Friend.class);
   private ServiceRegistry registry = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
   private SessionFactory sessionFactory = config.buildSessionFactory(registry);
   private boolean isTest;
@@ -44,7 +48,8 @@ public class UserServiceImpl implements UserService {
 
     static {
       testingUserService = new UserServiceImpl();
-      Configuration testingConfig = new Configuration().configure("testing-hibernate.cfg.xml").addAnnotatedClass(User.class);
+      Configuration testingConfig = new Configuration().configure("testing-hibernate.cfg.xml")
+              .addAnnotatedClass(User.class).addAnnotatedClass(Friend.class);
       testingUserService.config = testingConfig;
       ServiceRegistry testingRegistry = new StandardServiceRegistryBuilder().applySettings(testingConfig.getProperties()).build();
       testingUserService.registry = testingRegistry;
@@ -73,6 +78,7 @@ public class UserServiceImpl implements UserService {
      * @return An optional wrapper supplying the User if it exists empty if it does not.
      */
     @Override
+    @Transactional
     public Optional<User>  findUserByName(String name){
       Session session = sessionFactory.openSession();
       session.beginTransaction();

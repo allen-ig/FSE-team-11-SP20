@@ -1,5 +1,6 @@
 var ws;
-var friendId;
+var senderObj;
+var recipientObj;
 
 function connect() {
     var username = document.getElementById("username").value;
@@ -14,13 +15,14 @@ function connect() {
         console.log(event.data);
         var message = JSON.parse(event.data);
         var searchAndFriend = document.getElementById("searchAndFriend");
-        if (message.type) log.innerHTML += message.from + " : " + message.content + "\n";
+        // console.log(message.type);
+        if (message.content !== "friendRequest") log.innerHTML += message.from + " : " + message.content + "\n";
         else {
-            friendId = message.friendId;
+            // friendId = message.friendId;
             searchAndFriend.innerHTML +=
                 `<div id="friendRequest"><span>${message.from} just send you a friend request!</span>
-                <button id="approveFriendRequest" onclick="handleFriendRequest('approve');">Approve</button>
-                <button id="denyFriendRequest" onclick="handleFriendRequest('deny');">Deny</button> </div>`;
+                <button id="approveFriendRequest" onclick="handleFriendRequest(senderObj.name, recipientObj.name, 'approve');">Approve</button>
+                <button id="denyFriendRequest" onclick="handleFriendRequest(senderObj.name, recipientObj.name, 'deny');">Deny</button> </div>`;
         }
     };
 }
@@ -36,20 +38,26 @@ function send() {
     ws.send(json);
 }
 
-function search(){
+function search() {
     let addFriendBtn = document.getElementById("addFriend");
     let userToSearch = document.getElementById("search").value;
     fetch(`http://${document.location.host}${document.location.pathname}rest/user/${userToSearch}`)
         .then(response => response.json())
         .then(response => {
+            console.log(response)
+            recipientObj = response;
             if (response.name) {
                 alert(`you can add ${response.name} as a friend!`);
                 addFriendBtn.classList.remove("dontShow");
-            }
-            else alert("the user you searched does not exist!");
+            } else alert("the user you searched does not exist!");
         }, err => {
             console.log(err);
         })
+        .then(() => fetch(`http://${document.location.host}${document.location.pathname}rest/user/${ws.url.split('/').pop()}`)
+            .then(response => response.json())
+            .then(response => {
+                senderObj = response;
+            }))
 }
 
 function addFriend(){
@@ -58,19 +66,34 @@ function addFriend(){
     let searchField = document.getElementById("search");
     let recipient = searchField.value;
     searchField.value = "";
-    alert("friend request sent!");
-    ws.send({
-        "type": "friendRequest",
+    let json = JSON.stringify({
+        "content": "friendRequest",
         "to": recipient
-    });
+    })
+    ws.send(json);
+    let postBody = {
+        "sender": senderObj,
+        "recipient": recipientObj
+    }
+    fetch(`http://${document.location.host}${document.location.pathname}rest/friend/create`,
+        {method: "POST",
+            body: JSON.stringify(postBody),
+            headers: {
+                'Content-Type': 'application/json; charset=utf-8'
+            }})
+        .then(() => alert("friend request sent!"))
 }
 
-function handleFriendRequest(friendId, response) {
-    fetch(`http://${document.location.host}${document.location.pathname}rest/friend/${friendId}/${response}`,
+function handleFriendRequest(sender, recipient, response) {
+    fetch(`http://${document.location.host}${document.location.pathname}rest/friend/${sender}/${recipient}/${response}`,
         {method: "PATCH",
                 body: JSON.stringify({
                     response: response
-                })})
+                }),
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8'
+                }
+        })
         .then(() => {
             let friendRequest = document.getElementById("friendRequest");
             friendRequest.parentNode.removeChild(friendRequest);
