@@ -19,26 +19,26 @@ import org.hibernate.query.Query;
 import org.hibernate.service.ServiceRegistry;
 
 public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
-
+  
   private Configuration config = new Configuration().configure("hibernate.cfg.xml")
     .addAnnotatedClass(User.class).addAnnotatedClass(BasicGroup.class);
   private ServiceRegistry registry = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
   private SessionFactory sessionFactory = config.buildSessionFactory(registry);
   private boolean isTest;
-
+  
   /***
    * UserServiceImpl is a Singleton class.
    */
   private UserServiceWithGroupsImpl() {  }
-
+  
   private static UserServiceWithGroupsImpl accountService;
   private static UserServiceWithGroupsImpl testingUserService;
-
+  
   static {
     accountService = new UserServiceWithGroupsImpl();
     accountService.isTest = false;
   }
-
+  
   static {
     testingUserService = new UserServiceWithGroupsImpl();
     Configuration testingConfig = new Configuration().configure("testing-hibernate.cfg.xml").addAnnotatedClass(User.class).addAnnotatedClass(BasicGroup.class);
@@ -48,7 +48,7 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
     testingUserService.sessionFactory = testingConfig.buildSessionFactory(testingRegistry);
     testingUserService.isTest = true;
   }
-
+  
   /**
    * Call this method to return an instance of this service.
    *
@@ -100,7 +100,7 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
   public synchronized void addUser(User user) {
     if (findUserByName(user.getName()).isPresent()) {
       throw new UserAlreadyPresentException(
-          String.format("User already present with name: %s", user.getName()));
+        String.format("User already present with name: %s", user.getName()));
     }
     Session session = sessionFactory.openSession();
     session.beginTransaction();
@@ -114,7 +114,7 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
       session.close();
     }
   }
-
+  
   public synchronized void deleteUser(User user) {
     Session session = sessionFactory.openSession();
     session.beginTransaction();
@@ -128,7 +128,7 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
       session.close();
     }
   }
-
+  
   @Override
   public boolean isTest() {
     return isTest;
@@ -137,7 +137,7 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
   public Optional<BasicGroup> findGroupByName(String username, String groupName) {
     Session session = sessionFactory.openSession();
     session.beginTransaction();
-  
+    
     try {
       BasicGroup result = (BasicGroup) findGroupByNameQuery(groupName, session);
 //      check if user is part of the group
@@ -178,27 +178,9 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
     
     Session session = sessionFactory.openSession();
     session.beginTransaction();
-  
-    Set<User> updatedMembers = new HashSet<>();
-    for (User member : group.getMembers()) {
-      try {
-        User userInDb = (User) findUserByNameQuery(member.getName(), session);
-        updatedMembers.add(userInDb);
-      } catch (NoResultException ex) {
-        // log that the user did not exist in database
-      }
-    }
-  
-    Set<User> updatedModerators = new HashSet<>();
-    for (User moderator : group.getModerators()) {
-      try {
-        User userInDb = (User) findUserByNameQuery(moderator.getName(), session);
-        updatedModerators.add(userInDb);
-      } catch (NoResultException ex) {
-        // log that the user did not exist in database
-      }
-    }
     
+    Set<User> updatedMembers = getUsersInDatabase(group.getMembers(), session);
+    Set<User> updatedModerators = getUsersInDatabase(group.getModerators(), session);
     group.setMembers(updatedMembers);
     group.setModerators(updatedModerators);
     
@@ -225,6 +207,20 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
     }
   }
   
+  private Set<User> getUsersInDatabase(Set<User> usersToBeValidated, Session session) {
+    Set<User> updatedUsers = new HashSet<>();
+    for (User user : usersToBeValidated) {
+      try {
+        User userInDb = (User) findUserByNameQuery(user.getName(), session);
+        updatedUsers.add(userInDb);
+      } catch (NoResultException ex) {
+        // log that the user did not exist in database
+      }
+    }
+    
+    return updatedUsers;
+  }
+  
   @Override
   public void addMembersToGroup(BasicGroup group) {
     Session session = sessionFactory.openSession();
@@ -234,7 +230,7 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
     String strQuery = "SELECT g FROM BasicGroup g join fetch g.members join fetch g.moderators WHERE g.name = :name";
     Query query = session.createQuery(strQuery);
     query.setParameter("name", group.getName());
-  
+    
     BasicGroup result = (BasicGroup) query.getSingleResult();
     Optional<BasicGroup> op = Optional.of(result);
     
@@ -243,8 +239,11 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
     }
     
     BasicGroup groupInDatabase = op.get();
-    
-    // check if members and/or moderators exist
+  
+    Set<User> updatedMembers = getUsersInDatabase(group.getMembers(), session);
+    Set<User> updatedModerators = getUsersInDatabase(group.getModerators(), session);
+    group.setMembers(updatedMembers);
+    group.setModerators(updatedModerators);
     
     if(!group.getMembers().isEmpty()) {
       groupInDatabase.getMembers().addAll(group.getMembers());
@@ -252,7 +251,7 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
         newMember.getGroups().add(groupInDatabase);
       }
     }
-  
+    
     if(!group.getModerators().isEmpty()) {
       groupInDatabase.getModerators().addAll(group.getModerators());
       
@@ -260,7 +259,7 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
         newModerator.getModeratorFor().add(groupInDatabase);
       }
     }
-  
+    
     try {
       session.saveOrUpdate(groupInDatabase);
       session.getTransaction().commit();
