@@ -5,13 +5,7 @@ import com.neu.prattle.exceptions.UserAlreadyPresentException;
 import com.neu.prattle.model.BasicGroup;
 import com.neu.prattle.model.User;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 import javax.persistence.NoResultException;
 import org.hibernate.Session;
@@ -67,10 +61,7 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
     }
     return accountService;
   }
-
-  private Set<User> userSet = new HashSet<>();
-  private Map<User, Map<String, BasicGroup>> groupSet = new HashMap<>();
-
+  
   /***
    *
    * @param name -> The name of the user.
@@ -136,7 +127,7 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
   public Optional<BasicGroup> findGroupByName(String username, String groupName) {
     Session session = sessionFactory.openSession();
     session.beginTransaction();
-    String strQuery = "SELECT g FROM BasicGroup g WHERE g.name = :name";
+    String strQuery = "SELECT g FROM BasicGroup g join fetch g.members join fetch g.moderators WHERE g.name = :name";
     Query query = session.createQuery(strQuery);
     query.setParameter("name", groupName);
   
@@ -151,32 +142,7 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
       session.disconnect();
       session.close();
     }
-//    User user = new User(name);
-//    if (groupSet.containsKey(user) && groupSet.get(user).containsKey(group)) {
-//      return Optional.of(groupSet.get(user).get(group).copy());
-//    } else {
-//      return Optional.empty();
-//    }
   }
-  
- 
-//  public Optional<BasicGroup> findGroupByName(String groupName) {
-//    Session session = sessionFactory.openSession();
-//    session.beginTransaction();
-//    String strQuery = "SELECT g FROM BasicGroup g WHERE g.name = :name";
-//    Query query = session.createQuery(strQuery);
-//    query.setParameter("name", groupName);
-//
-//    try {
-//      BasicGroup result = (BasicGroup) query.getSingleResult();
-//      return Optional.of(result);
-//    } catch (NoResultException ex) {
-//      return Optional.empty();
-//    } finally {
-//      session.disconnect();
-//      session.close();
-//    }
-//  }
   
   /**
    * Adds a group to the system. If users in group do not exist, simply does not send to them.
@@ -191,24 +157,64 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
         "The group must contain at least one member.");
     }
     
-    if (findGroupByName(group.getMembers().get(0).getName(), group.getName()).isPresent()) {
+    if (findGroupByName(group.getMembers().iterator().next().getName(), group.getName()).isPresent()) {
       throw new GroupAlreadyPresentException(
         String.format("Group already present with name: %s", group.getName()));
     }
-    
-    if(group.getModerators().isEmpty()) {
-      List<User> moderators = new ArrayList<>();
-      Optional<User> op = findUserByName(group.getMembers().get(0).getName());
-      if(op.isPresent()) {
-        moderators.add(op.get());
-        group.setModerators(moderators);
-      }
-    }
-    
+  
     Session session = sessionFactory.openSession();
     session.beginTransaction();
+    
+    for(User member : group.getMembers()) {
+      member.getGroups().add(group);
+    }
+    
+    if(group.getModerators().isEmpty()) {
+      group.getModerators().add(group.getMembers().iterator().next());
+    }
+    
+    for(User moderator : group.getModerators()) {
+      moderator.getModeratorFor().add(group);
+    }
+    
+    // delete after discussing expected behavior
+  
+//    Set<User> members = new HashSet<>();
+//
+//    for(User member : group.getMembers()) {
+//      Optional<User> op = findUserByName(member.getName());
+//      if(op.isPresent()) {
+//        User user = op.get();
+//        user.getGroups().add(group);
+//        members.add(op.get());
+//      }
+//    }
+//
+//    group.setMembers(members);
+//
+//    Set<User> moderators = new HashSet<>();
+//    if(group.getModerators().isEmpty()) {
+//      Optional<User> op = findUserByName(group.getMembers().iterator().next().getName());
+//      if(op.isPresent()) {
+//        User user = op.get();
+//        user.getModeratorFor().add(group);
+//        moderators.add(user);
+//      }
+//    } else {
+//      for(User moderator : group.getModerators()) {
+//        Optional<User> op = findUserByName(moderator.getName());
+//        if(op.isPresent()) {
+//          User user = op.get();
+//          Set<BasicGroup> groups = user.getGroups();
+//          groups.add(group);
+//          user.setModeratorFor(groups);
+//        }
+//      }
+//    }
+//    group.setModerators(moderators);
+    
     try {
-      session.save(group);
+      session.saveOrUpdate(group);
       session.getTransaction().commit();
     } catch (Exception e) {
       System.out.println(e.getMessage());
@@ -216,35 +222,6 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
       session.disconnect();
       session.close();
     }
-    
-    
-//    List<String> members = group.getMembers();
-//    List<String> moderators = group.getModerators();
-//
-//    //check if there are users
-//    if (moderators.isEmpty()) {
-//      if (members.isEmpty()) {
-//        throw new IllegalArgumentException(String.format("No members in group %s", group.getName()));
-//      }
-//      moderators.add(members.get(0));
-//    }
-//
-//    for (String member : members) {
-//      Optional<User> foundUser = findUserByName(member);
-//      if (foundUser.isPresent()) {
-//        if (groupSet.containsKey(foundUser.get())) {
-//          if (groupSet.get(foundUser.get()).containsKey(group.getName())) {
-//            throw new UserAlreadyPresentException(
-//                String.format("Group already present with name: %s", group.getName()));
-//          } else {
-//            groupSet.get(foundUser.get()).put(group.getName(), group.copy());
-//          }
-//        } else {
-//          groupSet.put(foundUser.get(), new HashMap<>());
-//          groupSet.get(foundUser.get()).put(group.getName(), group.copy());
-//        }
-//      }
-//    }
   }
-
 }
+

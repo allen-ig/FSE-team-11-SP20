@@ -1,8 +1,8 @@
 package com.neu.prattle.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -42,10 +42,10 @@ public class BasicGroup {
   @ManyToMany(cascade = {CascadeType.ALL})
   @JoinTable(
     name = "user_group",
-    joinColumns = {@JoinColumn(name = "group_id"), },
+    joinColumns = {@JoinColumn(name = "group_id")},
     inverseJoinColumns = {@JoinColumn(name = "user_id")}
   )
-  private List<User> members = new ArrayList<>();
+  private Set<User> members;
 
   /**
    * Moderators of the group.
@@ -56,10 +56,12 @@ public class BasicGroup {
     joinColumns = {@JoinColumn(name = "group_id")},
     inverseJoinColumns = {@JoinColumn(name = "user_id")}
   )
-  private List<User> moderators = new ArrayList<>();
+  private Set<User> moderators;
 
   private BasicGroup () {
     name = "not set";
+    moderators = new HashSet<>();
+    members = new HashSet<>();
   }
   
   public String getName() {
@@ -74,22 +76,6 @@ public class BasicGroup {
 
   public boolean hasMember(User user) {
     return members.contains(user);
-  }
-  
-  public void setMembers(List<User> members) {
-    this.members = members;
-  }
-  
-  public void setModerators(List<User> moderators) {
-    this.moderators = moderators;
-  }
-  
-  public List<User> getMembers() {
-    return members;
-  }
-  
-  public List<User> getModerators() {
-    return moderators;
   }
   
   public boolean hasModerator(User user) {
@@ -113,7 +99,23 @@ public class BasicGroup {
       return gObj.name.equals(this.name);
     }
   }
-
+  
+  public Set<User> getMembers() {
+    return members;
+  }
+  
+  public void setMembers(Set<User> members) {
+    this.members = members;
+  }
+  
+  public Set<User> getModerators() {
+    return moderators;
+  }
+  
+  public void setModerators(Set<User> moderators) {
+    this.moderators = moderators;
+  }
+  
   public BasicGroup copy(){
     return groupBuilder().setName(name).setMembers(members).setModerators(moderators).build();
   }
@@ -138,12 +140,12 @@ public class BasicGroup {
       return this;
     }
 
-    public GroupBuilder setModerators(List<User> users) {
+    public GroupBuilder setModerators(Set<User> users) {
       group.setModerators(users);
       return this;
     }
 
-    public GroupBuilder setMembers(List<User> users) {
+    public GroupBuilder setMembers(Set<User> users) {
       group.setMembers(users);
       return this;
     }

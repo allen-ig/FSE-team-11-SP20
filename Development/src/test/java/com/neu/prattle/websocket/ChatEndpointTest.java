@@ -3,13 +3,11 @@ package com.neu.prattle.websocket;
 import com.neu.prattle.model.BasicGroup;
 import com.neu.prattle.model.Message;
 import com.neu.prattle.model.User;
-import com.neu.prattle.service.UserService;
-import com.neu.prattle.service.UserServiceImpl;
 
 import com.neu.prattle.service.UserServiceWithGroups;
 import com.neu.prattle.service.UserServiceWithGroupsImpl;
-import java.util.ArrayList;
-import java.util.Optional;
+import java.util.HashSet;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,6 +20,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.websocket.EncodeException;
@@ -29,7 +28,6 @@ import javax.websocket.RemoteEndpoint;
 import javax.websocket.Session;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -195,7 +193,7 @@ public class ChatEndpointTest {
     User omu2 = new User("onMessageUser2");
     us.addUser(omu);
     us.addUser(omu2);
-    ArrayList<User> members = new ArrayList<>();
+    Set<User> members = new HashSet<>();
     members.add(omu);
     members.add(omu2);
 
@@ -471,7 +469,7 @@ public class ChatEndpointTest {
 
     User omu = new User("OnMessageUser");
     User omu2 = new User("OnMessageUser2");
-    ArrayList<User> mems = new ArrayList<>();
+    Set<User> mems = new HashSet<>();
     mems.add(omu);
     mems.add(omu2);
 
@@ -502,6 +500,7 @@ public class ChatEndpointTest {
     }
   }
 
+  //
   @Test
   public void testPrivateAddGroup() {
     Mockito.when(this.mockSession.getId()).thenReturn("sessionId");

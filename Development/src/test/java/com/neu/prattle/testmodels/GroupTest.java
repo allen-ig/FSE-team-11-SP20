@@ -3,8 +3,11 @@ package com.neu.prattle.testmodels;
 import com.neu.prattle.model.BasicGroup;
 import com.neu.prattle.model.User;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -27,7 +30,7 @@ public class GroupTest {
 
   @Test
   public void testSetMembers() {
-    List<User> users= new ArrayList<>();
+    Set<User> users= new HashSet<>();
     
     User user1 = new User("user1");
     User user2 = new User("user2");
@@ -49,7 +52,8 @@ public class GroupTest {
 
   @Test
   public void hasMember() {
-    List<User> users= new ArrayList<>();
+    Set<User> users= new HashSet<>();
+    
     User user1 = new User("user1");
     User user2 = new User("user2");
     users.add(user1);
@@ -63,7 +67,7 @@ public class GroupTest {
 
   @Test
   public void testSetModerators() {
-    List<User> users= new ArrayList<>();
+    Set<User> users= new HashSet<>();
     User user1 = new User("user1");
     User user2 = new User("user2");
     users.add(user1);
@@ -83,7 +87,8 @@ public class GroupTest {
 
   @Test
   public void testHasModerator() {
-    List<User> users= new ArrayList<>();
+    Set<User> users= new HashSet<>();
+    
     users.add(new User("user1"));
     users.add(new User("`user2"));
     builder.setModerators(users);
@@ -94,7 +99,8 @@ public class GroupTest {
 
   @Test
   public void testSize() {
-    List<User> users= new ArrayList<>();
+    Set<User> users= new HashSet<>();
+    
     users.add(new User("user1"));
     users.add(new User("user2"));
 
@@ -141,7 +147,8 @@ public class GroupTest {
 
   @Test
   public void testCopy() {
-    List<User> users= new ArrayList<>();
+    Set<User> users= new HashSet<>();
+    
     users.add(new User("user1"));
     users.add(new User("user2"));
     BasicGroup group1 = builder.setName("group1").setMembers(users).setModerators(users).build();
