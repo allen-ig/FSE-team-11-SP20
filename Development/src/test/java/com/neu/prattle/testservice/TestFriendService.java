@@ -47,16 +47,16 @@ public class TestFriendService {
 
     @Test
     public void testSendFriendRequest(){
-        User test1 = userService.findUserByName("test1").get();
-        User test2 = userService.findUserByName("test2").get();
+//        User test1 = userService.findUserByName("test1").get();
+////        User test2 = userService.findUserByName("test2").get();
         Friend friend = new Friend(test1, test2);
         friendService.sendFriendRequest(friend);
     }
 
     @Test
     public void testApproveFriendRequest(){
-        User test1 = userService.findUserByName("test1").get();
-        User test2 = userService.findUserByName("test2").get();
+//        User test1 = userService.findUserByName("test1").get();
+//        User test2 = userService.findUserByName("test2").get();
         Friend friend = new Friend(test1, test2);
         friendService.sendFriendRequest(friend);
         friendService.approveFriendRequest(test1, test2, true);
@@ -65,7 +65,7 @@ public class TestFriendService {
     @Test
     public void testDenyFriendRequest(){
         userService.addUser(new User("test3"));
-        User test1 = userService.findUserByName("test1").get();
+//        User test1 = userService.findUserByName("test1").get();
         User test3 = userService.findUserByName("test3").get();
         Friend friend = new Friend(test1, test3);
         friendService.sendFriendRequest(friend);
@@ -74,8 +74,8 @@ public class TestFriendService {
 
     @Test
     public void testFindAllFriends(){
-        User test1 = userService.findUserByName("test1").get();
-        User test2 = userService.findUserByName("test2").get();
+//        User test1 = userService.findUserByName("test1").get();
+//        User test2 = userService.findUserByName("test2").get();
         Friend friend = new Friend(test1, test2);
         friendService.sendFriendRequest(friend);
         friendService.approveFriendRequest(test1, test2, true);

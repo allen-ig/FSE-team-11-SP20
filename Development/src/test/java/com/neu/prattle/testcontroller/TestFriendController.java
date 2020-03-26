@@ -50,8 +50,6 @@ public class TestFriendController {
 
     @Test
     public void testSendFriendRequest(){
-        userService.addUser(test1);
-        userService.addUser(test2);
         Response response = friendController.sendFriendRequest(new Friend(test1, test2));
         assertEquals(response.getStatus(), Response.status(200).build().getStatus());
     }
