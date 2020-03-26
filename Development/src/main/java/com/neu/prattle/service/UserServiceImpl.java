@@ -4,6 +4,8 @@ import com.neu.prattle.exceptions.UserAlreadyPresentException;
 import com.neu.prattle.model.User;
 
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.persistence.NoResultException;
 import org.hibernate.Session;
@@ -28,6 +30,7 @@ public class UserServiceImpl implements UserService {
   private ServiceRegistry registry = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
   private SessionFactory sessionFactory = config.buildSessionFactory(registry);
   private boolean isTest;
+  private Logger logger = Logger.getLogger(this.getClass().getName());
 
     /***
      * UserServiceImpl is a "Singleton" class.
@@ -99,7 +102,7 @@ public class UserServiceImpl implements UserService {
           session.save(user);
           session.getTransaction().commit();
         } catch (Exception e){
-            System.out.println(e.getMessage());
+            logger.log(Level.SEVERE,(e.getMessage()));
         } finally{
             session.disconnect();
             session.close();
@@ -113,7 +116,7 @@ public class UserServiceImpl implements UserService {
         session.delete(user);
         session.getTransaction().commit();
       } catch(Exception e){
-        System.out.println(e.getMessage());
+        logger.log(Level.SEVERE,(e.getMessage()));
       } finally{
         session.disconnect();
         session.close();

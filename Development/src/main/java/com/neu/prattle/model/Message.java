@@ -9,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Objects;
 
 /***
  * A Basic POJO for Message.
@@ -100,6 +101,13 @@ public class Message {
                 );
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(toUser + fromUser + content);
+    }
+
+
+
     /***
      * A Builder helper class to create instances of {@link Message}
      */
@@ -132,8 +140,7 @@ public class Message {
         }
 
         public Message build()  {
-             Message savedMessage = messageService.createMessage(message);
-            return savedMessage;
+            return messageService.createMessage(message);
         }
     }
 }

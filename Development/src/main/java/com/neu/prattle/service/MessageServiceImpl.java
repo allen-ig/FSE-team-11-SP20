@@ -1,7 +1,6 @@
 package com.neu.prattle.service;
 
 import com.neu.prattle.model.Message;
-import com.neu.prattle.model.User;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -11,8 +10,8 @@ import org.hibernate.query.Query;
 import org.hibernate.service.ServiceRegistry;
 
 import java.util.List;
-
-import javax.persistence.NoResultException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class MessageServiceImpl implements MessageService {
 
@@ -20,6 +19,7 @@ public class MessageServiceImpl implements MessageService {
   private ServiceRegistry registry = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
   private SessionFactory sessionFactory = config.buildSessionFactory(registry);
   private boolean isTest;
+  private Logger logger = Logger.getLogger(this.getClass().getName());
 
   /**
    * MessageServiceImpl is a "Singleton" class
@@ -54,13 +54,17 @@ public class MessageServiceImpl implements MessageService {
   }
 
   @Override
-  public List<Message> getUserMessages(User user) {
-    return null;
-  }
-
-  @Override
   public void deleteMessage(Message message) {
-
+    Session session = sessionFactory.openSession();
+    session.beginTransaction();
+    try {
+      session.delete(message);
+      session.getTransaction().commit();
+    } catch (Exception e){
+     logger.log(Level.SEVERE, e.getMessage());
+    } finally{
+      session.close();
+    }
   }
 
   @Override
@@ -71,7 +75,7 @@ public class MessageServiceImpl implements MessageService {
       session.save(message);
       session.getTransaction().commit();
     } catch (Exception e){
-      System.out.println(e.getMessage());
+      logger.log(Level.SEVERE, (e.getMessage()));
     } finally{
       session.close();
     }
@@ -92,6 +96,7 @@ public class MessageServiceImpl implements MessageService {
     Query query = session.createQuery(strQuery);
     query.setParameter("username", username);
     userMessages = query.getResultList();
+    session.close();
     return userMessages;
   }
 }

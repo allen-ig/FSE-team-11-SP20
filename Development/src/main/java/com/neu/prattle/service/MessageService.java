@@ -11,12 +11,7 @@ import java.util.List;
  */
 public interface MessageService {
 
-  /**
-   * Returns a List of all Messages sent to a User
-   * @param user
-   * @return A List of all messages sent to a User
-   */
-  List<Message> getUserMessages(User user);
+
 
   /**
    * Deletes a message from the database
@@ -38,6 +33,11 @@ public interface MessageService {
    */
   boolean isTest();
 
+  /**
+   * Returns a List of all Messages sent to a User
+   * @param username
+   * @return A List of all messages sent to a User
+   */
   List<Message> getUserMessages(String username);
 
 }

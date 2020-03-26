@@ -2,6 +2,7 @@ package com.neu.prattle.testservice;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,6 +76,18 @@ public class TestMessageService {
       builder.setMessageContent(msg[2]);
       expectedJimMessages.add(builder.build());
     }
+  }
+
+  @Test
+  public void testDelete(){
+   builder = Message.messageBuilder();
+    builder.setTo("You");
+    builder.setFrom("Me");
+    builder.setMessageContent("Hello");
+    Message newMessage = builder.build();
+    messageService.deleteMessage(newMessage);
+    List<Message> youMessages = messageService.getUserMessages("You");
+    assertFalse(youMessages.contains(newMessage));
   }
 
 }
