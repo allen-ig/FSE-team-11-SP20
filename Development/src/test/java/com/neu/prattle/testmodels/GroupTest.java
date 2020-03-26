@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -19,7 +20,13 @@ public class GroupTest {
 
   @Before
   public void setUp() {
+    System.setProperty("testing","true");
     builder = BasicGroup.groupBuilder();
+  }
+  
+  @After
+  public void tearDown(){
+    System.setProperty("testing", "false");
   }
 
   @Test
