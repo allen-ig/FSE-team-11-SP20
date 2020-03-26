@@ -24,19 +24,36 @@ public class FriendTest {
         assertEquals("user2", friend.getRecipient().getName());
     }
 
-//    @Test
-//    public void testStringConstructor(){
-//        Friend.FriendKey friendKey = new Friend.FriendKey("user1", "user2");
-//        friend = new Friend(friendKey);
-//        assertEquals("user1", friend.getFriendKey().getSender());
-//        assertEquals("user2", friend.getFriendKey().getRecipient());
-//    }
+    @Test
+    public void testGetId(){
+        friend = new Friend(new User("user1"), new User("user2"));
+        assertEquals(0, friend.getId());
+    }
+
+    @Test
+    public void testSetId(){
+        friend = new Friend(new User("user1"), new User("user2"));
+        friend.setId(9);
+        assertEquals(9, friend.getId());
+    }
+
+    @Test
+    public void testGetSender(){
+        friend = new Friend(new User("user1"), new User("user2"));
+        assertEquals("user1", friend.getSender().getName());
+    }
 
     @Test
     public void testSetSender(){
         friend = new Friend(new User("user1"), new User("user2"));
         friend.setSender(new User("user3"));
         assertEquals("user3", friend.getSender().getName());
+    }
+
+    @Test
+    public void testGetRecipient(){
+        friend = new Friend(new User("user1"), new User("user2"));
+        assertEquals("user2", friend.getRecipient().getName());
     }
 
     @Test
@@ -59,10 +76,4 @@ public class FriendTest {
         assertEquals("APPROVED", friend.getStatus());
     }
 
-//    @Test
-//    public void testFriendKeyConstructor(){
-//        Friend.FriendKey friendKey = new Friend.FriendKey();
-//        assertNull(friendKey.getRecipient());
-//        assertNull(friendKey.getSender());
-//    }
 }
