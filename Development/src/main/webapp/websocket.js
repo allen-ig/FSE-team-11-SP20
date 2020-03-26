@@ -22,7 +22,7 @@ function connect() {
 }
 
 function formatDate(d){
-    return " on " + (d.getMonth()+1) + "-" d.getDate() + "-"+ d.getFullYear() + " at" +
+    return " on " + (d.getMonth()+1) + "-" + d.getDate() + "-"+ d.getFullYear() + " at " +
     d.getHours() + ":" + d.getMinutes();
 }
 
