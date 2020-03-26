@@ -7,12 +7,14 @@ import java.util.Objects;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 /**
@@ -50,7 +52,7 @@ public class BasicGroup {
   /**
    * Moderators of the group.
    */
-  @ManyToMany(cascade = {CascadeType.ALL})
+  @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
   @JoinTable(
     name = "moderator_group",
     joinColumns = {@JoinColumn(name = "group_id")},
@@ -123,7 +125,7 @@ public class BasicGroup {
   }
 
   /**
-   * Builder so we can conveniently create instances with @Link.
+   * Builder so we can conveniently create instances with @Consumes.
    */
   public static class GroupBuilder {
 
