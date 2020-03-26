@@ -267,8 +267,7 @@ public class ChatEndpoint {
             .findGroupByName(message.getFrom(), instructions[i + 1]);
         if (group.isPresent()) {
           for (User mem : group.get().getMembers()) {
-            Message m = Message.messageBuilder().setFrom(message.getFrom()).setTo(mem.getName())
-                .setMessageContent(message.getContent()).build();
+            Message m = Message.messageBuilder().setFrom(group.get().getName() + ": " + message.getFrom()).setTo(mem.getName()).setMessageContent(message.getContent()).build();
             if (chatEndpoints.containsKey(mem.getName())) {
               synchronized (chatEndpoints.get(mem.getName())) {
                 try {
