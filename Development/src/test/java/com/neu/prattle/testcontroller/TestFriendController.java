@@ -35,14 +35,16 @@ public class TestFriendController {
         friendController = new FriendController();
         test1 = new User("test1");
         test2 = new User("test2");
-//        userService.addUser(test1);
-//        userService.addUser(test2);
+        userService.addUser(test1);
+        userService.addUser(test2);
     }
 
     @After
     public void tearDown(){
-//        userService.deleteUser(test1);
-//        userService.deleteUser(test2);
+        User user1 = userService.findUserByName("test1").get();
+        User user2 = userService.findUserByName("test2").get();
+        userService.deleteUser(user1);
+        userService.deleteUser(user2);
         System.setProperty("testing", "false");
     }
 
