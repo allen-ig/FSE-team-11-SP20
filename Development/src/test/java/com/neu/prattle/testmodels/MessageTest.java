@@ -80,4 +80,12 @@ public class MessageTest {
         assertTrue(savedMessage.getTimestamp().getTime()-now.getTime()<3000);
         assertTrue(savedMessage.getId()>0);
     }
+
+    @Test
+    public void testSetTimestamp(){
+        Message newMessage = new Message();
+        newMessage.setTimestamp();
+        Timestamp now = Timestamp.from(Instant.now());
+        assertTrue(newMessage.getTimestamp().getTime()-now.getTime()<3000);
+    }
 }

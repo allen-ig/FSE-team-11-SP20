@@ -14,11 +14,16 @@ function connect() {
         var message = JSON.parse(event.data);
         var newMessage = message.from + " : " + message.content;
         if (message.timestamp){
-            newMessage += " at " + new Date(message.timestamp);
+            newMessage += formatDate(new Date(message.timestamp));
         }
         newMessage += "\n";
         log.innerHTML += newMessage
     };
+}
+
+function formatDate(d){
+    return " on " + (d.getMonth()+1) + "-" d.getDate() + "-"+ d.getFullYear() + " at" +
+    d.getHours() + ":" + d.getMinutes();
 }
 
 function send() {

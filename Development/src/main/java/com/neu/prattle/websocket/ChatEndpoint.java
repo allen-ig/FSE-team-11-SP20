@@ -141,6 +141,7 @@ public class ChatEndpoint {
     @OnMessage
     public void onMessage(Session session, Message message) {
         message.setFrom(users.get(session.getId()));
+        message.setTimestamp();
         messageService.createMessage(message);
         if (message.getTo() == null || message.getTo().length() == 0) {
             broadcast(message);

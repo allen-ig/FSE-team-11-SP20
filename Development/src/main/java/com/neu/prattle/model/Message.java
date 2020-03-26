@@ -106,6 +106,10 @@ public class Message {
         return Objects.hash(toUser + fromUser + content);
     }
 
+    public void setTimestamp(){
+        this.timestamp = Timestamp.from(Instant.now());
+    }
+
 
 
     /***
@@ -121,7 +125,7 @@ public class Message {
          MessageBuilder()    {
             message = new Message();
             message.setFrom("Not set");
-            message.timestamp = Timestamp.from(Instant.now());
+            message.setTimestamp();
         }
 
         public MessageBuilder setFrom(String from)    {
