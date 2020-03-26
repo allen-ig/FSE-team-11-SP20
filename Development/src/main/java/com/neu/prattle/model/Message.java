@@ -96,8 +96,8 @@ public class Message {
         return (
                 (this.getTo().equals(message.getTo())) &&
                         (this.getFrom().equals(message.getFrom())) &&
+                        (this.getContent().equals(message.getContent())) &&
                         (diff<5000)
-
                 );
     }
 

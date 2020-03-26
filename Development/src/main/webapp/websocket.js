@@ -13,7 +13,7 @@ function connect() {
         console.log(event.data);
         var message = JSON.parse(event.data);
         var newMessage = message.from + " : " + message.content;
-        if (message.content){
+        if (message.timestamp){
             newMessage += " at " + new Date(message.timestamp);
         }
         newMessage += "\n";
