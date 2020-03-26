@@ -12,8 +12,18 @@ function connect() {
     var log = document.getElementById("log");
         console.log(event.data);
         var message = JSON.parse(event.data);
-        log.innerHTML += message.from + " : " + message.content + "\n";
+        var newMessage = message.from + " : " + message.content;
+        if (message.timestamp){
+            newMessage += formatDate(new Date(message.timestamp));
+        }
+        newMessage += "\n";
+        log.innerHTML += newMessage
     };
+}
+
+function formatDate(d){
+    return " on " + (d.getMonth()+1) + "-" + d.getDate() + "-"+ d.getFullYear() + " at " +
+    d.getHours() + ":" + d.getMinutes();
 }
 
 function send() {

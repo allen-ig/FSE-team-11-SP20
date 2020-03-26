@@ -4,10 +4,10 @@ import com.neu.prattle.exceptions.UserAlreadyPresentException;
 import com.neu.prattle.model.User;
 
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.NoResultException;
-import javax.persistence.Persistence;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
@@ -17,8 +17,9 @@ import org.hibernate.query.Query;
 /***
  * Implementation of {@link UserService}
  *
- * It stores the user accounts in-memory, which means any user accounts
- * created will be deleted once the application has been restarted.
+ * It stores the user accounts in a MYSQL database
+ * It is capable of storing data in an actual database or a temporary,
+ * im-memory database that will be deleted upon completion of code execution
  *
  * @author CS5500 Fall 2019 Teaching staff
  * @version dated 2019-10-06
@@ -29,9 +30,10 @@ public class UserServiceImpl implements UserService {
   private ServiceRegistry registry = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
   private SessionFactory sessionFactory = config.buildSessionFactory(registry);
   private boolean isTest;
+  private Logger logger = Logger.getLogger(this.getClass().getName());
 
     /***
-     * UserServiceImpl is a Singleton class.
+     * UserServiceImpl is a "Singleton" class.
      */
     private UserServiceImpl() { }
 
@@ -57,14 +59,13 @@ public class UserServiceImpl implements UserService {
      * @return this
      */
     public static UserService getInstance() {
-      try{
-        if (System.getProperty("testing").equals("true")){
-          return testingUserService;
-        }
-      } catch (NullPointerException e){
+      if (System.getProperty("testing") == null){
         return accountService;
       }
-      return accountService;
+      else if (System.getProperty("testing").equals("true")){
+        return testingUserService;
+      }
+        return accountService;
     }
 
   /***
@@ -101,7 +102,7 @@ public class UserServiceImpl implements UserService {
           session.save(user);
           session.getTransaction().commit();
         } catch (Exception e){
-            System.out.println(e.getMessage());
+            logger.log(Level.SEVERE,(e.getMessage()));
         } finally{
             session.disconnect();
             session.close();
@@ -115,7 +116,7 @@ public class UserServiceImpl implements UserService {
         session.delete(user);
         session.getTransaction().commit();
       } catch(Exception e){
-        System.out.println(e.getMessage());
+        logger.log(Level.SEVERE,(e.getMessage()));
       } finally{
         session.disconnect();
         session.close();
