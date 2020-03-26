@@ -10,9 +10,10 @@ package com.neu.prattle.websocket;
 import com.neu.prattle.service.UserServiceWithGroups;
 import com.neu.prattle.service.UserServiceWithGroupsImpl;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.concurrent.ConcurrentHashMap;
@@ -32,11 +33,6 @@ import com.neu.prattle.model.BasicGroup;
 
 /**
  * The Class ChatEndpoint.
-<<<<<<< HEAD
- * <p>
-=======
- *
->>>>>>> a36d5801ca418236010d3088db75edd5f7e4cbaa
  * This class handles Messages that arrive on the server.
  */
 @ServerEndpoint(value = "/chat/{username}", decoders = MessageDecoder.class, encoders = MessageEncoder.class)
@@ -55,8 +51,7 @@ public class ChatEndpoint {
   /**
    * The Constant chatEndpoints. ConcurrentHashMap should be thread safe.
    */
-  //private static final Set<ChatEndpoint> chatEndpoints = new CopyOnWriteArraySet<>();
-  private static final ConcurrentHashMap<String, ChatEndpoint> chatEndpoints = new ConcurrentHashMap<>();
+  private static ConcurrentHashMap<String, ChatEndpoint> chatEndpoints = new ConcurrentHashMap<>();
 
   /**
    * The users.
@@ -324,7 +319,7 @@ public class ChatEndpoint {
     StringBuilder usersNotExist = new StringBuilder();
 
     //Build group, add specified members
-    ArrayList<User> add = new ArrayList<>();
+    Set<User> add = new HashSet<>();
     for (int i = 0; i < content.length - 1; i++) {
       add.add(new User(content[i + 1]));
       if (!accountService.findUserByName(content[i + 1]).isPresent()) {

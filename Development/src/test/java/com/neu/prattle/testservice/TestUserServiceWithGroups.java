@@ -8,9 +8,9 @@ import com.neu.prattle.model.BasicGroup;
 import com.neu.prattle.model.User;
 import com.neu.prattle.service.UserServiceWithGroups;
 import com.neu.prattle.service.UserServiceWithGroupsImpl;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 import org.junit.After;
 import org.junit.Before;
@@ -38,9 +38,9 @@ public class TestUserServiceWithGroups {
     newUserService = UserServiceWithGroupsImpl.getInstance();
 
     User testU = new User("TestGroups");
-    List<User> members = new ArrayList<>();
+    Set<User> members = new HashSet<>();
     members.add(testU);
-    List<User> moderators = new ArrayList<>();
+    Set<User> moderators = new HashSet<>();
     moderators.add(testU);
 
     BasicGroup testG = new BasicGroup.GroupBuilder().setName("Test").setMembers(members)
@@ -82,8 +82,8 @@ public class TestUserServiceWithGroups {
   public void testAddGroup(){
     User nU = new User("ThisIsANewUser");
     us.addUser(nU);
-
-    List<User> mems = new ArrayList<>();
+  
+    Set<User> mems = new HashSet<>();
     mems.add(nU);
 
     us.addGroup(BasicGroup.groupBuilder().setName("ThisIsANewGroup").setMembers(mems).build());
@@ -94,8 +94,8 @@ public class TestUserServiceWithGroups {
   public void testAddSecondGroup(){
     User secondTimeWeAreUsingThisUser = new User("ThisIsAnEvenNewerUser");
     us.addUser(secondTimeWeAreUsingThisUser);
-
-    List<User> mems = new ArrayList<>();
+  
+    Set<User> mems = new HashSet<>();
     mems.add(secondTimeWeAreUsingThisUser);
 
     BasicGroup newGroup = BasicGroup.groupBuilder().setName("ThisIsASecondGroup").setMembers(mems).build();

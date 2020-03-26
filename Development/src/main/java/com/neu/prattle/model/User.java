@@ -1,8 +1,8 @@
 package com.neu.prattle.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -39,33 +39,36 @@ public class User {
 	private String name;
 
 	@ManyToMany(mappedBy = "members")
-  private List<BasicGroup> groups = new ArrayList<>();
+  private Set<BasicGroup> groups;
 
   @ManyToMany(mappedBy = "moderators")
-  private List<BasicGroup> moderatorFor = new ArrayList<>();
+  private Set<BasicGroup> moderatorFor;
 	
 	public User() {
-
+    groups = new HashSet<>();
+    moderatorFor = new HashSet<>();
 	}
 
-    public User(String name) {
-        this.name = name;
-    }
-
-    /***
-     * Returns the hashCode of this object.
-     *
-     * As name can be treated as a sort of identifier for
-     * this instance, we can use the hashCode of "name"
-     * for the complete object.
-     *
-     *
-     * @return hashCode of "this"
-     */
-    @Override
-    public int hashCode() {
-        return Objects.hash(name);
-    }
+	public User(String name) {
+	  this.name = name;
+    groups = new HashSet<>();
+    moderatorFor = new HashSet<>();
+	}
+  
+  /***
+   * Returns the hashCode of this object.
+   *
+   * As name can be treated as a sort of identifier for
+   * this instance, we can use the hashCode of "name"
+   * for the complete object.
+   *
+   *
+   * @return hashCode of "this"
+   */
+  @Override
+  public int hashCode() {
+    return Objects.hash(name);
+  }
 
   /***
    * Makes comparison between two user accounts.
@@ -84,19 +87,19 @@ public class User {
     return user.name.equals(this.name);
   }
   
-  public List<BasicGroup> getGroups() {
+  public Set<BasicGroup> getGroups() {
     return groups;
   }
   
-  public void setGroups(List<BasicGroup> groups) {
+  public void setGroups(Set<BasicGroup> groups) {
     this.groups = groups;
   }
   
-  public List<BasicGroup> getModeratorFor() {
+  public Set<BasicGroup> getModeratorFor() {
     return moderatorFor;
   }
   
-  public void setModeratorFor(List<BasicGroup> moderatorFor) {
+  public void setModeratorFor(Set<BasicGroup> moderatorFor) {
     this.moderatorFor = moderatorFor;
   }
 }
