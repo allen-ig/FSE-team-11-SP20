@@ -21,8 +21,8 @@ public class TestFriendService {
 
     private FriendService friendService;
     private UserService userService;
-    private User test1;
-    private User test2;
+//    private User test1;
+//    private User test2;
 
     @Before
     public void setUp() {
@@ -30,8 +30,6 @@ public class TestFriendService {
         friendService = FriendServiceImpl.getInstance();
         userService = UserServiceImpl.getInstance();
         assertTrue(friendService.isTest());
-        test1 = new User("test1");
-        test2 = new User("test2");
     }
 
     @After
@@ -43,8 +41,8 @@ public class TestFriendService {
 
     @Test
     public void testSendFriendRequest(){
-        userService.addUser(test1);
-        userService.addUser(test2);
+//        userService.addUser(test1);
+//        userService.addUser(test2);
         User test1 = userService.findUserByName("test1").get();
         User test2 = userService.findUserByName("test2").get();
         Friend friend = new Friend(test1, test2);
