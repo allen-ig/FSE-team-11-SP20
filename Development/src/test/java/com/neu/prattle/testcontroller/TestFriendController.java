@@ -78,14 +78,4 @@ public class TestFriendController {
     public void testFindAllFriends(){
         friendController.findAllFriends(test1.getName());
     }
-
-    @Test
-    public void testRespondToFriendRequest(){
-        User test3 = new User("test3");
-        Friend friend = new Friend(test1, test3);
-        friendController.sendFriendRequest(friend);
-        Response response = friendController.respondToFriendRequest(test1.getName(), test3.getName(), "approve");
-        assertEquals(response.getStatus(), Response.status(404).build().getStatus());
-        friendService.deleteFriend(friend);
-    }
 }

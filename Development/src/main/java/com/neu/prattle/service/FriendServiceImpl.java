@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class FriendServiceImpl implements FriendService{
 
@@ -23,6 +25,8 @@ public class FriendServiceImpl implements FriendService{
     private ServiceRegistry registry = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
     private SessionFactory sessionFactory = config.buildSessionFactory(registry);
     private boolean isTest;
+
+    private Logger logger = Logger.getLogger(this.getClass().getName());
 
     private FriendServiceImpl() { }
 
@@ -67,7 +71,7 @@ public class FriendServiceImpl implements FriendService{
             session.save(friend);
             session.getTransaction().commit();
         }catch (Exception e){
-            e.printStackTrace();
+            logger.log(Level.SEVERE, e.getMessage());
         }finally {
             session.disconnect();
             session.close();
@@ -87,7 +91,7 @@ public class FriendServiceImpl implements FriendService{
             friend.setStatus(isApproved ? "APPROVED" : "DENIED");
             session.getTransaction().commit();
         }catch (Exception e){
-            e.printStackTrace();
+            logger.log(Level.SEVERE, e.getMessage());
         }finally {
             session.disconnect();
             session.close();
@@ -123,10 +127,10 @@ public class FriendServiceImpl implements FriendService{
         query.setParameter("sender", sender);
         query.setParameter("recipient", recipient);
         try{
+            System.out.println(findAllFriends(sender.getName()));
             Friend friend = (Friend) query.getSingleResult();
             return Optional.of(friend);
-        }catch (Exception e){
-            e.printStackTrace();
+        }catch (NoResultException e){
             return Optional.empty();
         }finally {
             session.disconnect();
@@ -141,7 +145,7 @@ public class FriendServiceImpl implements FriendService{
         try{
             session.delete(friend);
         }catch (Exception e){
-            e.printStackTrace();
+            logger.log(Level.SEVERE, e.getMessage());
         }finally {
             session.disconnect();
             session.close();
