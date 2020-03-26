@@ -34,10 +34,10 @@ public class User {
   @Column(name = "name", unique = true)
 	private String name;
 
-	@OneToMany(mappedBy = "sender")
+	@OneToMany(mappedBy = "sender", cascade = CascadeType.REMOVE)
     private List<Friend> friendList = new ArrayList<>();
 
-	@OneToMany(mappedBy = "recipient")
+	@OneToMany(mappedBy = "recipient", cascade = CascadeType.REMOVE)
     private List<Friend> friendByList = new ArrayList<>();
 
     public List<Friend> getFriendList() {

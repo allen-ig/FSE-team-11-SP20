@@ -5,8 +5,9 @@ import com.neu.prattle.model.User;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import java.util.Objects;
+
+import static org.junit.Assert.*;
 
 public class FriendTest {
 
@@ -76,4 +77,27 @@ public class FriendTest {
         assertEquals("APPROVED", friend.getStatus());
     }
 
+    @Test
+    public void testHashCode(){
+        Friend friend = new Friend(new User("test1"), new User("test2"));
+        assertEquals(Objects.hash("test1", "test2"), friend.hashCode());
+    }
+
+    @Test
+    public void testEqualsTrue(){
+        User test1 = new User("test1");
+        User test2 = new User("test2");
+        Friend friend1 = new Friend(test1, test2);
+        Friend friend2 = new Friend(test1, test2);
+        assertTrue(friend1.equals(friend2));
+    }
+
+    @Test
+    public void testEqualsFalse(){
+        User test1 = new User("test1");
+        User test2 = new User("test2");
+        Friend friend1 = new Friend(test1, test2);
+        Friend friend2 = new Friend(test2, test1);
+        assertFalse(friend1.equals(friend2));
+    }
 }

@@ -18,7 +18,7 @@ import javax.ws.rs.core.Response;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-@FixMethodOrder(MethodSorters.JVM)
+
 public class TestFriendController {
     private FriendService friendService;
     private UserService userService;
@@ -50,22 +50,28 @@ public class TestFriendController {
 
     @Test
     public void testSendFriendRequest(){
-        Response response = friendController.sendFriendRequest(new Friend(test1, test2));
+        Friend friend = new Friend(test1, test2);
+        Response response = friendController.sendFriendRequest(friend);
         assertEquals(response.getStatus(), Response.status(200).build().getStatus());
+        friendService.deleteFriend(friend);
     }
 
     @Test
     public void testApproveFriendRequest(){
-        friendController.sendFriendRequest(new Friend(test1, test2));
+        Friend friend = new Friend(test1, test2);
+        friendController.sendFriendRequest(friend);
         Response response = friendController.respondToFriendRequest(test1.getName(), test2.getName(), "approve");
         assertEquals(response.getStatus(), Response.status(200).build().getStatus());
+        friendService.deleteFriend(friend);
     }
 
     @Test
     public void testDenyFriendRequest(){
-        friendController.sendFriendRequest(new Friend(test1, test2));
+        Friend friend = new Friend(test1, test2);
+        friendController.sendFriendRequest(friend);
         Response response = friendController.respondToFriendRequest(test1.getName(), test2.getName(), "deny");
         assertEquals(response.getStatus(), Response.status(200).build().getStatus());
+        friendService.deleteFriend(friend);
     }
 
     @Test
@@ -76,8 +82,10 @@ public class TestFriendController {
     @Test
     public void testRespondToFriendRequest(){
         User test3 = new User("test3");
-        friendController.sendFriendRequest(new Friend(test1, test3));
+        Friend friend = new Friend(test1, test3);
+        friendController.sendFriendRequest(friend);
         Response response = friendController.respondToFriendRequest(test1.getName(), test3.getName(), "approve");
         assertEquals(response.getStatus(), Response.status(404).build().getStatus());
+        friendService.deleteFriend(friend);
     }
 }

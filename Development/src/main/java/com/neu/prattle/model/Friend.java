@@ -2,6 +2,7 @@ package com.neu.prattle.model;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Objects;
 
 @Entity
 @Table(name = "friend")
@@ -59,4 +60,17 @@ public class Friend {
         return recipient;
     }
 
+    @Override
+    public int hashCode(){
+        return Objects.hash(sender.getName(), recipient.getName());
+    }
+
+    @Override
+    public boolean equals(Object obj){
+        if (!(obj instanceof Friend))
+            return false;
+
+        Friend friend = (Friend) obj;
+        return friend.getSender().getName().equals(this.sender.getName()) && friend.getRecipient().getName().equals(this.recipient.getName());
+    }
 }

@@ -1,5 +1,6 @@
 package com.neu.prattle.controller;
 
+import com.neu.prattle.exceptions.FriendAlreadyPresentException;
 import com.neu.prattle.model.Friend;
 import com.neu.prattle.model.User;
 import com.neu.prattle.service.FriendService;
@@ -29,7 +30,11 @@ public class FriendController {
     @Path("/create")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response sendFriendRequest(Friend friend){
-        friendService.sendFriendRequest(friend);
+        try {
+            friendService.sendFriendRequest(friend);
+        }catch (FriendAlreadyPresentException e){
+            return Response.status(409).build();
+        }
         return Response.ok().build();
     }
 

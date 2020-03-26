@@ -1,5 +1,7 @@
 package com.neu.prattle.service;
 
+import com.neu.prattle.exceptions.FriendAlreadyPresentException;
+import com.neu.prattle.exceptions.UserAlreadyPresentException;
 import com.neu.prattle.model.Friend;
 import com.neu.prattle.model.User;
 import org.hibernate.Session;
@@ -12,6 +14,7 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 public class FriendServiceImpl implements FriendService{
 
@@ -52,7 +55,12 @@ public class FriendServiceImpl implements FriendService{
         return friendService;
     }
     @Override
-    public void sendFriendRequest(Friend friend) {
+    public synchronized void sendFriendRequest(Friend friend) {
+        if (findFriendByUsers(friend.getSender(), friend.getRecipient()).isPresent()){
+            throw new FriendAlreadyPresentException(
+                    String.format("Friend relationship between %s and %s already present!",
+                            friend.getSender().getName(), friend.getRecipient().getName()));
+        }
         Session session = sessionFactory.openSession();
         session.beginTransaction();
         try{
@@ -67,7 +75,7 @@ public class FriendServiceImpl implements FriendService{
     }
 
     @Override
-    public void approveFriendRequest(User sender, User recipient, boolean isApproved) {
+    public synchronized void approveFriendRequest(User sender, User recipient, boolean isApproved) {
         Session session = sessionFactory.openSession();
         session.beginTransaction();
         String strQuery = "SELECT f FROM Friend f WHERE f.sender=:sender AND f.recipient=:recipient";
@@ -104,6 +112,40 @@ public class FriendServiceImpl implements FriendService{
             session.close();
         }
         return friends;
+    }
+
+    @Override
+    public Optional<Friend> findFriendByUsers(User sender, User recipient){
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+        String strQuery = "SELECT f FROM Friend f WHERE f.sender = :sender AND f.recipient = :recipient";
+        Query query = session.createQuery(strQuery);
+        query.setParameter("sender", sender);
+        query.setParameter("recipient", recipient);
+        try{
+            Friend friend = (Friend) query.getSingleResult();
+            return Optional.of(friend);
+        }catch (Exception e){
+            e.printStackTrace();
+            return Optional.empty();
+        }finally {
+            session.disconnect();
+            session.close();
+        }
+    }
+
+    @Override
+    public synchronized void deleteFriend(Friend friend){
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+        try{
+            session.delete(friend);
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            session.disconnect();
+            session.close();
+        }
     }
 
     @Override
