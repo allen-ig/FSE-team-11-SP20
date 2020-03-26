@@ -38,6 +38,6 @@ public interface MessageService {
    */
   boolean isTest();
 
-  List<Message> getUserMessages();
+  List<Message> getUserMessages(String username);
 
 }

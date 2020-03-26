@@ -7,9 +7,12 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.query.Query;
 import org.hibernate.service.ServiceRegistry;
 
 import java.util.List;
+
+import javax.persistence.NoResultException;
 
 public class MessageServiceImpl implements MessageService {
 
@@ -81,7 +84,14 @@ public class MessageServiceImpl implements MessageService {
   }
 
   @Override
-  public List<Message> getUserMessages() {
-    return null;
+  public List<Message> getUserMessages(String username) {
+    List<Message> userMessages;
+    Session session = sessionFactory.openSession();
+    session.beginTransaction();
+    String strQuery = "SELECT m FROM Message m  WHERE m.toUser = :username";
+    Query query = session.createQuery(strQuery);
+    query.setParameter("username", username);
+    userMessages = query.getResultList();
+    return userMessages;
   }
 }
