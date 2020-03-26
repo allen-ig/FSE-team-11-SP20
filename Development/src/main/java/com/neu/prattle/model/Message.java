@@ -82,6 +82,24 @@ public class Message {
         return new MessageBuilder();
     }
 
+    @Override
+    public boolean equals(Object o){
+        if (o == this){
+            return true;
+        }
+        if (!(o instanceof Message)) {
+            return false;
+        }
+        Message message = (Message)o;
+        long diff = Math.abs(this.getTimestamp().getTime() - message.getTimestamp().getTime());
+        return (
+                (this.getTo().equals(message.getTo())) &&
+                        (this.getFrom().equals(message.getFrom())) &&
+                        (diff<5000)
+
+                );
+    }
+
     /***
      * A Builder helper class to create instances of {@link Message}
      */
