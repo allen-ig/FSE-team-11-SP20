@@ -42,4 +42,17 @@ public class GroupController {
 
     return Response.ok().build();
   }
+  
+  @POST
+  @Path("/add/users")
+  @Consumes(MediaType.APPLICATION_JSON)
+  public Response addNewMembers(BasicGroup group) {
+    try {
+      accountService.addMembersToGroup(group);
+    } catch (GroupAlreadyPresentException e) {
+      return Response.status(409).build();
+    }
+    
+    return Response.ok().build();
+  }
 }
