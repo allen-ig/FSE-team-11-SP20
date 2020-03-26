@@ -12,7 +12,7 @@ function connect() {
     var log = document.getElementById("log");
         console.log(event.data);
         var message = JSON.parse(event.data);
-        log.innerHTML += message.from + " : " + message.content + "\n";
+        log.innerHTML += message.from + " : " + message.content + " at " + message.timestamp +"\n";
     };
 }
 

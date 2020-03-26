@@ -9,6 +9,7 @@ package com.neu.prattle.websocket;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -96,6 +97,10 @@ public class ChatEndpoint {
         addEndpoint(session, username);
         Message message = createConnectedMessage(username);
         broadcast(message);
+      List<Message> userMessages = messageService.getUserMessages(username);
+      for (Message m : userMessages){
+        sendMessage(m);
+      }
     }
 
     /**
