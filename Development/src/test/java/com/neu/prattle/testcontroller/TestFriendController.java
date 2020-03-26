@@ -16,8 +16,9 @@ import org.junit.runners.MethodSorters;
 
 import javax.ws.rs.core.Response;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-
+@FixMethodOrder(MethodSorters.JVM)
 public class TestFriendController {
     private FriendService friendService;
     private UserService userService;
@@ -47,23 +48,36 @@ public class TestFriendController {
 
     @Test
     public void testSendFriendRequest(){
-        friendController.sendFriendRequest(new Friend(test1, test2));
+        userService.addUser(test1);
+        userService.addUser(test2);
+        Response response = friendController.sendFriendRequest(new Friend(test1, test2));
+        assertEquals(response.getStatus(), Response.status(200).build().getStatus());
     }
 
     @Test
     public void testApproveFriendRequest(){
         friendController.sendFriendRequest(new Friend(test1, test2));
-        friendController.respondToFriendRequest(test1.getName(), test2.getName(), "approve");
+        Response response = friendController.respondToFriendRequest(test1.getName(), test2.getName(), "approve");
+        assertEquals(response.getStatus(), Response.status(200).build().getStatus());
     }
 
     @Test
     public void testDenyFriendRequest(){
         friendController.sendFriendRequest(new Friend(test1, test2));
-        friendController.respondToFriendRequest(test1.getName(), test2.getName(), "deny");
+        Response response = friendController.respondToFriendRequest(test1.getName(), test2.getName(), "deny");
+        assertEquals(response.getStatus(), Response.status(200).build().getStatus());
     }
 
     @Test
     public void testFindAllFriends(){
         friendController.findAllFriends(test1.getName());
+    }
+
+    @Test
+    public void testRespondToFriendRequest(){
+        User test3 = new User("test3");
+        friendController.sendFriendRequest(new Friend(test1, test3));
+        Response response = friendController.respondToFriendRequest(test1.getName(), test3.getName(), "approve");
+        assertEquals(response.getStatus(), Response.status(404).build().getStatus());
     }
 }
