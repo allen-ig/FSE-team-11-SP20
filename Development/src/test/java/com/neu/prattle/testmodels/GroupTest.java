@@ -3,7 +3,7 @@ package com.neu.prattle.testmodels;
 import com.neu.prattle.model.BasicGroup;
 import com.neu.prattle.model.User;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,7 +12,7 @@ import static org.junit.Assert.*;
 
 public class GroupTest {
 
-  BasicGroup.GroupBuilder builder;
+  private BasicGroup.GroupBuilder builder;
 
   @Before
   public void setUp() {
@@ -27,58 +27,65 @@ public class GroupTest {
 
   @Test
   public void testSetMembers() {
-
-    ArrayList<User> users= new ArrayList<>();
-    users.add(new User("user1"));
-    users.add(new User("user2"));
+    List<User> users= new ArrayList<>();
+    
+    User user1 = new User("user1");
+    User user2 = new User("user2");
+    users.add(user1);
+    users.add(user2);
 
     assertEquals(0, builder.build().getMembers().size());
 
     builder.setMembers(users);
 
-    ArrayList<String> expected = new ArrayList<>();
-    expected.add("user1");
-    expected.add("user2");
+    List<User> expected = new ArrayList<>();
+    expected.add(user1);
+    expected.add(user2);
 
     assertTrue(builder.build().getMembers().contains(expected.get(0)));
     assertTrue(builder.build().getMembers().contains(expected.get(1)));
-    assertFalse(builder.build().getMembers().contains("this shouldnt be here"));
+    assertFalse(builder.build().getMembers().contains(new User("user3")));
   }
 
   @Test
   public void hasMember() {
-    ArrayList<User> users= new ArrayList<>();
-    users.add(new User("user1"));
-    users.add(new User("user2"));
+    List<User> users= new ArrayList<>();
+    User user1 = new User("user1");
+    User user2 = new User("user2");
+    users.add(user1);
+    users.add(user2);
+    
     builder.setMembers(users);
 
-    assertTrue(builder.build().hasMember(new User("user1")));
+    assertTrue(builder.build().hasMember(user1));
     assertFalse(builder.build().hasMember(new User("thisUserIsNew")));
   }
 
   @Test
   public void testSetModerators() {
-    ArrayList<User> users= new ArrayList<>();
-    users.add(new User("user1"));
-    users.add(new User("user2"));
-
+    List<User> users= new ArrayList<>();
+    User user1 = new User("user1");
+    User user2 = new User("user2");
+    users.add(user1);
+    users.add(user2);
+    
     assertEquals(0, builder.build().getModerators().size());
 
     builder.setModerators(users);
 
-    ArrayList<String> expected = new ArrayList<>();
-    expected.add("user1");
-    expected.add("user2");
+    ArrayList<User> expected = new ArrayList<>();
+    expected.add(user1);
+    expected.add(user2);
     assertTrue(builder.build().getModerators().contains(expected.get(0)));
     assertTrue(builder.build().getModerators().contains(expected.get(1)));
-    assertFalse(builder.build().getModerators().contains("this shouldnt be here"));
+    assertFalse(builder.build().getModerators().contains(new User("User not present")));
   }
 
   @Test
   public void testHasModerator() {
-    ArrayList<User> users= new ArrayList<>();
+    List<User> users= new ArrayList<>();
     users.add(new User("user1"));
-    users.add(new User("user2"));
+    users.add(new User("`user2"));
     builder.setModerators(users);
 
     assertTrue(builder.build().hasModerator(new User("user1")));
@@ -87,7 +94,7 @@ public class GroupTest {
 
   @Test
   public void testSize() {
-    ArrayList<User> users= new ArrayList<>();
+    List<User> users= new ArrayList<>();
     users.add(new User("user1"));
     users.add(new User("user2"));
 
@@ -134,7 +141,7 @@ public class GroupTest {
 
   @Test
   public void testCopy() {
-    ArrayList<User> users= new ArrayList<>();
+    List<User> users= new ArrayList<>();
     users.add(new User("user1"));
     users.add(new User("user2"));
     BasicGroup group1 = builder.setName("group1").setMembers(users).setModerators(users).build();

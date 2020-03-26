@@ -1,12 +1,10 @@
 package com.neu.prattle.model;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -39,31 +37,29 @@ public class BasicGroup {
   @Column(name = "name", unique = true)
   private String name;
   /**
-   * Hashset of User for the members of the group.
+   * ArrayList of User for the members of the group.
    */
-  @ManyToMany
+  @ManyToMany(cascade = {CascadeType.ALL})
   @JoinTable(
     name = "user_group",
-    joinColumns = {@JoinColumn(name = "group_id")},
+    joinColumns = {@JoinColumn(name = "group_id"), },
     inverseJoinColumns = {@JoinColumn(name = "user_id")}
   )
-  private Set<User> members;
+  private List<User> members = new ArrayList<>();
 
   /**
    * Moderators of the group.
    */
-  @ManyToMany
+  @ManyToMany(cascade = {CascadeType.ALL})
   @JoinTable(
     name = "moderator_group",
     joinColumns = {@JoinColumn(name = "group_id")},
     inverseJoinColumns = {@JoinColumn(name = "user_id")}
   )
-  private Set<User> moderators;
+  private List<User> moderators = new ArrayList<>();
 
   private BasicGroup () {
     name = "not set";
-    members = new HashSet<>();
-    moderators = new HashSet<>();
   }
   
   public String getName() {
@@ -79,40 +75,26 @@ public class BasicGroup {
   public boolean hasMember(User user) {
     return members.contains(user);
   }
-
-
-  public List<String> getMembers() {
-    ArrayList<String> names = new ArrayList<>();
-    for (User m : members) {
-      names.add(m.getName());
-    }
-    return names;
+  
+  public void setMembers(List<User> members) {
+    this.members = members;
   }
-
-
-  public void setMembers(Collection<User> newMembers) {
-    members.addAll(newMembers);
+  
+  public void setModerators(List<User> moderators) {
+    this.moderators = moderators;
   }
-
-
+  
+  public List<User> getMembers() {
+    return members;
+  }
+  
+  public List<User> getModerators() {
+    return moderators;
+  }
+  
   public boolean hasModerator(User user) {
     return moderators.contains(user);
   }
-
-
-  public List<String> getModerators() {
-    ArrayList<String> names = new ArrayList<>();
-    for (User m : moderators) {
-      names.add(m.getName());
-    }
-    return names;
-  }
-
-
-  public void setModerators(Collection<User> mods) {
-    moderators.addAll(mods);
-  }
-
 
   public int size() {
     return members.size();
@@ -156,12 +138,12 @@ public class BasicGroup {
       return this;
     }
 
-    public GroupBuilder setModerators(Collection<User> users) {
+    public GroupBuilder setModerators(List<User> users) {
       group.setModerators(users);
       return this;
     }
 
-    public GroupBuilder setMembers(Collection<User> users) {
+    public GroupBuilder setMembers(List<User> users) {
       group.setMembers(users);
       return this;
     }
