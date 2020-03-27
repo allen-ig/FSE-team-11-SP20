@@ -302,17 +302,4 @@ public class GroupController {
     // !!! Issue - no way to send a message to everyone except from JS or calling ChatEncPoint
     return Response.ok().entity(message.toString()).build();
   }
-
-  @POST
-  @Path("/add/users")
-  @Consumes(MediaType.APPLICATION_JSON)
-  public Response addNewMembers(BasicGroup group) {
-    try {
-      accountService.addMembersToGroup(group);
-    } catch (GroupAlreadyPresentException e) {
-      return Response.status(409).build();
-    }
-    
-    return Response.ok().build();
-  }
 }

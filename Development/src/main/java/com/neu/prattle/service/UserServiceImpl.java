@@ -83,7 +83,7 @@ public class UserServiceImpl implements UserService {
   public Optional<User> findUserByName(String name) {
     Session session = sessionFactory.openSession();
     session.beginTransaction();
-    String strQuery = "SELECT u FROM User u  WHERE u.name = :name";
+    String strQuery = "SELECT u FROM User u WHERE u.name = :name";
     Query query = session.createQuery(strQuery);
     query.setParameter("name", name);
     try {

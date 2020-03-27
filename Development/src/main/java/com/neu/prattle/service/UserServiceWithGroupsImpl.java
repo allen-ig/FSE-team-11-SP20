@@ -91,7 +91,7 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
   }
   
   private Object findUserByNameQuery(String name, Session session) {
-    String strQuery = "SELECT u FROM User u  WHERE u.name = :name";
+    String strQuery = "SELECT u FROM User u WHERE u.name = :name";
     Query query = session.createQuery(strQuery);
     query.setParameter("name", name);
     
@@ -414,8 +414,8 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
     }
   }
   
-  @Override
-  public void addMembersToGroup(BasicGroup group) {
+  // delete later
+  private void addMembersToGroup(BasicGroup group) {
     Session session = sessionFactory.openSession();
     session.beginTransaction();
     
