@@ -260,12 +260,15 @@ public class ChatEndpoint {
     //get groups
     String[] instructions = message.getTo().trim().split(" ");
 
+    //user already registered to send messages
+    User sender = accountService.findUserByName(message.getFrom()).get();
+
     //if group is found, sentMessage to all members
     if (instructions.length > 1) {
       for (int i = 0; i < instructions.length - 1; i++) {
         Optional<BasicGroup> group = accountService
             .findGroupByName(message.getFrom(), instructions[i + 1]);
-        if (group.isPresent()) {
+        if (group.isPresent() && group.get().getMembers().contains(sender)) {
           for (User mem : group.get().getMembers()) {
             Message m = Message.messageBuilder().setFrom(group.get().getName() + ": " + message.getFrom()).setTo(mem.getName()).setMessageContent(message.getContent()).build();
             if (chatEndpoints.containsKey(mem.getName())) {
