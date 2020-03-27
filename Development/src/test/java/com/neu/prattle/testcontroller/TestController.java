@@ -17,6 +17,12 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.codehaus.jackson.map.util.JSONPObject;
 import org.junit.*;
 import org.junit.runners.MethodSorters;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+import javax.ws.rs.core.Response;
 
 import static org.junit.Assert.assertTrue;
 
@@ -63,3 +69,4 @@ public class TestController {
     Assert.assertEquals(response.getStatus(), Response.status(404).build().getStatus());
   }
 }
+
