@@ -4,8 +4,8 @@ import com.neu.prattle.exceptions.GroupAlreadyPresentException;
 import com.neu.prattle.exceptions.GroupDeletedException;
 import com.neu.prattle.exceptions.SenderNotAuthorizedException;
 import com.neu.prattle.exceptions.UserAlreadyPresentException;
+import com.neu.prattle.main.HibernateUtil;
 import com.neu.prattle.model.BasicGroup;
-import com.neu.prattle.model.Friend;
 import com.neu.prattle.model.User;
 
 import java.util.HashSet;
@@ -17,19 +17,12 @@ import java.util.logging.Logger;
 import javax.persistence.NoResultException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.hibernate.cfg.Configuration;
 import org.hibernate.query.Query;
-import org.hibernate.service.ServiceRegistry;
 
 public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
   
   private Logger logger = Logger.getLogger(this.getClass().getName());
-  
-  private Configuration config = new Configuration().configure("hibernate.cfg.xml")
-    .addAnnotatedClass(User.class).addAnnotatedClass(BasicGroup.class).addAnnotatedClass(Friend.class);
-  private ServiceRegistry registry = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
-  private SessionFactory sessionFactory = config.buildSessionFactory(registry);
+  private SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
   private boolean isTest;
   
   /***
@@ -47,11 +40,8 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
   
   static {
     testingUserService = new UserServiceWithGroupsImpl();
-    Configuration testingConfig = new Configuration().configure("testing-hibernate.cfg.xml").addAnnotatedClass(User.class).addAnnotatedClass(BasicGroup.class).addAnnotatedClass(Friend.class);
-    testingUserService.config = testingConfig;
-    ServiceRegistry testingRegistry = new StandardServiceRegistryBuilder().applySettings(testingConfig.getProperties()).build();
-    testingUserService.registry = testingRegistry;
-    testingUserService.sessionFactory = testingConfig.buildSessionFactory(testingRegistry);
+    testingUserService.sessionFactory =
+        HibernateUtil.getTestSessionFactory();
     testingUserService.isTest = true;
   }
   
