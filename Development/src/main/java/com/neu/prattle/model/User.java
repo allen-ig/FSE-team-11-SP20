@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -38,10 +39,10 @@ public class User {
   @Column(name = "name", unique = true)
 	private String name;
 
-	@ManyToMany(mappedBy = "members")
+	@ManyToMany(mappedBy = "members", cascade = {CascadeType.ALL})
   private Set<BasicGroup> groups;
 
-  @ManyToMany(mappedBy = "moderators")
+  @ManyToMany(mappedBy = "moderators", cascade = {CascadeType.ALL})
   private Set<BasicGroup> moderatorFor;
 	
 	public User() {
