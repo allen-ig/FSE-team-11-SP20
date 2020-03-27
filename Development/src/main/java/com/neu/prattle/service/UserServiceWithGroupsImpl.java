@@ -139,6 +139,10 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
     
     for(User moderator : group.getModerators()) {
       moderator.getModeratorFor().add(group);
+      if(!group.getMembers().contains(moderator)) {
+        group.getMembers().add(moderator);
+        moderator.getGroups().add(group);
+      }
     }
     
     try {
