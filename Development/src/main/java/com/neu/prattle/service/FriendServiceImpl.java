@@ -33,6 +33,8 @@ public class FriendServiceImpl implements FriendService{
 
     private static FriendServiceImpl friendService;
     private static FriendServiceImpl testingFriendService;
+    
+    
     static {
         friendService = new FriendServiceImpl();
         friendService.isTest = false;
@@ -41,14 +43,14 @@ public class FriendServiceImpl implements FriendService{
     static {
         testingFriendService = new FriendServiceImpl();
         Configuration testingConfig = new Configuration().configure("testing-hibernate.cfg.xml")
-                .addAnnotatedClass(User.class).addAnnotatedClass(Friend.class);
+                .addAnnotatedClass(User.class).addAnnotatedClass(Friend.class).addAnnotatedClass(BasicGroup.class);
         testingFriendService.config = testingConfig;
         ServiceRegistry testingRegistry = new StandardServiceRegistryBuilder().applySettings(testingConfig.getProperties()).build();
         testingFriendService.registry = testingRegistry;
         testingFriendService.sessionFactory = testingConfig.buildSessionFactory(testingRegistry);
         testingFriendService.isTest = true;
     }
-
+    
     public static FriendService getInstance() {
         try{
             if (System.getProperty("testing").equals("true")){

@@ -5,6 +5,7 @@ import com.neu.prattle.exceptions.GroupDeletedException;
 import com.neu.prattle.exceptions.SenderNotAuthorizedException;
 import com.neu.prattle.exceptions.UserAlreadyPresentException;
 import com.neu.prattle.model.BasicGroup;
+import com.neu.prattle.model.Friend;
 import com.neu.prattle.model.User;
 
 import java.util.HashSet;
@@ -26,7 +27,7 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
   private Logger logger = Logger.getLogger(this.getClass().getName());
   
   private Configuration config = new Configuration().configure("hibernate.cfg.xml")
-    .addAnnotatedClass(User.class).addAnnotatedClass(BasicGroup.class);
+    .addAnnotatedClass(User.class).addAnnotatedClass(BasicGroup.class).addAnnotatedClass(Friend.class);
   private ServiceRegistry registry = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
   private SessionFactory sessionFactory = config.buildSessionFactory(registry);
   private boolean isTest;
@@ -46,7 +47,7 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
   
   static {
     testingUserService = new UserServiceWithGroupsImpl();
-    Configuration testingConfig = new Configuration().configure("testing-hibernate.cfg.xml").addAnnotatedClass(User.class).addAnnotatedClass(BasicGroup.class);
+    Configuration testingConfig = new Configuration().configure("testing-hibernate.cfg.xml").addAnnotatedClass(User.class).addAnnotatedClass(BasicGroup.class).addAnnotatedClass(Friend.class);
     testingUserService.config = testingConfig;
     ServiceRegistry testingRegistry = new StandardServiceRegistryBuilder().applySettings(testingConfig.getProperties()).build();
     testingUserService.registry = testingRegistry;
