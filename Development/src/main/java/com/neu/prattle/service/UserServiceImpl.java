@@ -1,6 +1,7 @@
 package com.neu.prattle.service;
 
 import com.neu.prattle.exceptions.UserAlreadyPresentException;
+import com.neu.prattle.model.Friend;
 import com.neu.prattle.model.User;
 
 import java.util.Optional;
@@ -8,6 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.persistence.NoResultException;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
@@ -26,7 +28,8 @@ import org.hibernate.query.Query;
  */
 public class UserServiceImpl implements UserService {
 
-  private Configuration config = new Configuration().configure("hibernate.cfg.xml").addAnnotatedClass(User.class);
+  private Configuration config = new Configuration().configure("hibernate.cfg.xml")
+          .addAnnotatedClass(User.class).addAnnotatedClass(Friend.class);
   private ServiceRegistry registry = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
   private SessionFactory sessionFactory = config.buildSessionFactory(registry);
   private boolean isTest;
@@ -46,7 +49,8 @@ public class UserServiceImpl implements UserService {
 
     static {
       testingUserService = new UserServiceImpl();
-      Configuration testingConfig = new Configuration().configure("testing-hibernate.cfg.xml").addAnnotatedClass(User.class);
+      Configuration testingConfig = new Configuration().configure("testing-hibernate.cfg.xml")
+              .addAnnotatedClass(User.class).addAnnotatedClass(Friend.class);
       testingUserService.config = testingConfig;
       ServiceRegistry testingRegistry = new StandardServiceRegistryBuilder().applySettings(testingConfig.getProperties()).build();
       testingUserService.registry = testingRegistry;

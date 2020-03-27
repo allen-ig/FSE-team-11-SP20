@@ -59,6 +59,6 @@ public class TestSimple {
 
 	@Test
 	public void prattleApplicationTest() {
-		assertEquals(1, prattleApplication.getClasses().size());
+		assertEquals(2, prattleApplication.getClasses().size());
 	}
 }

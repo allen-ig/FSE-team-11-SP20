@@ -1,0 +1,75 @@
+package com.neu.prattle.controller;
+
+import com.neu.prattle.exceptions.FriendAlreadyPresentException;
+import com.neu.prattle.model.Friend;
+import com.neu.prattle.model.User;
+import com.neu.prattle.service.FriendService;
+import com.neu.prattle.service.FriendServiceImpl;
+import com.neu.prattle.service.UserService;
+import com.neu.prattle.service.UserServiceImpl;
+import org.codehaus.jackson.map.ObjectMapper;
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+@Path(value = "/friend")
+public class FriendController {
+
+    private FriendService friendService = FriendServiceImpl.getInstance();
+    private UserService userService = UserServiceImpl.getInstance();
+
+    private static Logger logger = Logger.getLogger(FriendController.class.getName());
+
+    @POST
+    @Path("/create")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response sendFriendRequest(Friend friend){
+        try {
+            friendService.sendFriendRequest(friend);
+        }catch (FriendAlreadyPresentException e){
+            return Response.status(409).build();
+        }
+        return Response.ok().build();
+    }
+
+    @GET
+    @Path("/{username}/friends")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response findAllFriends(@PathParam("username") String username){
+        Collection<Friend> friendList = friendService.findAllFriends(username);
+
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonString = "";
+        try {
+            jsonString = mapper.writeValueAsString(friendList);
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, e.getMessage());
+        }
+        return Response.ok().type(MediaType.APPLICATION_JSON).entity(jsonString).build();
+    }
+
+    @PATCH
+    @Path("/{sender}/{recipient}/{isApproved}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response respondToFriendRequest(
+            @PathParam("sender") String sender,
+            @PathParam("recipient") String recipient,
+            @PathParam("isApproved") String isApproved){
+        Optional<User> senderOp = userService.findUserByName(sender);
+        Optional<User> recipientOp = userService.findUserByName(recipient);
+        StringBuilder message = new StringBuilder();
+        if (senderOp.isPresent() && recipientOp.isPresent()){
+            friendService.approveFriendRequest(senderOp.get(), recipientOp.get(), isApproved.equals("approve"));
+            return Response.ok().build();
+        }
+        if (!senderOp.isPresent()) message.append("Could not find sender!\n");
+        if (!recipientOp.isPresent()) message.append("Could not find recipient!");
+        return Response.status(404).entity(message.toString()).build();
+    }
+}

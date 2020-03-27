@@ -228,7 +228,7 @@ public class ChatEndpoint {
         try{
             recipientEndpoint.session.getBasicRemote()
                     .sendObject(message);
-            senderEndpoint.session.getBasicRemote()
+            if(!message.getContent().equals("friendRequest")) senderEndpoint.session.getBasicRemote()
                     .sendObject(message);
         }catch (IOException | EncodeException | NullPointerException e){
             logger.log(Level.SEVERE, e.getMessage());
