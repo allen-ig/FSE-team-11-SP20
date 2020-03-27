@@ -1,7 +1,6 @@
 package com.neu.prattle.service;
 
 import com.neu.prattle.exceptions.GroupAlreadyPresentException;
-import com.neu.prattle.exceptions.GroupNotFoundException;
 import com.neu.prattle.exceptions.GroupDeletedException;
 import com.neu.prattle.exceptions.SenderNotAuthorizedException;
 import com.neu.prattle.exceptions.UserAlreadyPresentException;
@@ -357,56 +356,6 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
     session.beginTransaction();
     try {
       session.saveOrUpdate(group);
-      session.getTransaction().commit();
-    } catch (Exception e) {
-      logger.log(Level.SEVERE, e.getMessage());
-    } finally {
-      session.disconnect();
-      session.close();
-    }
-  }
-  
-  // delete later
-  private void addMembersToGroup(BasicGroup group) {
-    Session session = sessionFactory.openSession();
-    session.beginTransaction();
-    
-    // check if group exists - how to pass caller?
-    String strQuery = "SELECT g FROM BasicGroup g join fetch g.members join fetch g.moderators WHERE g.name = :name";
-    Query query = session.createQuery(strQuery);
-    query.setParameter("name", group.getName());
-    
-    BasicGroup result = (BasicGroup) query.getSingleResult();
-    Optional<BasicGroup> op = Optional.of(result);
-    
-    if (!op.equals(Optional.empty())) {
-      throw new GroupNotFoundException("A group called " + group.getName() + " does not exist!");
-    }
-    
-    BasicGroup groupInDatabase = op.get();
-  
-    Set<User> updatedMembers = getUsersInDatabase(group.getMembers(), session);
-    Set<User> updatedModerators = getUsersInDatabase(group.getModerators(), session);
-    group.setMembers(updatedMembers);
-    group.setModerators(updatedModerators);
-    
-    if(!group.getMembers().isEmpty()) {
-      groupInDatabase.getMembers().addAll(group.getMembers());
-      for(User newMember : groupInDatabase.getMembers()) {
-        newMember.getGroups().add(groupInDatabase);
-      }
-    }
-    
-    if(!group.getModerators().isEmpty()) {
-      groupInDatabase.getModerators().addAll(group.getModerators());
-      
-      for(User newModerator : groupInDatabase.getModerators()) {
-        newModerator.getModeratorFor().add(groupInDatabase);
-      }
-    }
-    
-    try {
-      session.saveOrUpdate(groupInDatabase);
       session.getTransaction().commit();
     } catch (Exception e) {
       logger.log(Level.SEVERE, e.getMessage());
