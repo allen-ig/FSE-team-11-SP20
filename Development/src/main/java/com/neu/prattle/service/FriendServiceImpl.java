@@ -127,7 +127,6 @@ public class FriendServiceImpl implements FriendService{
         query.setParameter("sender", sender);
         query.setParameter("recipient", recipient);
         try{
-            System.out.println(findAllFriends(sender.getName()));
             Friend friend = (Friend) query.getSingleResult();
             return Optional.of(friend);
         }catch (NoResultException e){
