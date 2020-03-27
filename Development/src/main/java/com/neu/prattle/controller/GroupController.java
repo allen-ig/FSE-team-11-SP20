@@ -6,14 +6,13 @@ import com.neu.prattle.model.BasicGroup;
 
 import com.neu.prattle.model.Request.GroupRequest;
 import com.neu.prattle.model.User;
+import com.neu.prattle.service.UserService;
+import com.neu.prattle.service.UserServiceImpl;
 import com.neu.prattle.service.UserServiceWithGroups;
 import com.neu.prattle.service.UserServiceWithGroupsImpl;
-import com.sun.org.apache.xpath.internal.operations.Bool;
-import java.util.List;
 import java.util.Optional;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -32,6 +31,7 @@ public class GroupController {
 
   // Usually Dependency injection will be used to inject the service at run-time
   private UserServiceWithGroups accountService = UserServiceWithGroupsImpl.getInstance();
+  private UserService userService = UserServiceImpl.getInstance();
 
   /***
    * Handles a HTTP POST request for group creation
@@ -73,7 +73,7 @@ public class GroupController {
     //query records
     Optional<BasicGroup> foundGroup = accountService
         .findGroupByName(request.getUser(), request.getGroup());
-    Optional<User> sender = accountService.findUserByName(request.getSender());
+    Optional<User> sender = userService.findUserByName(request.getSender());
 
     //check if found
     boolean allClear = true;
@@ -246,8 +246,8 @@ public class GroupController {
       message = new StringBuilder();
 
       //query records
-      sender = accountService.findUserByName(request.getSender());
-      user = accountService.findUserByName(request.getUser());
+      sender = userService.findUserByName(request.getSender());
+      user = userService.findUserByName(request.getUser());
       group = accountService.findGroupByName(request.getUser(), request.getGroup());
 
       //check if found

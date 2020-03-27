@@ -40,6 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 public class TestGroupController {
 
   private UserServiceWithGroups us;
+  private UserService userService;
   private UserController uc;
   private GroupController gc;
   private User newUser;
@@ -57,6 +58,9 @@ public class TestGroupController {
     us = UserServiceWithGroupsImpl.getInstance();
     assertTrue(us.isTest());
 
+    userService = UserServiceImpl.getInstance();
+    assertTrue(userService.isTest());
+    
     uc = new UserController();
     gc = new GroupController();
 
@@ -127,7 +131,7 @@ public class TestGroupController {
   public void deleteGroupTest() {
     //existing group
     User da = new User("da");
-    us.addUser(da);
+    userService.addUser(da);
     Set<User> mem = new HashSet<>();
     mem.add(da);
     BasicGroup dga = BasicGroup.groupBuilder().setMembers(mem).setName("dga").build();
@@ -152,7 +156,7 @@ public class TestGroupController {
 
     //user not in mods
     User db = new User("db");
-    us.addUser(db);
+    userService.addUser(db);
     GroupRequest req5 = GroupRequest.groupRequestBuilder().setSender(db.getName()).setUser(user).setGroup(gName).build();
     Response res5 = gc.deleteGroup(req5);
     Assert.assertEquals(res5.getStatus(), 409);
@@ -168,7 +172,7 @@ public class TestGroupController {
   public void addUserTest() {
     //existing group
     User a = new User("a");
-    us.addUser(a);
+    userService.addUser(a);
     Set<User> mem = new HashSet<>();
     mem.add(a);
     BasicGroup ga = BasicGroup.groupBuilder().setMembers(mem).setName("ga").build();
@@ -176,7 +180,7 @@ public class TestGroupController {
 
     //new user
     User b = new User("b");
-    us.addUser(b);
+    userService.addUser(b);
 
     //make request
     String sender = a.getName();
@@ -212,7 +216,7 @@ public class TestGroupController {
 
     //new non member
     User nm = new User("nm");
-    us.addUser(nm);
+    userService.addUser(nm);
     GroupRequest req6 = GroupRequest.groupRequestBuilder().setSender(nm.getName()).setUser(user).setGroup(gName).build();
     Response res6 = gc.extendGroup(req6);
     Assert.assertEquals(res6.getStatus(), 409);
@@ -222,7 +226,7 @@ public class TestGroupController {
   public void addModeratorTest() {
     //existing group
     User ma = new User("ma");
-    us.addUser(ma);
+    userService.addUser(ma);
     Set<User> mem = new HashSet<>();
     mem.add(ma);
     BasicGroup mga = BasicGroup.groupBuilder().setMembers(mem).setName("mga").build();
@@ -230,7 +234,7 @@ public class TestGroupController {
 
     //new user
     User mb = new User("mb");
-    us.addUser(mb);
+    userService.addUser(mb);
 
     //make request
     String sender = ma.getName();
@@ -269,10 +273,10 @@ public class TestGroupController {
   public void removeUserTest() {
     //existing user
     User ra = new User("ra");
-    us.addUser(ra);
+    userService.addUser(ra);
     //new user
     User rb = new User("rb");
-    us.addUser(rb);
+    userService.addUser(rb);
     Set<User> mem = new HashSet<>();
     mem.add(ra);
     mem.add(rb);
@@ -304,7 +308,7 @@ public class TestGroupController {
 
     //not a moderator
     User r3 = new User("r3");
-    us.addUser(r3);
+    userService.addUser(r3);
     String nonMod = r3.getName();
     GroupRequest req5 = GroupRequest.groupRequestBuilder().setSender(nonMod).setUser(user).setGroup(gName).build();
     Response res5 = gc.removeUser(req5);
@@ -328,10 +332,10 @@ public class TestGroupController {
   public void removeModeratorTest() {
     //existing user
     User rma = new User("rma");
-    us.addUser(rma);
+    userService.addUser(rma);
     //new user
     User rmb = new User("rmb");
-    us.addUser(rmb);
+    userService.addUser(rmb);
     Set<User> mem = new HashSet<>();
     mem.add(rma);
     mem.add(rmb);

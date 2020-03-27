@@ -71,73 +71,12 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
     return accountService;
   }
   
-  /***
-   *
-   * @param name -> The name of the user.
-   * @return An optional wrapper supplying the User if it exists empty if it does not.
-   */
-  @Override
-  public Optional<User> findUserByName(String name) {
-    Session session = sessionFactory.openSession();
-    session.beginTransaction();
-    
-    try {
-      User result = (User) findUserByNameQuery(name, session);
-      return Optional.of(result);
-    } catch (NoResultException ex) {
-      return Optional.empty();
-    }
-    
-    finally {
-      session.disconnect();
-      session.close();
-    }
-  }
-  
   private Object findUserByNameQuery(String name, Session session) {
     String strQuery = "SELECT u FROM User u WHERE u.name = :name";
     Query query = session.createQuery(strQuery);
     query.setParameter("name", name);
     
     return query.getSingleResult();
-  }
-  
-  @Override
-  public synchronized void addUser(User user) {
-    if (findUserByName(user.getName()).isPresent()) {
-      throw new UserAlreadyPresentException(
-        String.format("User already present with name: %s", user.getName()));
-    }
-    Session session = sessionFactory.openSession();
-    session.beginTransaction();
-    try {
-      session.save(user);
-      session.getTransaction().commit();
-    } catch (Exception e) {
-      logger.log(Level.SEVERE, e.getMessage());
-    } finally {
-      session.disconnect();
-      session.close();
-    }
-  }
-  
-  public synchronized void deleteUser(User user) {
-    Session session = sessionFactory.openSession();
-    session.beginTransaction();
-    try {
-      session.delete(user);
-      session.getTransaction().commit();
-    } catch (Exception e) {
-      logger.log(Level.SEVERE, e.getMessage());
-    } finally {
-      session.disconnect();
-      session.close();
-    }
-  }
-  
-  @Override
-  public boolean isTest() {
-    return isTest;
   }
   
   public Optional<BasicGroup> findGroupByName(String username, String groupName) {
@@ -471,5 +410,10 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
       session.disconnect();
       session.close();
     }
-  } 
+  }
+  
+  @Override
+  public boolean isTest() {
+    return isTest;
+  }
 }

@@ -7,6 +7,8 @@ package com.neu.prattle.websocket;
  * @version dated 2017-03-05
  */
 
+import com.neu.prattle.service.UserService;
+import com.neu.prattle.service.UserServiceImpl;
 import com.neu.prattle.service.UserServiceWithGroups;
 import com.neu.prattle.service.UserServiceWithGroupsImpl;
 import java.io.IOException;
@@ -42,7 +44,8 @@ public class ChatEndpoint {
    * The account service.
    */
   private UserServiceWithGroups accountService = UserServiceWithGroupsImpl.getInstance();
-
+  private UserService userService = UserServiceImpl.getInstance();
+  
   /**
    * The session.
    */
@@ -89,7 +92,7 @@ public class ChatEndpoint {
   public void onOpen(Session session, @PathParam("username") String username)
       throws IOException, EncodeException {
 
-    Optional<User> user = accountService.findUserByName(username);
+    Optional<User> user = userService.findUserByName(username);
     if (!user.isPresent()) {
       Message error = Message.messageBuilder()
           .setMessageContent(String.format("User %s could not be found", username))
@@ -261,7 +264,7 @@ public class ChatEndpoint {
     String[] instructions = message.getTo().trim().split(" ");
 
     //user already registered to send messages
-    Optional<User> op = accountService.findUserByName(message.getFrom());
+    Optional<User> op = userService.findUserByName(message.getFrom());
     User sender = new User();
     if(op.isPresent()) {
       sender = op.get();
@@ -328,7 +331,7 @@ public class ChatEndpoint {
     Set<User> add = new HashSet<>();
     for (int i = 0; i < content.length - 1; i++) {
       add.add(new User(content[i + 1]));
-      if (!accountService.findUserByName(content[i + 1]).isPresent()) {
+      if (!userService.findUserByName(content[i + 1]).isPresent()) {
         usersNotExist.append(content[i + 1]);
         usersNotExist.append(" ");
       }
