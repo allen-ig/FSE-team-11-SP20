@@ -15,8 +15,14 @@ function connect() {
         console.log(event.data);
         var message = JSON.parse(event.data);
         var searchAndFriend = document.getElementById("searchAndFriend");
-        // console.log(message.type);
-        if (message.content !== "friendRequest") log.innerHTML += message.from + " : " + message.content + "\n";
+        if (message.content !== "friendRequest") {
+          var newMessage = message.from + " : " + message.content;
+          if (message.timestamp){
+              newMessage += formatDate(new Date(message.timestamp));
+          }
+          newMessage += "\n";
+          log.innerHTML += newMessage
+        }
         else {
             // friendId = message.friendId;
             searchAndFriend.innerHTML +=
@@ -24,7 +30,13 @@ function connect() {
                 <button id="approveFriendRequest" onclick="handleFriendRequest(senderObj.name, recipientObj.name, 'approve');">Approve</button>
                 <button id="denyFriendRequest" onclick="handleFriendRequest(senderObj.name, recipientObj.name, 'deny');">Deny</button> </div>`;
         }
+        
     };
+}
+
+function formatDate(d){
+    return " on " + (d.getMonth()+1) + "-" + d.getDate() + "-"+ d.getFullYear() + " at " +
+    d.getHours() + ":" + d.getMinutes();
 }
 
 function send() {
