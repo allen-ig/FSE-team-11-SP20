@@ -5,6 +5,8 @@ import com.neu.prattle.model.BasicGroup;
 import com.neu.prattle.model.User;
 
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.persistence.NoResultException;
 import org.hibernate.Session;
@@ -24,7 +26,9 @@ import org.hibernate.query.Query;
  * @version dated 2019-10-06
  */
 public class UserServiceImpl implements UserService {
-
+  
+  private Logger logger = Logger.getLogger(this.getClass().getName());
+  
   private Configuration config = new Configuration().configure("hibernate.cfg.xml")
     .addAnnotatedClass(User.class).addAnnotatedClass(BasicGroup.class);
   private ServiceRegistry registry = new StandardServiceRegistryBuilder()
@@ -109,7 +113,7 @@ public class UserServiceImpl implements UserService {
       session.save(user);
       session.getTransaction().commit();
     } catch (Exception e) {
-      System.out.println(e.getMessage());
+      logger.log(Level.SEVERE, e.getMessage());
     } finally {
       session.disconnect();
       session.close();
@@ -123,7 +127,7 @@ public class UserServiceImpl implements UserService {
       session.delete(user);
       session.getTransaction().commit();
     } catch (Exception e) {
-      System.out.println(e.getMessage());
+      logger.log(Level.SEVERE, e.getMessage());
     } finally {
       session.disconnect();
       session.close();

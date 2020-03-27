@@ -264,18 +264,22 @@ public class GroupController {
         message.append("you have been lost");
         allClear = false;
       }
-
     }
 
-    public boolean getAllClear() { return allClear;}
+    boolean getAllClear() { return allClear; }
 
-    public StringBuilder getMessage() {return message;}
+    StringBuilder getMessage() { return message; }
 
-    public User getSender() {return sender.get();}
+    User getSender() {
+      return sender.orElse(null);
+    }
 
-    public User getUser() {return user.get();}
+    User getUser() {
+      return user.orElse(null);
+    }
 
-    public BasicGroup getGroup() {return group.get();}
-
+    BasicGroup getGroup() {
+      return group.orElse(null);
+    }
   }
 }

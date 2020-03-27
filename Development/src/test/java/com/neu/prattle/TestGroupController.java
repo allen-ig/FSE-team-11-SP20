@@ -124,7 +124,7 @@ public class TestGroupController {
   }
 
   @Test
-  public void deleteGroup() {
+  public void deleteGroupTest() {
     //existing group
     User da = new User("da");
     us.addUser(da);
@@ -165,7 +165,7 @@ public class TestGroupController {
 
 
   @Test
-  public void addUser() {
+  public void addUserTest() {
     //existing group
     User a = new User("a");
     us.addUser(a);
@@ -219,7 +219,7 @@ public class TestGroupController {
   }
 
   @Test
-  public void addModerator() {
+  public void addModeratorTest() {
     //existing group
     User ma = new User("ma");
     us.addUser(ma);
@@ -266,7 +266,7 @@ public class TestGroupController {
   }
 
   @Test
-  public void removeUser() {
+  public void removeUserTest() {
     //existing user
     User ra = new User("ra");
     us.addUser(ra);
@@ -325,7 +325,7 @@ public class TestGroupController {
   }
 
   @Test
-  public void removeModerator() {
+  public void removeModeratorTest() {
     //existing user
     User rma = new User("rma");
     us.addUser(rma);
