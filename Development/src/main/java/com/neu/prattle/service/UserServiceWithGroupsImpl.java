@@ -2,6 +2,8 @@ package com.neu.prattle.service;
 
 import com.neu.prattle.exceptions.GroupAlreadyPresentException;
 import com.neu.prattle.exceptions.GroupNotFoundException;
+import com.neu.prattle.exceptions.GroupDeletedException;
+import com.neu.prattle.exceptions.SenderNotAuthorizedException;
 import com.neu.prattle.exceptions.UserAlreadyPresentException;
 import com.neu.prattle.model.BasicGroup;
 import com.neu.prattle.model.User;
@@ -89,7 +91,7 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
   }
   
   private Object findUserByNameQuery(String name, Session session) {
-    String strQuery = "SELECT u FROM User u  WHERE u.name = :name";
+    String strQuery = "SELECT u FROM User u WHERE u.name = :name";
     Query query = session.createQuery(strQuery);
     query.setParameter("name", name);
     
@@ -221,8 +223,199 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
     return updatedUsers;
   }
   
-  @Override
-  public void addMembersToGroup(BasicGroup group) {
+  /**
+   * Deletes a group. Checks if the sender is a moderator in the group.
+   * @param sender - User sender, stored at user login.
+   * @param group - BasicGroup group to be removed.
+   * @throws SenderNotAuthorizedException - If sender is not a moderator.
+   */
+  public synchronized void deleteGroup(User sender, BasicGroup group) throws SenderNotAuthorizedException {
+    Session session = sessionFactory.openSession();
+    session.beginTransaction();
+    
+    Set<User> mods = group.getModerators();
+    if (!mods.contains(sender)) {
+      throw new SenderNotAuthorizedException("You are not authorized to delete this message");
+    }
+    
+    try {
+      session.delete(group);
+      session.getTransaction().commit();
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+    } finally {
+      session.disconnect();
+      session.close();
+    }
+  }
+  
+  /**
+   * Adds a user.
+   * Checks for existence have been performed by the controller. Checking if allowed, and persisting
+   * change. Any member can add.
+   * @param sender - User sender of message, stored at user login.
+   * @param user - User to be added.
+   * @param group - Basic group to be changed.
+   * @throws SenderNotAuthorizedException - if sender is not a member.
+   * @throws UserAlreadyPresentException - if user is already in the group.
+   */
+  public synchronized void extendUsers(User sender, User user, BasicGroup group) throws SenderNotAuthorizedException, UserAlreadyPresentException {
+    //check if sender is member
+    Set<User> members = group.getMembers();
+    if (!members.contains(sender)) {
+      throw new SenderNotAuthorizedException("Not allowed to extend the users of this group");
+    }
+    //check if user already member
+    if (members.contains(user)) {
+      throw new UserAlreadyPresentException("Group already has this user");
+    }
+    
+    members.add(user);
+    group.setMembers(members);
+    
+    Session session = sessionFactory.openSession();
+    session.beginTransaction();
+    try {
+      session.saveOrUpdate(group);
+      session.getTransaction().commit();
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+    } finally {
+      session.disconnect();
+      session.close();
+    }
+  }
+  
+  /**
+   * Adds a user.
+   * Checks for existence have been performed by the controller. Checking if allowed, and persisting
+   * change. Any Moderator can add. Adds user as member if not already.
+   * @param sender - User sender of message, stored at user login.
+   * @param user - User to be added.
+   * @param group - Basic group to be changed.
+   * @throws SenderNotAuthorizedException - if sender is not a moderator.
+   * @throws UserAlreadyPresentException - if user is already a moderator.
+   */
+  public synchronized void extendModerators(User sender, User user, BasicGroup group) throws SenderNotAuthorizedException, UserAlreadyPresentException {
+    //check if sender is member
+    
+    Set<User> members = group.getMembers();
+    Set<User> moderators = group.getModerators();
+    if (!moderators.contains(sender)) {
+      throw new SenderNotAuthorizedException("Not allowed to extend the moderators of this group");
+    }
+    //check if user already member
+    if (moderators.contains(user)) {
+      throw new UserAlreadyPresentException("Group already has this moderator");
+    }
+    
+    //no need to check if already added for set.
+    members.add(user);
+    
+    moderators.add(user);
+    group.setMembers(members);
+    group.setModerators(moderators);
+    
+    Session session = sessionFactory.openSession();
+    session.beginTransaction();
+    try {
+      session.saveOrUpdate(group);
+      session.getTransaction().commit();
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+    } finally {
+      session.disconnect();
+      session.close();
+    }
+  }
+  
+  /**
+   * Removes a user.
+   * Checks for existence have been performed by the controller. Checking if allowed, and persisting
+   * change. Any Moderator can remove. Users can remove themselves.
+   * @param sender - User sender of message, stored at user login.
+   * @param user - User to be added.
+   * @param group - Basic group to be changed.
+   * @throws SenderNotAuthorizedException - if sender is not a moderator or deleted user.
+   */
+  public synchronized void removeUser(User sender, User user, BasicGroup group) throws SenderNotAuthorizedException {
+    //check if sender is member
+    Set<User> members = group.getMembers();
+    Set<User> moderators = group.getModerators();
+    if (!moderators.contains(sender) && !sender.getName().equals(user.getName())) {
+      throw new SenderNotAuthorizedException("Not allowed to delete this user");
+    }
+    
+    //ok if not there
+    members.remove(user);
+    moderators.remove(user);
+    
+    //check if deleting the last member
+    if (members.isEmpty() || moderators.isEmpty()) {
+      //already checked if moderator, so no errors
+      deleteGroup(sender, group);
+      throw new GroupDeletedException(group.getName());
+    }
+    
+    group.setMembers(members);
+    group.setModerators(moderators);
+    
+    Session session = sessionFactory.openSession();
+    session.beginTransaction();
+    try {
+      session.saveOrUpdate(group);
+      session.getTransaction().commit();
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+    } finally {
+      session.disconnect();
+      session.close();
+    }
+  }
+  
+  /**
+   * Removes a moderator.
+   * Checks for existence have been performed by the controller. Checking if allowed, and persisting
+   * change. Can only remove if sender and moderator. If last moderator removed, group it deleted even if users are present.
+   * @param sender - User sender of message, stored at user login.
+   * @param user - User to be added.
+   * @param group - Basic group to be changed.
+   * @throws SenderNotAuthorizedException - if sender is not a moderator.
+   */
+  public synchronized void removeModerator(User sender, User user, BasicGroup group) throws SenderNotAuthorizedException {
+    //check if sender is member
+    Set<User> moderators = group.getModerators();
+    if (!(moderators.contains(sender) || sender == user)) {
+      throw new SenderNotAuthorizedException("Not allowed to delete this user");
+    }
+    
+    //ok if not there
+    moderators.remove(user);
+    
+    //check if deleting the last member
+    if (moderators.isEmpty()) {
+      //already checked if moderator, so no errors
+      deleteGroup(sender, group);
+      return;
+    }
+    
+    group.setModerators(moderators);
+    
+    Session session = sessionFactory.openSession();
+    session.beginTransaction();
+    try {
+      session.saveOrUpdate(group);
+      session.getTransaction().commit();
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+    } finally {
+      session.disconnect();
+      session.close();
+    }
+  }
+  
+  // delete later
+  private void addMembersToGroup(BasicGroup group) {
     Session session = sessionFactory.openSession();
     session.beginTransaction();
     
@@ -269,8 +462,5 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
       session.disconnect();
       session.close();
     }
-    
-    // update group?
-  }
+  } 
 }
-

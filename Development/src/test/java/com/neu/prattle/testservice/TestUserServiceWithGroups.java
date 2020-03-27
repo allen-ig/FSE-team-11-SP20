@@ -78,6 +78,15 @@ public class TestUserServiceWithGroups {
     us.addUser(new User("TestAddUser"));
   }
 
+  @Test
+  public void deleteUser() {
+    us.addUser(new User("testDelete"));
+    Optional<User> found = us.findUserByName("testDelete");
+    us.deleteUser(found.get());
+    us.deleteUser(new User("newUserForDelete"));
+  }
+
+
   @Test(expected = GroupAlreadyPresentException.class)
   public void testAddGroup(){
     User nU = new User("ThisIsANewUser");
