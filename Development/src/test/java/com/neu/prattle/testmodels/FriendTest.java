@@ -100,4 +100,12 @@ public class FriendTest {
         Friend friend2 = new Friend(test2, test1);
         assertFalse(friend1.equals(friend2));
     }
+
+    @Test
+    public void testEqualsNotAFriend(){
+        User test1 = new User("test1");
+        User test2 = new User("test2");
+        Friend friend1 = new Friend(test1, test2);
+        assertFalse(friend1.equals(test1));
+    }
 }

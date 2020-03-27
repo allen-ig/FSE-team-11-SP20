@@ -59,9 +59,9 @@ function search() {
             console.log(response)
             recipientObj = response;
             if (response.name) {
-                alert(`you can add ${response.name} as a friend!`);
+                console.log(`you can add ${response.name} as a friend!`);
                 addFriendBtn.classList.remove("dontShow");
-            } else alert("the user you searched does not exist!");
+            } else console.log("the user you searched does not exist!");
         }, err => {
             console.log(err);
         })
@@ -93,7 +93,7 @@ function addFriend(){
             headers: {
                 'Content-Type': 'application/json; charset=utf-8'
             }})
-        .then(() => alert("friend request sent!"))
+        .then(() => console.log("friend request sent!"))
 }
 
 function handleFriendRequest(sender, recipient, response) {

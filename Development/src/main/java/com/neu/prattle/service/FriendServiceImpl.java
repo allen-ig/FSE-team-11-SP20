@@ -110,7 +110,7 @@ public class FriendServiceImpl implements FriendService{
         try{
             friends = query.getResultList();
         }catch (Exception e){
-            e.printStackTrace();
+            logger.log(Level.SEVERE, e.getMessage());
         }finally {
             session.disconnect();
             session.close();
