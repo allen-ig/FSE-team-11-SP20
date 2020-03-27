@@ -11,6 +11,9 @@ import com.neu.prattle.service.UserServiceImpl;
 import com.neu.prattle.service.UserServiceWithGroups;
 import com.neu.prattle.service.UserServiceWithGroupsImpl;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
@@ -32,6 +35,7 @@ public class GroupController {
   // Usually Dependency injection will be used to inject the service at run-time
   private UserServiceWithGroups accountService = UserServiceWithGroupsImpl.getInstance();
   private UserService userService = UserServiceImpl.getInstance();
+  private Logger logger = Logger.getLogger(this.getClass().getName());
 
   /***
    * Handles a HTTP POST request for group creation
@@ -92,6 +96,7 @@ public class GroupController {
     try {
       accountService.deleteGroup(sender.get(), foundGroup.get());
     } catch (SenderNotAuthorizedException e) {
+      logger.log(Level.SEVERE, e.getMessage());
       return Response.status(409).build();
     }
     message.append("Group Deleted: ");
@@ -121,13 +126,12 @@ public class GroupController {
     try {
       accountService.extendUsers(pr.getSender(), pr.getUser(), pr.getGroup());
     } catch (Exception e) {
+      logger.log(Level.SEVERE, e.getMessage());
       return Response.status(409).build();
     }
 
-    message.append("members of ");
-    message.append(pr.getGroup().getName());
-    message.append(" appended: ");
-    message.append(pr.getUser().getName());
+    message.append("members of ").append(pr.getGroup().getName());
+    message.append(" appended: ").append(pr.getUser().getName());
     // !!! Issue - no way to send a message to everyone except from JS or calling ChatEncPoint
     return Response.ok().entity(message.toString()).build();
   }
@@ -187,6 +191,7 @@ public class GroupController {
     try {
       accountService.removeUser(pr.getSender(), pr.getUser(), pr.getGroup());
     } catch (Exception e) {
+      logger.log(Level.SEVERE, e.getMessage());
       return Response.status(409).build();
     }
 
@@ -225,8 +230,7 @@ public class GroupController {
 
     message.append("moderator of ");
     message.append(pr.getGroup().getName());
-    message.append(" removed: ");
-    message.append(pr.getUser().getName());
+    message.append(" removed: ").append(pr.getUser().getName());
 
     return Response.ok().entity(message.toString()).build();
   }
