@@ -4,9 +4,6 @@ import com.neu.prattle.exceptions.UserAlreadyPresentException;
 import com.neu.prattle.model.User;
 import com.neu.prattle.service.UserService;
 import com.neu.prattle.service.UserServiceImpl;
-
-import com.neu.prattle.service.UserServiceWithGroups;
-import com.neu.prattle.service.UserServiceWithGroupsImpl;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -24,8 +21,8 @@ import javax.ws.rs.core.Response;
 public class UserController {
 
     // Usually Dependency injection will be used to inject the service at run-time
-    private UserServiceWithGroups accountService = UserServiceWithGroupsImpl.getInstance();
-
+    private UserService userService = UserServiceImpl.getInstance();
+    
     /***
      * Handles a HTTP POST request for user creation
      * 
@@ -37,7 +34,7 @@ public class UserController {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response createUserAccount(User user) {
         try {
-            accountService.addUser(user);
+            userService.addUser(user);
         } catch (UserAlreadyPresentException e) {
             return Response.status(409).build();
         }

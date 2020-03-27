@@ -4,6 +4,7 @@ import com.neu.prattle.model.BasicGroup;
 import com.neu.prattle.model.Message;
 import com.neu.prattle.model.User;
 
+import com.neu.prattle.service.UserServiceImpl;
 import com.neu.prattle.service.UserServiceWithGroups;
 import com.neu.prattle.service.UserServiceWithGroupsImpl;
 import java.util.HashSet;
@@ -106,7 +107,7 @@ public class ChatEndpointTest {
 
     UserServiceWithGroups u = UserServiceWithGroupsImpl.getInstance();
     User user = new User("onOpenUser");
-    u.addUser(user);
+    UserServiceImpl.getInstance().addUser(user);
 
 
     try {
@@ -191,8 +192,8 @@ public class ChatEndpointTest {
     UserServiceWithGroups us = UserServiceWithGroupsImpl.getInstance();
     User omu = new User("onMessageUser");
     User omu2 = new User("onMessageUser2");
-    us.addUser(omu);
-    us.addUser(omu2);
+    UserServiceImpl.getInstance().addUser(omu);
+    UserServiceImpl.getInstance().addUser(omu2);
     Set<User> members = new HashSet<>();
     members.add(omu);
     members.add(omu2);
@@ -438,7 +439,7 @@ public class ChatEndpointTest {
 
     UserServiceWithGroups u = UserServiceWithGroupsImpl.getInstance();
     User user = new User(username);
-    u.addUser(user);
+    UserServiceImpl.getInstance().addUser(user);
 
     try {
       privateMethod.invoke(chatEndpoint, message);
@@ -475,8 +476,8 @@ public class ChatEndpointTest {
 
     BasicGroup existingGroup = BasicGroup.groupBuilder().setName("existingGroup").setMembers(mems).build();
     UserServiceWithGroups us = UserServiceWithGroupsImpl.getInstance();
-    us.addUser(omu);
-    us.addUser(omu2);
+    UserServiceImpl.getInstance().addUser(omu);
+    UserServiceImpl.getInstance().addUser(omu2);
     us.addGroup(existingGroup);
 
     Message message5 = Message.messageBuilder().setFrom(omu.getName()).setTo(" group existingGroup")

@@ -11,6 +11,8 @@ import com.neu.prattle.model.User;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.persistence.NoResultException;
 import org.hibernate.Session;
@@ -21,6 +23,8 @@ import org.hibernate.query.Query;
 import org.hibernate.service.ServiceRegistry;
 
 public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
+  
+  private Logger logger = Logger.getLogger(this.getClass().getName());
   
   private Configuration config = new Configuration().configure("hibernate.cfg.xml")
     .addAnnotatedClass(User.class).addAnnotatedClass(BasicGroup.class);
@@ -67,29 +71,6 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
     return accountService;
   }
   
-  /***
-   *
-   * @param name -> The name of the user.
-   * @return An optional wrapper supplying the User if it exists empty if it does not.
-   */
-  @Override
-  public Optional<User> findUserByName(String name) {
-    Session session = sessionFactory.openSession();
-    session.beginTransaction();
-    
-    try {
-      User result = (User) findUserByNameQuery(name, session);
-      return Optional.of(result);
-    } catch (NoResultException ex) {
-      return Optional.empty();
-    }
-    
-    finally {
-      session.disconnect();
-      session.close();
-    }
-  }
-  
   private Object findUserByNameQuery(String name, Session session) {
     String strQuery = "SELECT u FROM User u WHERE u.name = :name";
     Query query = session.createQuery(strQuery);
@@ -98,51 +79,13 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
     return query.getSingleResult();
   }
   
-  @Override
-  public synchronized void addUser(User user) {
-    if (findUserByName(user.getName()).isPresent()) {
-      throw new UserAlreadyPresentException(
-        String.format("User already present with name: %s", user.getName()));
-    }
-    Session session = sessionFactory.openSession();
-    session.beginTransaction();
-    try {
-      session.save(user);
-      session.getTransaction().commit();
-    } catch (Exception e) {
-      System.out.println(e.getMessage());
-    } finally {
-      session.disconnect();
-      session.close();
-    }
-  }
-  
-  public synchronized void deleteUser(User user) {
-    Session session = sessionFactory.openSession();
-    session.beginTransaction();
-    try {
-      session.delete(user);
-      session.getTransaction().commit();
-    } catch (Exception e) {
-      System.out.println(e.getMessage());
-    } finally {
-      session.disconnect();
-      session.close();
-    }
-  }
-  
-  @Override
-  public boolean isTest() {
-    return isTest;
-  }
-  
   public Optional<BasicGroup> findGroupByName(String username, String groupName) {
     Session session = sessionFactory.openSession();
     session.beginTransaction();
     
     try {
       BasicGroup result = (BasicGroup) findGroupByNameQuery(groupName, session);
-//      check if user is part of the group
+
       return Optional.of(result);
     } catch (NoResultException ex) {
       return Optional.empty();
@@ -202,7 +145,7 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
       session.saveOrUpdate(group);
       session.getTransaction().commit();
     } catch (Exception e) {
-      System.out.println(e.getMessage());
+      logger.log(Level.SEVERE, e.getMessage());
     } finally {
       session.disconnect();
       session.close();
@@ -216,7 +159,7 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
         User userInDb = (User) findUserByNameQuery(user.getName(), session);
         updatedUsers.add(userInDb);
       } catch (NoResultException ex) {
-        // log that the user did not exist in database
+        logger.log(Level.SEVERE, ex.getMessage());
       }
     }
     
@@ -238,11 +181,14 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
       throw new SenderNotAuthorizedException("You are not authorized to delete this message");
     }
     
+    group.getMembers().clear();
+    group.getModerators().clear();
+    
     try {
-      session.delete(group);
+      session.remove(group);
       session.getTransaction().commit();
     } catch (Exception e) {
-      System.out.println(e.getMessage());
+      logger.log(Level.SEVERE, e.getMessage());
     } finally {
       session.disconnect();
       session.close();
@@ -279,7 +225,7 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
       session.saveOrUpdate(group);
       session.getTransaction().commit();
     } catch (Exception e) {
-      System.out.println(e.getMessage());
+      logger.log(Level.SEVERE, e.getMessage());
     } finally {
       session.disconnect();
       session.close();
@@ -298,12 +244,12 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
    */
   public synchronized void extendModerators(User sender, User user, BasicGroup group) throws SenderNotAuthorizedException, UserAlreadyPresentException {
     //check if sender is member
-    
     Set<User> members = group.getMembers();
     Set<User> moderators = group.getModerators();
     if (!moderators.contains(sender)) {
       throw new SenderNotAuthorizedException("Not allowed to extend the moderators of this group");
     }
+    
     //check if user already member
     if (moderators.contains(user)) {
       throw new UserAlreadyPresentException("Group already has this moderator");
@@ -318,11 +264,12 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
     
     Session session = sessionFactory.openSession();
     session.beginTransaction();
+
     try {
       session.saveOrUpdate(group);
       session.getTransaction().commit();
     } catch (Exception e) {
-      System.out.println(e.getMessage());
+      logger.log(Level.SEVERE, e.getMessage());
     } finally {
       session.disconnect();
       session.close();
@@ -342,6 +289,7 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
     //check if sender is member
     Set<User> members = group.getMembers();
     Set<User> moderators = group.getModerators();
+
     if (!moderators.contains(sender) && !sender.getName().equals(user.getName())) {
       throw new SenderNotAuthorizedException("Not allowed to delete this user");
     }
@@ -366,7 +314,7 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
       session.saveOrUpdate(group);
       session.getTransaction().commit();
     } catch (Exception e) {
-      System.out.println(e.getMessage());
+      logger.log(Level.SEVERE, e.getMessage());
     } finally {
       session.disconnect();
       session.close();
@@ -407,7 +355,7 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
       session.saveOrUpdate(group);
       session.getTransaction().commit();
     } catch (Exception e) {
-      System.out.println(e.getMessage());
+      logger.log(Level.SEVERE, e.getMessage());
     } finally {
       session.disconnect();
       session.close();
@@ -427,7 +375,7 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
     BasicGroup result = (BasicGroup) query.getSingleResult();
     Optional<BasicGroup> op = Optional.of(result);
     
-    if (!op.isPresent()) {
+    if (!op.equals(Optional.empty())) {
       throw new GroupNotFoundException("A group called " + group.getName() + " does not exist!");
     }
     
@@ -457,10 +405,15 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
       session.saveOrUpdate(groupInDatabase);
       session.getTransaction().commit();
     } catch (Exception e) {
-      System.out.println(e.getMessage());
+      logger.log(Level.SEVERE, e.getMessage());
     } finally {
       session.disconnect();
       session.close();
     }
-  } 
+  }
+  
+  @Override
+  public boolean isTest() {
+    return isTest;
+  }
 }

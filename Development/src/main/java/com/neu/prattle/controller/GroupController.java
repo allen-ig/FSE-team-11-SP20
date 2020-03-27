@@ -6,14 +6,16 @@ import com.neu.prattle.model.BasicGroup;
 
 import com.neu.prattle.model.Request.GroupRequest;
 import com.neu.prattle.model.User;
+import com.neu.prattle.service.UserService;
+import com.neu.prattle.service.UserServiceImpl;
 import com.neu.prattle.service.UserServiceWithGroups;
 import com.neu.prattle.service.UserServiceWithGroupsImpl;
-import com.sun.org.apache.xpath.internal.operations.Bool;
-import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -32,6 +34,8 @@ public class GroupController {
 
   // Usually Dependency injection will be used to inject the service at run-time
   private UserServiceWithGroups accountService = UserServiceWithGroupsImpl.getInstance();
+  private UserService userService = UserServiceImpl.getInstance();
+  private Logger logger = Logger.getLogger(this.getClass().getName());
 
   /***
    * Handles a HTTP POST request for group creation
@@ -73,7 +77,7 @@ public class GroupController {
     //query records
     Optional<BasicGroup> foundGroup = accountService
         .findGroupByName(request.getUser(), request.getGroup());
-    Optional<User> sender = accountService.findUserByName(request.getSender());
+    Optional<User> sender = userService.findUserByName(request.getSender());
 
     //check if found
     boolean allClear = true;
@@ -92,6 +96,7 @@ public class GroupController {
     try {
       accountService.deleteGroup(sender.get(), foundGroup.get());
     } catch (SenderNotAuthorizedException e) {
+      logger.log(Level.SEVERE, e.getMessage());
       return Response.status(409).build();
     }
     message.append("Group Deleted: ");
@@ -109,43 +114,24 @@ public class GroupController {
   @Path("/addUser")
   @Consumes(MediaType.APPLICATION_JSON)
   public Response extendGroup(GroupRequest request) {
-    StringBuilder message = new StringBuilder();
 
-    //query records
-    Optional<BasicGroup> foundGroup = accountService
-        .findGroupByName(request.getUser(), request.getGroup());
-    Optional<User> foundUser = accountService.findUserByName(request.getUser());
-    Optional<User> sender = accountService.findUserByName(request.getSender());
+    ProcessedRequest pr = new ProcessedRequest(request);
 
-    //check if found
-    boolean allClear = true;
-    if (!foundUser.isPresent()) {
-      message.append("user ").append(request.getUser()).append(" not found.\n");
-      allClear = false;
-    }
-    if (!foundGroup.isPresent()) {
-      message.append("group ").append(request.getGroup()).append(" not found.\n");
-      allClear = false;
-    }
-    if (!sender.isPresent()) {
-      message.append("you have been lost");
-      allClear = false;
-    }
-    if (!allClear) {
+    StringBuilder message = pr.getMessage();
+
+    if (!pr.allClear) {
       return Response.status(409).entity(message.toString()).build();
     }
 
     try {
-      //attempt request
-      accountService.extendUsers(sender.get(), foundUser.get(), foundGroup.get());
+      accountService.extendUsers(pr.getSender(), pr.getUser(), pr.getGroup());
     } catch (Exception e) {
+      logger.log(Level.SEVERE, e.getMessage());
       return Response.status(409).build();
     }
 
-    message.append("members of ");
-    message.append(foundGroup.get().getName());
-    message.append(" appended: ");
-    message.append(foundUser.get().getName());
+    message.append("members of ").append(pr.getGroup().getName());
+    message.append(" appended: ").append(pr.getUser().getName());
     // !!! Issue - no way to send a message to everyone except from JS or calling ChatEncPoint
     return Response.ok().entity(message.toString()).build();
   }
@@ -160,44 +146,26 @@ public class GroupController {
   @Path("/addModerator")
   @Consumes(MediaType.APPLICATION_JSON)
   public Response extendModerators(GroupRequest request) {
-    StringBuilder message = new StringBuilder();
 
-    //query records
-    Optional<BasicGroup> foundGroup = accountService
-        .findGroupByName(request.getUser(), request.getGroup());
-    Optional<User> foundUser = accountService.findUserByName(request.getUser());
-    Optional<User> sender = accountService.findUserByName(request.getSender());
+    ProcessedRequest pr = new ProcessedRequest(request);
 
-    //check if found
-    boolean allClear = true;
-    if (!foundUser.isPresent()) {
-      message.append("user ").append(request.getUser()).append(" not found.\n");
-      allClear = false;
-    }
-    if (!foundGroup.isPresent()) {
-      message.append("group ").append(request.getGroup()).append(" not found.\n");
-      allClear = false;
-    }
-    if (!sender.isPresent()) {
-      message.append("you have been lost");
-      allClear = false;
-    }
-    if (!allClear) {
+    StringBuilder message = pr.getMessage();
+
+    if (!pr.allClear) {
       return Response.status(409).entity(message.toString()).build();
     }
 
     try {
-      //attempt request
-      accountService.extendModerators(sender.get(), foundUser.get(), foundGroup.get());
+      accountService.extendModerators(pr.getSender(), pr.getUser(), pr.getGroup());
     } catch (Exception e) {
       return Response.status(409).build();
     }
 
     message.append("moderators of ");
-    message.append(foundGroup.get().getName());
+    message.append(pr.getGroup().getName());
     message.append(" appended: ");
-    message.append(foundUser.get().getName());
-    // !!! Issue - no way to send a message to everyone except from JS or calling ChatEncPoint
+    message.append(pr.getUser().getName());
+    // !!! Issue - no way to send a message to everyone except from JS or calling ChatEndPoint
     return Response.ok().entity(message.toString()).build();
   }
 
@@ -211,44 +179,27 @@ public class GroupController {
   @Path("/removeUser")
   @Consumes(MediaType.APPLICATION_JSON)
   public Response removeUser(GroupRequest request) {
-    StringBuilder message = new StringBuilder();
 
-    //query records
-    Optional<BasicGroup> foundGroup = accountService
-        .findGroupByName(request.getUser(), request.getGroup());
-    Optional<User> foundUser = accountService.findUserByName(request.getUser());
-    Optional<User> sender = accountService.findUserByName(request.getSender());
+    ProcessedRequest pr = new ProcessedRequest(request);
 
-    //check if found
-    boolean allClear = true;
-    if (!foundUser.isPresent()) {
-      message.append("user ").append(request.getUser()).append(" not found.\n");
-      allClear = false;
-    }
-    if (!foundGroup.isPresent()) {
-      message.append("group ").append(request.getGroup()).append(" not found.\n");
-      allClear = false;
-    }
-    if (!sender.isPresent()) {
-      message.append("you have been lost");
-      allClear = false;
-    }
-    if (!allClear) {
+    StringBuilder message = pr.getMessage();
+
+    if (!pr.allClear) {
       return Response.status(409).entity(message.toString()).build();
     }
 
     try {
-      //attempt request
-      accountService.removeUser(sender.get(), foundUser.get(), foundGroup.get());
+      accountService.removeUser(pr.getSender(), pr.getUser(), pr.getGroup());
     } catch (Exception e) {
+      logger.log(Level.SEVERE, e.getMessage());
       return Response.status(409).build();
     }
 
     message.append("member of ");
-    message.append(foundGroup.get().getName());
+    message.append(pr.getGroup().getName());
     message.append(" removed: ");
-    message.append(foundUser.get().getName());
-    // !!! Issue - no way to send a message to everyone except from JS or calling ChatEncPoint
+    message.append(pr.getUser().getName());
+
     return Response.ok().entity(message.toString()).build();
   }
 
@@ -262,44 +213,77 @@ public class GroupController {
   @Path("/removeModerator")
   @Consumes(MediaType.APPLICATION_JSON)
   public Response removeModerator(GroupRequest request) {
-    StringBuilder message = new StringBuilder();
 
-    //query records
-    Optional<BasicGroup> foundGroup = accountService
-        .findGroupByName(request.getUser(), request.getGroup());
-    Optional<User> foundUser = accountService.findUserByName(request.getUser());
-    Optional<User> sender = accountService.findUserByName(request.getSender());
+    ProcessedRequest pr = new ProcessedRequest(request);
 
-    //check if found
-    boolean allClear = true;
-    if (!foundUser.isPresent()) {
-      message.append("user ").append(request.getUser()).append(" not found.\n");
-      allClear = false;
-    }
-    if (!foundGroup.isPresent()) {
-      message.append("group ").append(request.getGroup()).append(" not found.\n");
-      allClear = false;
-    }
-    if (!sender.isPresent()) {
-      message.append("you have been lost");
-      allClear = false;
-    }
-    if (!allClear) {
+    StringBuilder message = pr.getMessage();
+
+    if (!pr.allClear) {
       return Response.status(409).entity(message.toString()).build();
     }
 
     try {
-      //attempt request
-      accountService.removeUser(sender.get(), foundUser.get(), foundGroup.get());
+      accountService.removeUser(pr.getSender(), pr.getUser(), pr.getGroup());
     } catch (Exception e) {
-      return Response.status(409).build();
+      return Response.status(409).entity(e.getMessage()).build();
     }
 
     message.append("moderator of ");
-    message.append(foundGroup.get().getName());
-    message.append(" removed: ");
-    message.append(foundUser.get().getName());
-    // !!! Issue - no way to send a message to everyone except from JS or calling ChatEncPoint
+    message.append(pr.getGroup().getName());
+    message.append(" removed: ").append(pr.getUser().getName());
+
     return Response.ok().entity(message.toString()).build();
+  }
+
+  /**
+   * Processes request, stores Sender, User, Group, if clear, and message.
+   */
+  private class ProcessedRequest {
+
+    private boolean allClear;
+    private Optional<User> sender;
+    private Optional<User> user;
+    private Optional<BasicGroup> group;
+    private StringBuilder message;
+
+    ProcessedRequest(GroupRequest request) {
+      message = new StringBuilder();
+
+      //query records
+      sender = userService.findUserByName(request.getSender());
+      user = userService.findUserByName(request.getUser());
+      group = accountService.findGroupByName(request.getUser(), request.getGroup());
+
+      //check if found
+      allClear = true;
+      if (!user.isPresent()) {
+        message.append("user ").append(request.getUser()).append(" not found.\n");
+        allClear = false;
+      }
+      if (!group.isPresent()) {
+        message.append("group ").append(request.getGroup()).append(" not found.\n");
+        allClear = false;
+      }
+      if (!sender.isPresent()) {
+        message.append("you have been lost");
+        allClear = false;
+      }
+    }
+
+    boolean getAllClear() { return allClear; }
+
+    StringBuilder getMessage() { return message; }
+
+    User getSender() {
+      return sender.orElse(null);
+    }
+
+    User getUser() {
+      return user.orElse(null);
+    }
+
+    BasicGroup getGroup() {
+      return group.orElse(null);
+    }
   }
 }

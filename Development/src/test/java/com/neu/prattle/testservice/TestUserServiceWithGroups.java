@@ -6,6 +6,8 @@ import com.neu.prattle.exceptions.GroupAlreadyPresentException;
 import com.neu.prattle.exceptions.UserAlreadyPresentException;
 import com.neu.prattle.model.BasicGroup;
 import com.neu.prattle.model.User;
+import com.neu.prattle.service.UserService;
+import com.neu.prattle.service.UserServiceImpl;
 import com.neu.prattle.service.UserServiceWithGroups;
 import com.neu.prattle.service.UserServiceWithGroupsImpl;
 import java.util.HashSet;
@@ -19,12 +21,15 @@ import org.junit.Test;
 public class TestUserServiceWithGroups {
 
   private UserServiceWithGroups us;
+  private UserService userService;
 
   @Before
   public void setUp() {
     System.setProperty("testing", "true");
     us = UserServiceWithGroupsImpl.getInstance();
+    userService = UserServiceImpl.getInstance();
     assertTrue(us.isTest());
+    assertTrue(userService.isTest());
   }
 
   @After
@@ -45,10 +50,10 @@ public class TestUserServiceWithGroups {
 
     BasicGroup testG = new BasicGroup.GroupBuilder().setName("Test").setMembers(members)
       .setModerators(moderators).build();
-    us.addUser(testU);
+    userService.addUser(testU);
     us.addGroup(testG);
 
-    Optional<User> testGet = newUserService.findUserByName("TestGroups");
+    Optional<User> testGet = userService.findUserByName("TestGroups");
     Optional<BasicGroup> testGetG = newUserService.findGroupByName(testU.getName(), testG.getName());
     assertTrue(testGet.isPresent());
     assertTrue(testGetG.isPresent());
@@ -58,7 +63,7 @@ public class TestUserServiceWithGroups {
 
   @Test
   public void testGetNoneUser(){
-    Optional<User>noneUser = us.findUserByName("ThisUserDoesntExist");
+    Optional<User>noneUser = userService.findUserByName("ThisUserDoesntExist");
     assertEquals(noneUser, Optional.empty());
   }
 
@@ -66,7 +71,7 @@ public class TestUserServiceWithGroups {
   public void testGetNoneGroup(){
     Optional<BasicGroup>noneGroup = us.findGroupByName("ThisUserDoesntExist", "ThisGroupDoersNotExist");
     assertEquals(noneGroup, Optional.empty());
-    us.addUser(new User("ThisUserDoesntExist"));
+    userService.addUser(new User("ThisUserDoesntExist"));
     noneGroup = us.findGroupByName("ThisUserDoesntExist", "ThisGroupDoersNotExist");
     assertEquals(noneGroup, Optional.empty());
 
@@ -74,23 +79,23 @@ public class TestUserServiceWithGroups {
 
   @Test (expected = UserAlreadyPresentException.class)
   public void testAddUser(){
-    us.addUser(new User("TestAddUser"));
-    us.addUser(new User("TestAddUser"));
+    userService.addUser(new User("TestAddUser"));
+    userService.addUser(new User("TestAddUser"));
   }
 
   @Test
   public void deleteUser() {
-    us.addUser(new User("testDelete"));
-    Optional<User> found = us.findUserByName("testDelete");
-    us.deleteUser(found.get());
-    us.deleteUser(new User("newUserForDelete"));
+    userService.addUser(new User("testDelete"));
+    Optional<User> found = userService.findUserByName("testDelete");
+    userService.deleteUser(found.get());
+    userService.deleteUser(new User("newUserForDelete"));
   }
 
 
   @Test(expected = GroupAlreadyPresentException.class)
   public void testAddGroup(){
     User nU = new User("ThisIsANewUser");
-    us.addUser(nU);
+    userService.addUser(nU);
   
     Set<User> mems = new HashSet<>();
     mems.add(nU);
@@ -102,7 +107,7 @@ public class TestUserServiceWithGroups {
   @Test
   public void testAddSecondGroup(){
     User secondTimeWeAreUsingThisUser = new User("ThisIsAnEvenNewerUser");
-    us.addUser(secondTimeWeAreUsingThisUser);
+    userService.addUser(secondTimeWeAreUsingThisUser);
   
     Set<User> mems = new HashSet<>();
     mems.add(secondTimeWeAreUsingThisUser);
