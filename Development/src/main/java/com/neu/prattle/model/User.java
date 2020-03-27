@@ -1,23 +1,8 @@
 package com.neu.prattle.model;
 
 
-import java.util.HashSet;
-import java.util.ArrayList;
-import java.util.List;
-
-import java.util.Objects;
-import java.util.Set;
-
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
 import javax.persistence.*;
+import java.util.*;
 
 
 
@@ -86,6 +71,10 @@ public class User {
     groups = new HashSet<>();
     moderatorFor = new HashSet<>();
 	}
+
+	public int getId() {
+        return this.id;
+    }
   
   /***
    * Returns the hashCode of this object.

@@ -7,39 +7,19 @@ package com.neu.prattle.websocket;
  * @version dated 2017-03-05
  */
 
-import com.neu.prattle.service.UserService;
-import com.neu.prattle.service.UserServiceImpl;
-import com.neu.prattle.service.UserServiceWithGroups;
-import com.neu.prattle.service.UserServiceWithGroupsImpl;
-import java.io.IOException;
-import java.util.HashMap;
-
-import java.util.HashSet;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.concurrent.ConcurrentHashMap;
-
-import javax.websocket.EncodeException;
-import javax.websocket.OnClose;
-import javax.websocket.OnError;
-import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
-import javax.websocket.Session;
-import javax.websocket.server.PathParam;
-import javax.websocket.server.ServerEndpoint;
-
+import com.neu.prattle.model.BasicGroup;
 import com.neu.prattle.model.Message;
 import com.neu.prattle.model.User;
+import com.neu.prattle.service.*;
 
-import com.neu.prattle.model.BasicGroup;
-import com.neu.prattle.service.MessageService;
-import com.neu.prattle.service.UserService;
-import com.neu.prattle.service.UserServiceImpl;
-import com.neu.prattle.service.MessageServiceImpl;
+import javax.websocket.*;
+import javax.websocket.server.PathParam;
+import javax.websocket.server.ServerEndpoint;
+import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -233,7 +213,7 @@ public class ChatEndpoint {
         try {
           endpoint.session.getBasicRemote()
               .sendObject(message);
-        } catch (IOException | EncodeException e |  NullPointerException e) {
+        } catch (IOException | EncodeException |  NullPointerException e) {
           /* note: in production, who exactly is looking at the console.  This exception's
            *       output should be moved to a logger.
            */
@@ -294,7 +274,7 @@ public class ChatEndpoint {
     //if group is found, sentMessage to all members
     if (instructions.length > 1) {
       for (int i = 0; i < instructions.length - 1; i++) {
-        Optional<BasicGroup> group = accountService
+        Optional<BasicGroup> group = groupService
             .findGroupByName(message.getFrom(), instructions[i + 1]);
         if (group.isPresent() && group.get().getMembers().contains(sender)) {
           for (User mem : group.get().getMembers()) {
@@ -376,9 +356,9 @@ public class ChatEndpoint {
 
     //try to add group
     try {
-      synchronized (accountService) {
+      synchronized (groupService) {
         //Add the group
-        accountService.addGroup(group);
+        groupService.addGroup(group);
 
         //Send Feedback to the user
         synchronized (chatEndpoints.get(message.getFrom())) {

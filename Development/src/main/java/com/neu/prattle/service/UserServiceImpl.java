@@ -1,25 +1,20 @@
 package com.neu.prattle.service;
 
 import com.neu.prattle.exceptions.UserAlreadyPresentException;
-
 import com.neu.prattle.model.BasicGroup;
-
 import com.neu.prattle.model.Friend;
-
 import com.neu.prattle.model.User;
-
-import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.persistence.NoResultException;
-
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.service.ServiceRegistry;
 import org.hibernate.query.Query;
+import org.hibernate.service.ServiceRegistry;
+
+import javax.persistence.NoResultException;
+import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /***
  * Implementation of {@link UserService}
@@ -141,7 +136,7 @@ public class UserServiceImpl implements UserService {
         session.close();
       }
     }
-  }
+
 
   @Override
   public boolean isTest() {
