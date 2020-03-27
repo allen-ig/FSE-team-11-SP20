@@ -39,7 +39,7 @@ public class FriendController {
     }
 
     @GET
-    @Path("/{username}")
+    @Path("/{username}/friends")
     @Produces(MediaType.APPLICATION_JSON)
     public Response findAllFriends(@PathParam("username") String username){
         Collection<Friend> friendList = friendService.findAllFriends(username);
@@ -63,10 +63,13 @@ public class FriendController {
             @PathParam("isApproved") String isApproved){
         Optional<User> senderOp = userService.findUserByName(sender);
         Optional<User> recipientOp = userService.findUserByName(recipient);
+        StringBuilder message = new StringBuilder();
         if (senderOp.isPresent() && recipientOp.isPresent()){
             friendService.approveFriendRequest(senderOp.get(), recipientOp.get(), isApproved.equals("approve"));
             return Response.ok().build();
         }
-        return Response.status(404).build();
+        if (!senderOp.isPresent()) message.append("Could not find sender!\n");
+        if (!recipientOp.isPresent()) message.append("Could not find recipient!");
+        return Response.status(404).entity(message.toString()).build();
     }
 }

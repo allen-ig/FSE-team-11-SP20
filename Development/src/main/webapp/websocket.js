@@ -15,7 +15,7 @@ function connect() {
         console.log(event.data);
         var message = JSON.parse(event.data);
         var searchAndFriend = document.getElementById("searchAndFriend");
-        if (message.content !== "friendRequest") {
+        if (message.content != "friendRequest") {
           var newMessage = message.from + " : " + message.content;
           if (message.timestamp){
               newMessage += formatDate(new Date(message.timestamp));

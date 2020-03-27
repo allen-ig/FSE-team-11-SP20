@@ -78,4 +78,24 @@ public class TestFriendController {
     public void testFindAllFriends(){
         friendController.findAllFriends(test1.getName());
     }
+
+    @Test
+    public void testRespondToFriendRequestWithoutSender(){
+        Friend friend = new Friend(test1, test2);
+        friendController.sendFriendRequest(friend);
+        Response response = friendController.respondToFriendRequest("noSender", test2.getName(), "deny");
+        assertEquals(response.getStatus(), Response.status(404).build().getStatus());
+        assertEquals("Could not find sender!\n", response.getEntity());
+        friendService.deleteFriend(friend);
+    }
+
+    @Test
+    public void testRespondToFriendRequestWithoutRecipient(){
+        Friend friend = new Friend(test1, test2);
+        friendController.sendFriendRequest(friend);
+        Response response = friendController.respondToFriendRequest(test1.getName(), "noRecipient", "deny");
+        assertEquals(response.getStatus(), Response.status(404).build().getStatus());
+        assertEquals("Could not find recipient!", response.getEntity());
+        friendService.deleteFriend(friend);
+    }
 }
