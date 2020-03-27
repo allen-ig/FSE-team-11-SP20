@@ -1,6 +1,7 @@
 package com.neu.prattle.main;
 
 import com.neu.prattle.controller.GroupController;
+import com.neu.prattle.controller.FriendController;
 import com.neu.prattle.controller.UserController;
 
 import javax.ws.rs.core.Application;
@@ -21,6 +22,7 @@ public class PrattleApplication extends Application {
     public Set<Class<?>> getClasses() {
         resourceClasses.add(UserController.class);
         resourceClasses.add(GroupController.class);
+        resourceClasses.add(FriendController.class);
         return resourceClasses;
     }
 }

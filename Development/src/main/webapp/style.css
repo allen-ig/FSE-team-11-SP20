@@ -1,7 +1,7 @@
 body {
     font-family: Arial, Helvetica, sans-serif;
     font-size: 80%;
-    background-color: #1f1f1f;
+    /*background-color: #1f1f1f;*/
 }
 
 #wrapper {
@@ -133,4 +133,8 @@ p {
 
 .device a:hover {
     text-decoration: underline;
+}
+
+.dontShow {
+    display: none;
 }

@@ -1,20 +1,40 @@
 package com.neu.prattle.model;
 
+import com.neu.prattle.service.MessageService;
+import com.neu.prattle.service.MessageServiceImpl;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.util.Objects;
+
 /***
  * A Basic POJO for Message.
  *
  * @author CS5500 Fall 2019 Teaching staff
  * @version dated 2019-10-06
  */
+
+@Entity
 public class Message {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
+    private Timestamp timestamp;
+
     /***
      * The name of the user who sent this message.
      */
-    private String from;
+    private String fromUser;
     /***
      * The name of the user to whom the message is sent.
      */
-    private String to;
+    private String toUser;
     /***
      * It represents the contents of the message.
      */
@@ -23,26 +43,32 @@ public class Message {
     @Override
     public String toString() {
         return new StringBuilder()
-                .append("From: ").append(from)
-                .append("To: ").append(to)
+                .append("From: ").append(fromUser)
+                .append("To: ").append(toUser)
                 .append("Content: ").append(content)
                 .toString();
     }
 
     public String getFrom() {
-        return from;
+        return fromUser;
     }
 
     public void setFrom(String from) {
-        this.from = from;
+        this.fromUser = from;
     }
 
     public String getTo() {
-        return to;
+        return toUser;
     }
 
+    public int getId(){return this.id;}
+
     public void setTo(String to) {
-        this.to = to;
+        this.toUser = to;
+    }
+
+    public Timestamp getTimestamp(){
+        return this.timestamp;
     }
 
     public String getContent() {
@@ -57,6 +83,35 @@ public class Message {
         return new MessageBuilder();
     }
 
+    @Override
+    public boolean equals(Object o){
+        if (o == this){
+            return true;
+        }
+        if (!(o instanceof Message)) {
+            return false;
+        }
+        Message message = (Message)o;
+        long diff = Math.abs(this.getTimestamp().getTime() - message.getTimestamp().getTime());
+        return (
+                (this.getTo().equals(message.getTo())) &&
+                        (this.getFrom().equals(message.getFrom())) &&
+                        (this.getContent().equals(message.getContent())) &&
+                        (diff<5000)
+                );
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(toUser + fromUser + content);
+    }
+
+    public void setTimestamp(){
+        this.timestamp = Timestamp.from(Instant.now());
+    }
+
+
+
     /***
      * A Builder helper class to create instances of {@link Message}
      */
@@ -64,11 +119,14 @@ public class Message {
         /***
          * Invoking the build method will return this message object.
          */
+        private MessageService messageService = MessageServiceImpl.getInstance();
         Message message;
 
-        public MessageBuilder()    {
+         MessageBuilder()    {
             message = new Message();
             message.setFrom("Service");
+           message.setTimestamp();
+
         }
 
         public MessageBuilder setFrom(String from)    {
@@ -87,7 +145,7 @@ public class Message {
         }
 
         public Message build()  {
-            return message;
+            return messageService.createMessage(message);
         }
     }
 }

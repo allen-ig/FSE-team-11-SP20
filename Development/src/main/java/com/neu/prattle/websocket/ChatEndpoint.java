@@ -13,7 +13,10 @@ import com.neu.prattle.service.UserServiceWithGroups;
 import com.neu.prattle.service.UserServiceWithGroupsImpl;
 import java.io.IOException;
 import java.util.HashMap;
+
 import java.util.HashSet;
+
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
@@ -31,7 +34,13 @@ import javax.websocket.server.ServerEndpoint;
 
 import com.neu.prattle.model.Message;
 import com.neu.prattle.model.User;
+
 import com.neu.prattle.model.BasicGroup;
+import com.neu.prattle.service.MessageService;
+import com.neu.prattle.service.UserService;
+import com.neu.prattle.service.UserServiceImpl;
+import com.neu.prattle.service.MessageServiceImpl;
+
 
 /**
  * The Class ChatEndpoint.
@@ -40,16 +49,20 @@ import com.neu.prattle.model.BasicGroup;
 @ServerEndpoint(value = "/chat/{username}", decoders = MessageDecoder.class, encoders = MessageEncoder.class)
 public class ChatEndpoint {
 
+
   /**
    * The account service.
    */
-  private UserServiceWithGroups accountService = UserServiceWithGroupsImpl.getInstance();
+  private UserServiceWithGroups groupService = UserServiceWithGroupsImpl.getInstance();
   private UserService userService = UserServiceImpl.getInstance();
+  private MessageService messageService = MessageServiceImpl.getInstance();
+
   
   /**
    * The session.
    */
   private Session session;
+
 
   /**
    * The Constant chatEndpoints. ConcurrentHashMap should be thread safe.
@@ -66,8 +79,8 @@ public class ChatEndpoint {
    */
   private static Logger logger = Logger.getLogger(ChatEndpoint.class.getName());
 
-  private void setAccountService(UserServiceWithGroups accountService) {
-    this.accountService = accountService;
+  private void setAccountService(UserServiceWithGroups groupService) {
+    this.groupService = groupService;
   }
 
   private void setSession(Session session) {
@@ -92,20 +105,25 @@ public class ChatEndpoint {
   public void onOpen(Session session, @PathParam("username") String username)
       throws IOException, EncodeException {
 
+
     Optional<User> user = userService.findUserByName(username);
     if (!user.isPresent()) {
       Message error = Message.messageBuilder()
           .setMessageContent(String.format("User %s could not be found", username))
           .build();
-
-      session.getBasicRemote().sendObject(error);
+       session.getBasicRemote().sendObject(error);
       return;
     }
+        addEndpoint(session, username);
+        Message message = createConnectedMessage(username);
+        broadcast(message);
+      List<Message> userMessages = messageService.getUserMessages(username);
+      for (Message m : userMessages){
+        sendMessage(m);
+      }
+    }
+  
 
-    addEndpoint(session, username);
-    Message message = createConnectedMessage(username);
-    broadcast(message);
-  }
 
   /**
    * Creates a Message that some user is now connected - that is, a Session was opened
@@ -145,11 +163,12 @@ public class ChatEndpoint {
   @OnMessage
   public void onMessage(Session session, Message message) {
     message.setFrom(users.get(session.getId()));
-
-    if (message.getTo() == null) {
-      broadcast(message);
-      return;
-    }
+        message.setTimestamp();
+        messageService.createMessage(message);
+        if (message.getTo() == null || message.getTo().length() == 0) {
+            broadcast(message);
+          return;
+        }
 
     String[] to = message.getTo().trim().split(" ");
     switch (to[0].toUpperCase()) {
@@ -214,7 +233,7 @@ public class ChatEndpoint {
         try {
           endpoint.session.getBasicRemote()
               .sendObject(message);
-        } catch (IOException | EncodeException e) {
+        } catch (IOException | EncodeException e |  NullPointerException e) {
           /* note: in production, who exactly is looking at the console.  This exception's
            *       output should be moved to a logger.
            */
@@ -229,30 +248,32 @@ public class ChatEndpoint {
    *
    * @param message
    */
-  private static void sendMessage(Message message) {
-    if (chatEndpoints.containsKey(message.getTo())) {
-      synchronized (chatEndpoints.get(message.getTo())) {
-        try {
-          chatEndpoints.get(message.getTo()).session.getBasicRemote().sendObject(message);
-        } catch (IOException | EncodeException e) {
-          logger.log(Level.SEVERE, e.getMessage());
+  private static synchronized void sendMessage(Message message) {
+        ChatEndpoint recipientEndpoint = chatEndpoints.get(message.getTo());
+        ChatEndpoint senderEndpoint = chatEndpoints.get(message.getFrom());
+        if (!chatEndpoints.containsKey(message.getTo())){
+            Message errorMessage = new Message();
+            errorMessage.setFrom("SYSTEM");
+            errorMessage.setContent("The recipient does not exist or is currently offline");
+            try {
+                senderEndpoint.session.getBasicRemote()
+                        .sendObject(errorMessage);
+            }catch (IOException | EncodeException | NullPointerException e){
+                logger.log(Level.SEVERE, e.getMessage());
+            }
+            return;
         }
-      }
-    } else {
-      synchronized (chatEndpoints.get(message.getFrom())) {
-        try {
-
-          String content = "user: " + message.getTo()
-              + " not found :(";
-          Message response = Message.messageBuilder().setMessageContent(content)
-              .setTo(message.getFrom()).build();
-          chatEndpoints.get(message.getFrom()).session.getBasicRemote().sendObject(response);
-        } catch (IOException | EncodeException e) {
-          logger.log(Level.SEVERE, e.getMessage());
+        try{
+            recipientEndpoint.session.getBasicRemote()
+                    .sendObject(message);
+            if(!message.getContent().equals("friendRequest")) senderEndpoint.session.getBasicRemote()
+                    .sendObject(message);
+        }catch (IOException | EncodeException | NullPointerException e){
+            logger.log(Level.SEVERE, e.getMessage());
         }
-      }
     }
-  }
+  
+
 
   /**
    * Sends a message to a group. If group can't be found, does nothing.
@@ -287,6 +308,7 @@ public class ChatEndpoint {
                    *       output should be moved to a logger.
                    */
                   logger.log(Level.SEVERE, e.getMessage());
+
 
                 }
               }
@@ -348,6 +370,7 @@ public class ChatEndpoint {
         } catch (IOException | EncodeException e) {
           logger.log(Level.SEVERE, e.getMessage());
         }
+
       }
     }
 
@@ -362,6 +385,7 @@ public class ChatEndpoint {
           chatEndpoints.get(message.getFrom()).session.getBasicRemote()
               .sendObject(Message.messageBuilder().setTo(message.getFrom())
                   .setMessageContent("group created: " + group.getName()).build());
+
         }
       }
     } catch (Exception e) {
