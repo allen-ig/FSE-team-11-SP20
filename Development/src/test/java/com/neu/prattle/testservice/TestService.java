@@ -1,7 +1,8 @@
-package com.neu.prattle;
+package com.neu.prattle.testservice;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import com.neu.prattle.exceptions.UserAlreadyPresentException;
 import com.neu.prattle.model.User;
@@ -23,23 +24,15 @@ public class TestService {
 
   @Before
   public void setUp() {
+    System.setProperty("testing", "true");
     us = UserServiceImpl.getInstance();
+    assertTrue(us.isTest());
   }
 
   @After
   public void tearDown() {
-    try {
-      us.deleteUser(us.findUserByName("Test").get());
-    } catch (Exception e) {
-      return;
-    }
-    try {
-      us.deleteUser(us.findUserByName("TestAddUser").get());
-    } catch (Exception e) {
-      return;
-    }
+    System.setProperty("testing", "false");
   }
-
 
   @Test
   public void testSingleton() {
@@ -63,5 +56,16 @@ public class TestService {
   public void testAddUser() {
     us.addUser(new User("TestAddUser"));
     us.addUser(new User("TestAddUser"));
+  }
+
+  /**
+   * Ensure that a non-testing UserServiceImpl that is configured to use
+   * the actual DB is returned when System.getProperty("testing") = "false"
+   */
+  @Test
+  public void testNonTestUserServiceImpl(){
+    System.setProperty("testing", "false");
+    UserService service = UserServiceImpl.getInstance();
+    assertFalse(service.isTest());
   }
 }

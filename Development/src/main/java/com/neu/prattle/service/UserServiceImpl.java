@@ -1,42 +1,61 @@
 package com.neu.prattle.service;
 
 import com.neu.prattle.exceptions.UserAlreadyPresentException;
+import com.neu.prattle.model.Friend;
 import com.neu.prattle.model.User;
 
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.NamedQuery;
 import javax.persistence.NoResultException;
-import javax.persistence.Persistence;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
 
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.service.ServiceRegistry;
+import org.hibernate.query.Query;
 /***
  * Implementation of {@link UserService}
  *
- * It stores the user accounts in-memory, which means any user accounts
- * created will be deleted once the application has been restarted.
+ * It stores the user accounts in a MYSQL database
+ * It is capable of storing data in an actual database or a temporary,
+ * im-memory database that will be deleted upon completion of code execution
  *
  * @author CS5500 Fall 2019 Teaching staff
  * @version dated 2019-10-06
  */
 public class UserServiceImpl implements UserService {
 
+  private Configuration config = new Configuration().configure("hibernate.cfg.xml")
+          .addAnnotatedClass(User.class).addAnnotatedClass(Friend.class);
+  private ServiceRegistry registry = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
+  private SessionFactory sessionFactory = config.buildSessionFactory(registry);
+  private boolean isTest;
+  private Logger logger = Logger.getLogger(this.getClass().getName());
+
     /***
-     * UserServiceImpl is a Singleton class.
+     * UserServiceImpl is a "Singleton" class.
      */
     private UserServiceImpl() { }
-    private static final EntityManagerFactory ENTITY_MANAGER_FACTORY =
-            Persistence.createEntityManagerFactory("prattle");
-    private static UserService accountService;
 
+    private static UserServiceImpl accountService;
+    private static UserServiceImpl testingUserService;
     static {
         accountService = new UserServiceImpl();
+        accountService.isTest = false;
+    }
+
+    static {
+      testingUserService = new UserServiceImpl();
+      Configuration testingConfig = new Configuration().configure("testing-hibernate.cfg.xml")
+              .addAnnotatedClass(User.class).addAnnotatedClass(Friend.class);
+      testingUserService.config = testingConfig;
+      ServiceRegistry testingRegistry = new StandardServiceRegistryBuilder().applySettings(testingConfig.getProperties()).build();
+      testingUserService.registry = testingRegistry;
+      testingUserService.sessionFactory = testingConfig.buildSessionFactory(testingRegistry);
+      testingUserService.isTest = true;
     }
 
     /**
@@ -44,59 +63,72 @@ public class UserServiceImpl implements UserService {
      * @return this
      */
     public static UserService getInstance() {
+      if (System.getProperty("testing") == null){
+        return accountService;
+      }
+      else if (System.getProperty("testing").equals("true")){
+        return testingUserService;
+      }
         return accountService;
     }
 
-    /***
+  /***
      *
      * @param name -> The name of the user.
-     * @return An optional wrapper supplying the user.
+     * @return An optional wrapper supplying the User if it exists empty if it does not.
      */
     @Override
     public Optional<User>  findUserByName(String name){
-        EntityManager em = ENTITY_MANAGER_FACTORY.createEntityManager();
-        String strQuery = "SELECT u FROM User u  WHERE u.name = :name";
-        TypedQuery<User> tq = em.createQuery(strQuery, User.class);
-        tq.setParameter("name", name);
-        User user;
-        try {
-            // Get matching User object and output
-            user = tq.getSingleResult();
-            return Optional.of(user);
-        }
-        catch(NoResultException ex) {
-            return Optional.empty();
-        }
+      Session session = sessionFactory.openSession();
+      session.beginTransaction();
+      String strQuery = "SELECT u FROM User u  WHERE u.name = :name";
+      Query query = session.createQuery(strQuery);
+      query.setParameter("name", name);
+      try{
+        User result = (User) query.getSingleResult();
+        return Optional.of(result);
+      } catch (NoResultException ex) {
+        return Optional.empty();
+      } finally {
+        session.disconnect();
+        session.close();
+      }
     }
 
     @Override
     public synchronized void addUser(User user){
-        EntityManager em = ENTITY_MANAGER_FACTORY.createEntityManager();
-        EntityTransaction et = null;
         if (findUserByName(user.getName()).isPresent()){
             throw new UserAlreadyPresentException(String.format("User already present with name: %s", user.getName()));
         }
+      Session session = sessionFactory.openSession();
+      session.beginTransaction();
         try {
-            et = em.getTransaction();
-            et.begin();
-            em.persist(user);
-            et.commit();
+          session.save(user);
+          session.getTransaction().commit();
         } catch (Exception e){
-            if (et != null){
-                et.rollback();
-            }
+            logger.log(Level.SEVERE,(e.getMessage()));
         } finally{
-            em.close();
+            session.disconnect();
+            session.close();
         }
     }
 
     public synchronized void deleteUser(User user){
-        EntityManager em = ENTITY_MANAGER_FACTORY.createEntityManager();
-        EntityTransaction et = em.getTransaction();
-        User u = em.find(User.class, user.getId());
-        et.begin();
-        em.remove(u);
-        et.commit();
-        em.close();
+      Session session = sessionFactory.openSession();
+      session.beginTransaction();
+      try{
+        session.delete(user);
+        session.getTransaction().commit();
+      } catch(Exception e){
+        logger.log(Level.SEVERE,(e.getMessage()));
+      } finally{
+        session.disconnect();
+        session.close();
+      }
     }
+
+  @Override
+  public boolean isTest() {
+    return isTest;
+  }
 }

@@ -1,13 +1,10 @@
 package com.neu.prattle.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 
 /***
@@ -17,7 +14,7 @@ import javax.persistence.Table;
  * @version dated 2019-10-06
  */
 @Entity
-@Table(name="user")
+@Table(name="nuslack_user")
 public class User {
 
 
@@ -37,7 +34,29 @@ public class User {
   @Column(name = "name", unique = true)
 	private String name;
 
-	public User() {
+	@OneToMany(mappedBy = "sender", cascade = CascadeType.ALL)
+    private List<Friend> friendList = new ArrayList<>();
+
+	@OneToMany(mappedBy = "recipient", cascade = CascadeType.ALL)
+    private List<Friend> friendByList = new ArrayList<>();
+
+    public List<Friend> getFriendList() {
+        return friendList;
+    }
+
+    public void setFriendList(List<Friend> friendList) {
+        this.friendList = friendList;
+    }
+
+    public List<Friend> getFriendByList() {
+        return friendByList;
+    }
+
+    public void setFriendByList(List<Friend> friendByList) {
+        this.friendByList = friendByList;
+    }
+
+    public User() {
 
 	}
 
