@@ -16,10 +16,11 @@ mapped to database tables. Database driver, location, userid and pw
         <!-- Define the class for Hibernate which implements JPA -->
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <!-- Define the object that should be persisted in the database -->
-        <class>com.neu.prattle.model.TestUser</class>
+        <class>com.neu.prattle.model.User</class>
+        <class>com.neu.prattle.model.BasicGroup</class>
         <properties>
             <!-- Driver for DB database -->
-            <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />
+            <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver" />
             <!-- URL for DB -->
             <property name="javax.persistence.jdbc.url" value="jdbc:mysql://db4free.net:3306/fseproject" />
             <!-- Username -->

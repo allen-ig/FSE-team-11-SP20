@@ -1,10 +1,9 @@
 package com.neu.prattle.model;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 import javax.persistence.*;
+import java.util.*;
+
 
 
 /***
@@ -17,7 +16,6 @@ import javax.persistence.*;
 @Table(name="nuslack_user")
 public class User {
 
-
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int id;
@@ -25,7 +23,6 @@ public class User {
 	public String getName() {
 		return name;
 	}
-	public int getId(){return id;}
 
 	public void setName(String name) {
 		this.name = name;
@@ -34,6 +31,10 @@ public class User {
   @Column(name = "name", unique = true)
 	private String name;
 
+
+	@ManyToMany(mappedBy = "members", cascade = {CascadeType.ALL})
+  private Set<BasicGroup> groups;
+  
 	@OneToMany(mappedBy = "sender", cascade = CascadeType.ALL)
     private List<Friend> friendList = new ArrayList<>();
 
@@ -56,43 +57,70 @@ public class User {
         this.friendByList = friendByList;
     }
 
-    public User() {
 
+  @ManyToMany(mappedBy = "moderators", cascade = {CascadeType.ALL})
+  private Set<BasicGroup> moderatorFor;
+	
+	public User() {
+    groups = new HashSet<>();
+    moderatorFor = new HashSet<>();
 	}
 
-    public User(String name) {
-        this.name = name;
-    }
+	public User(String name) {
+	  this.name = name;
+    groups = new HashSet<>();
+    moderatorFor = new HashSet<>();
+	}
 
-    /***
-     * Returns the hashCode of this object.
-     *
-     * As name can be treated as a sort of identifier for
-     * this instance, we can use the hashCode of "name"
-     * for the complete object.
-     *
-     *
-     * @return hashCode of "this"
-     */
-    @Override
-    public int hashCode() {
-        return Objects.hash(name);
+	public int getId() {
+        return this.id;
     }
+  
+  /***
+   * Returns the hashCode of this object.
+   *
+   * As name can be treated as a sort of identifier for
+   * this instance, we can use the hashCode of "name"
+   * for the complete object.
+   *
+   *
+   * @return hashCode of "this"
+   */
+  @Override
+  public int hashCode() {
+    return Objects.hash(name);
+  }
 
-    /***
-     * Makes comparison between two user accounts.
-     *
-     * Two user objects are equal if their name are equal ( names are case-sensitive )
-     *
-     * @param obj Object to compare
-     * @return a predicate value for the comparison.
-     */
-    @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof User))
-            return false;
-
-        User user = (User) obj;
-        return user.name.equals(this.name);
+  /***
+   * Makes comparison between two user accounts.
+   *
+   * Two user objects are equal if their name are equal ( names are case-sensitive )
+   *
+   * @param obj Object to compare
+   * @return a predicate value for the comparison.
+   */
+  @Override
+  public boolean equals(Object obj) {
+    if (!(obj instanceof User)) {
+      return false;
     }
+    User user = (User) obj;
+    return user.name.equals(this.name);
+  }
+  
+  public Set<BasicGroup> getGroups() {
+    return groups;
+  }
+  
+  public void setGroups(Set<BasicGroup> groups) {
+    this.groups = groups;
+  }
+  
+  public Set<BasicGroup> getModeratorFor() {
+    return moderatorFor;
+  }
+  
+  public void setModeratorFor(Set<BasicGroup> moderatorFor) {
+    this.moderatorFor = moderatorFor;
+  }
 }

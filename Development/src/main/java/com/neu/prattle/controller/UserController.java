@@ -4,12 +4,17 @@ import com.neu.prattle.exceptions.UserAlreadyPresentException;
 import com.neu.prattle.model.User;
 import com.neu.prattle.service.UserService;
 import com.neu.prattle.service.UserServiceImpl;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+
 
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import javax.ws.rs.*;
+
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
@@ -28,6 +33,8 @@ import java.util.logging.Logger;
 public class UserController {
 
     // Usually Dependency injection will be used to inject the service at run-time
+    private UserService userService = UserServiceImpl.getInstance();
+    
     private UserService accountService = UserServiceImpl.getInstance();
 
     private static Logger logger = Logger.getLogger(UserController.class.getName());
@@ -43,7 +50,7 @@ public class UserController {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response createUserAccount(User user) {
         try {
-            accountService.addUser(user);
+            userService.addUser(user);
         } catch (UserAlreadyPresentException e) {
             return Response.status(409).build();
         }

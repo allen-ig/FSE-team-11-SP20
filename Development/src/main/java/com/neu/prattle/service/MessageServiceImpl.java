@@ -1,23 +1,19 @@
 package com.neu.prattle.service;
 
+import com.neu.prattle.main.HibernateUtil;
 import com.neu.prattle.model.Message;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.hibernate.cfg.Configuration;
 import org.hibernate.query.Query;
-import org.hibernate.service.ServiceRegistry;
 
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class MessageServiceImpl implements MessageService {
-
-  private Configuration config = new Configuration().configure("hibernate.cfg.xml").addAnnotatedClass(Message.class);
-  private ServiceRegistry registry = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
-  private SessionFactory sessionFactory = config.buildSessionFactory(registry);
+  
+  private SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
   private boolean isTest;
   private Logger logger = Logger.getLogger(this.getClass().getName());
 
@@ -36,11 +32,8 @@ public class MessageServiceImpl implements MessageService {
 
   static {
     testingMessageService = new MessageServiceImpl();
-    Configuration testingConfig = new Configuration().configure("testing-hibernate.cfg.xml").addAnnotatedClass(Message.class);
-    testingMessageService.config = testingConfig;
-    ServiceRegistry testingRegistry = new StandardServiceRegistryBuilder().applySettings(testingConfig.getProperties()).build();
-    testingMessageService.registry = testingRegistry;
-    testingMessageService.sessionFactory = testingConfig.buildSessionFactory(testingRegistry);
+    testingMessageService.sessionFactory =
+      HibernateUtil.getTestSessionFactory();
     testingMessageService.isTest = true;
   }
 

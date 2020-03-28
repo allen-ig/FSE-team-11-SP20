@@ -124,8 +124,9 @@ public class Message {
 
          MessageBuilder()    {
             message = new Message();
-            message.setFrom("Not set");
-            message.setTimestamp();
+            message.setFrom("Service");
+           message.setTimestamp();
+
         }
 
         public MessageBuilder setFrom(String from)    {
