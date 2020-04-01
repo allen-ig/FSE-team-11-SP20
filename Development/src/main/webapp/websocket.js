@@ -24,13 +24,11 @@ function connect() {
           log.innerHTML += newMessage
         }
         else {
-            // friendId = message.friendId;
             searchAndFriend.innerHTML +=
                 `<div id="friendRequest"><span>${message.from} just send you a friend request!</span>
-                <button id="approveFriendRequest" onclick="handleFriendRequest(senderObj.name, recipientObj.name, 'approve');">Approve</button>
-                <button id="denyFriendRequest" onclick="handleFriendRequest(senderObj.name, recipientObj.name, 'deny');">Deny</button> </div>`;
+                <button id="approveFriendRequest" onclick="handleFriendRequest('${message.from}', '${message.to}', 'approve');">Approve</button>
+                <button id="denyFriendRequest" onclick="handleFriendRequest('${message.from}', '${message.to}', 'deny');">Deny</button> </div>`;
         }
-        
     };
 }
 
@@ -56,8 +54,6 @@ function search() {
     fetch(`http://${document.location.host}${document.location.pathname}rest/user/${userToSearch}`)
         .then(response => response.json())
         .then(response => {
-            console.log(response)
-            recipientObj = response;
             if (response.name) {
                 console.log(`you can add ${response.name} as a friend!`);
                 addFriendBtn.classList.remove("dontShow");

@@ -99,7 +99,7 @@ public class ChatEndpoint {
         broadcast(message);
       List<Message> userMessages = messageService.getUserMessages(username);
       for (Message m : userMessages){
-        sendMessage(m);
+        if (!m.getContent().equals("friendRequest")) sendMessage(m);
       }
     }
   
