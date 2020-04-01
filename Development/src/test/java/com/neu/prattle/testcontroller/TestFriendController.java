@@ -76,7 +76,11 @@ public class TestFriendController {
 
     @Test
     public void testFindAllFriends(){
-        friendController.findAllFriends(test1.getName());
+        Friend friend = new Friend(test1, test2);
+        friendController.sendFriendRequest(friend);
+        friendController.respondToFriendRequest(test1.getName(),test2.getName(),"approve");
+        System.out.println(friendController.findAllFriends(test1.getName()).getStatus());
+        friendService.deleteFriend(friend);
     }
 
     @Test

@@ -42,16 +42,21 @@ public class FriendController {
     @Path("/{username}/friends")
     @Produces(MediaType.APPLICATION_JSON)
     public Response findAllFriends(@PathParam("username") String username){
-        Collection<Friend> friendList = friendService.findAllFriends(username);
-
-        ObjectMapper mapper = new ObjectMapper();
-        String jsonString = "";
-        try {
-            jsonString = mapper.writeValueAsString(friendList);
-        } catch (IOException e) {
-            logger.log(Level.SEVERE, e.getMessage());
+        Optional<User> user = userService.findUserByName(username);
+        String resString = "";
+        if (user.isPresent()) {
+            Collection<Friend> friendList = friendService.findAllFriends(user.get());
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                resString = mapper.writeValueAsString(friendList);
+                return Response.ok().type(MediaType.APPLICATION_JSON).entity(resString).build();
+            } catch (IOException e) {
+                logger.log(Level.SEVERE, e.getMessage());
+            }
+        }else {
+            resString = "Could not find the target user " + username;
         }
-        return Response.ok().type(MediaType.APPLICATION_JSON).entity(jsonString).build();
+        return Response.status(404).type(MediaType.APPLICATION_JSON).entity(resString).build();
     }
 
     @PATCH
