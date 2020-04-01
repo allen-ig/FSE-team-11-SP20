@@ -54,6 +54,7 @@ function search() {
     fetch(`http://${document.location.host}${document.location.pathname}rest/user/${userToSearch}`)
         .then(response => response.json())
         .then(response => {
+            recipientObj = response;
             if (response.name) {
                 console.log(`you can add ${response.name} as a friend!`);
                 addFriendBtn.classList.remove("dontShow");
