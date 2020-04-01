@@ -41,22 +41,22 @@ public class BasicGroup {
   /**
    * ArrayList of User for the members of the group.
    */
-  @ManyToMany(cascade = {CascadeType.ALL})
+  @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
   @JoinTable(
     name = "user_group",
-    joinColumns = {@JoinColumn(name = "group_id")},
-    inverseJoinColumns = {@JoinColumn(name = "user_id")}
+    joinColumns = {@JoinColumn(name = "group_id", referencedColumnName = "id")},
+    inverseJoinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")}
   )
   private Set<User> members;
 
   /**
    * Moderators of the group.
    */
-  @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
+  @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
   @JoinTable(
     name = "moderator_group",
-    joinColumns = {@JoinColumn(name = "group_id")},
-    inverseJoinColumns = {@JoinColumn(name = "user_id")}
+    joinColumns = {@JoinColumn(name = "group_id", referencedColumnName = "id")},
+    inverseJoinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")}
   )
   private Set<User> moderators;
 

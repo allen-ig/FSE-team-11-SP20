@@ -31,16 +31,29 @@ public class User {
   @Column(name = "name", unique = true)
 	private String name;
 
-
 	@ManyToMany(mappedBy = "members", cascade = {CascadeType.ALL})
   private Set<BasicGroup> groups;
+  
+  @ManyToMany(mappedBy = "moderators", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+  private Set<BasicGroup> moderatorFor;
   
 	@OneToMany(mappedBy = "sender", cascade = CascadeType.ALL)
     private List<Friend> friendList = new ArrayList<>();
 
 	@OneToMany(mappedBy = "recipient", cascade = CascadeType.ALL)
     private List<Friend> friendByList = new ArrayList<>();
-
+  
+  public User() {
+    groups = new HashSet<>();
+    moderatorFor = new HashSet<>();
+  }
+  
+  public User(String name) {
+    this.name = name;
+    groups = new HashSet<>();
+    moderatorFor = new HashSet<>();
+  }
+	
     public List<Friend> getFriendList() {
         return friendList;
     }
@@ -56,21 +69,6 @@ public class User {
     public void setFriendByList(List<Friend> friendByList) {
         this.friendByList = friendByList;
     }
-
-
-  @ManyToMany(mappedBy = "moderators", cascade = {CascadeType.ALL})
-  private Set<BasicGroup> moderatorFor;
-	
-	public User() {
-    groups = new HashSet<>();
-    moderatorFor = new HashSet<>();
-	}
-
-	public User(String name) {
-	  this.name = name;
-    groups = new HashSet<>();
-    moderatorFor = new HashSet<>();
-	}
 
 	public int getId() {
         return this.id;
@@ -101,11 +99,14 @@ public class User {
    */
   @Override
   public boolean equals(Object obj) {
+    if (obj == this){
+      return true;
+    }
     if (!(obj instanceof User)) {
       return false;
     }
     User user = (User) obj;
-    return user.name.equals(this.name);
+    return user.name.equals(this.name) && user.getId()==this.getId();
   }
   
   public Set<BasicGroup> getGroups() {
