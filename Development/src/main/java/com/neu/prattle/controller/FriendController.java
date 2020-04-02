@@ -13,7 +13,9 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -47,8 +49,16 @@ public class FriendController {
         if (user.isPresent()) {
             Collection<Friend> friendList = friendService.findAllFriends(user.get());
             ObjectMapper mapper = new ObjectMapper();
+            List<User> userList = new ArrayList<>();
+            for (Friend friend : friendList){
+                if (friend.getSender().getName().equals(username))
+                    userList.add(friend.getRecipient());
+                else if (friend.getRecipient().getName().equals(username))
+                    userList.add(friend.getSender());
+            }
+
             try {
-                resString = mapper.writeValueAsString(friendList);
+                resString = mapper.writeValueAsString(userList);
                 return Response.ok().type(MediaType.APPLICATION_JSON).entity(resString).build();
             } catch (IOException e) {
                 logger.log(Level.SEVERE, e.getMessage());

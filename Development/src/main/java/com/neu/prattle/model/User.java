@@ -1,6 +1,8 @@
 package com.neu.prattle.model;
 
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.*;
 
@@ -30,16 +32,16 @@ public class User {
 
   @Column(name = "name", unique = true)
 	private String name;
-
+  @JsonIgnore
 	@ManyToMany(mappedBy = "members", cascade = {CascadeType.ALL})
   private Set<BasicGroup> groups;
-  
+  @JsonIgnore
   @ManyToMany(mappedBy = "moderators", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
   private Set<BasicGroup> moderatorFor;
-  
+  @JsonIgnore
 	@OneToMany(mappedBy = "sender", cascade = CascadeType.ALL)
     private List<Friend> friendList = new ArrayList<>();
-
+  @JsonIgnore
 	@OneToMany(mappedBy = "recipient", cascade = CascadeType.ALL)
     private List<Friend> friendByList = new ArrayList<>();
   
@@ -53,7 +55,7 @@ public class User {
     groups = new HashSet<>();
     moderatorFor = new HashSet<>();
   }
-	
+  @JsonIgnore
     public List<Friend> getFriendList() {
         return friendList;
     }
@@ -61,7 +63,7 @@ public class User {
     public void setFriendList(List<Friend> friendList) {
         this.friendList = friendList;
     }
-
+  @JsonIgnore
     public List<Friend> getFriendByList() {
         return friendByList;
     }
@@ -108,7 +110,7 @@ public class User {
     User user = (User) obj;
     return user.name.equals(this.name) && user.getId()==this.getId();
   }
-  
+  @JsonIgnore
   public Set<BasicGroup> getGroups() {
     return groups;
   }
@@ -116,7 +118,7 @@ public class User {
   public void setGroups(Set<BasicGroup> groups) {
     this.groups = groups;
   }
-  
+  @JsonIgnore
   public Set<BasicGroup> getModeratorFor() {
     return moderatorFor;
   }
