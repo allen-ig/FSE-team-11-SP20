@@ -1,16 +1,13 @@
 package com.neu.prattle.service;
 
 import com.neu.prattle.exceptions.FriendAlreadyPresentException;
-import com.neu.prattle.exceptions.UserAlreadyPresentException;
+import com.neu.prattle.main.HibernateUtil;
 import com.neu.prattle.model.Friend;
 import com.neu.prattle.model.User;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.hibernate.cfg.Configuration;
-import org.hibernate.service.ServiceRegistry;
-
-import javax.persistence.*;
+import javax.persistence.NoResultException;
+import javax.persistence.Query;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -19,11 +16,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class FriendServiceImpl implements FriendService{
-
-    private Configuration config = new Configuration().configure("hibernate.cfg.xml")
-            .addAnnotatedClass(User.class).addAnnotatedClass(Friend.class);
-    private ServiceRegistry registry = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
-    private SessionFactory sessionFactory = config.buildSessionFactory(registry);
+  
+    private SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
     private boolean isTest;
 
     private Logger logger = Logger.getLogger(this.getClass().getName());
@@ -32,6 +26,8 @@ public class FriendServiceImpl implements FriendService{
 
     private static FriendServiceImpl friendService;
     private static FriendServiceImpl testingFriendService;
+    
+    
     static {
         friendService = new FriendServiceImpl();
         friendService.isTest = false;
@@ -39,15 +35,10 @@ public class FriendServiceImpl implements FriendService{
 
     static {
         testingFriendService = new FriendServiceImpl();
-        Configuration testingConfig = new Configuration().configure("testing-hibernate.cfg.xml")
-                .addAnnotatedClass(User.class).addAnnotatedClass(Friend.class);
-        testingFriendService.config = testingConfig;
-        ServiceRegistry testingRegistry = new StandardServiceRegistryBuilder().applySettings(testingConfig.getProperties()).build();
-        testingFriendService.registry = testingRegistry;
-        testingFriendService.sessionFactory = testingConfig.buildSessionFactory(testingRegistry);
+        testingFriendService.sessionFactory = HibernateUtil.getTestSessionFactory();
         testingFriendService.isTest = true;
     }
-
+    
     public static FriendService getInstance() {
         try{
             if (System.getProperty("testing").equals("true")){

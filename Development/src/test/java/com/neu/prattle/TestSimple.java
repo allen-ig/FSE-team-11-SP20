@@ -1,20 +1,18 @@
 package com.neu.prattle;
 
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.util.Optional;
-
 import com.neu.prattle.main.PrattleApplication;
+import com.neu.prattle.model.User;
 import com.neu.prattle.service.UserService;
 import com.neu.prattle.service.UserServiceImpl;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.neu.prattle.model.User;
+import java.util.Optional;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class TestSimple {
 
@@ -59,6 +57,6 @@ public class TestSimple {
 
 	@Test
 	public void prattleApplicationTest() {
-		assertEquals(2, prattleApplication.getClasses().size());
+		assertEquals(3, prattleApplication.getClasses().size());
 	}
 }
