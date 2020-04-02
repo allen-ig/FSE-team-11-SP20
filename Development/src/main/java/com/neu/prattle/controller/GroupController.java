@@ -120,6 +120,7 @@ public class GroupController {
     StringBuilder message = pr.getMessage();
 
     if (!pr.allClear) {
+      message.append("Did not pass allClear");
       return Response.status(409).entity(message.toString()).build();
     }
 
@@ -127,13 +128,13 @@ public class GroupController {
       accountService.extendUsers(pr.getSender(), pr.getUser(), pr.getGroup());
     } catch (Exception e) {
       logger.log(Level.SEVERE, e.getMessage());
-      return Response.status(409).build();
+      return Response.status(409).entity(message.toString()).build();
     }
 
     message.append("members of ").append(pr.getGroup().getName());
     message.append(" appended: ").append(pr.getUser().getName());
     // !!! Issue - no way to send a message to everyone except from JS or calling ChatEncPoint
-    return Response.ok().entity(message.toString()).build();
+    return Response.ok().type(MediaType.TEXT_PLAIN).entity(message.toString()).build();
   }
 
   /***

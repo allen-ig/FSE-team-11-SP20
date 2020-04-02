@@ -2,8 +2,13 @@ var ws;
 var senderObj;
 var recipientObj;
 
+var sender;
+
+
+
 function connect() {
     var username = document.getElementById("username").value;
+    sender = document.getElementById("username").value;
     
     var host = document.location.host;
     var pathname = document.location.pathname;
@@ -110,4 +115,186 @@ function handleFriendRequest(sender, recipient, response) {
             let friendRequest = document.getElementById("friendRequest");
             friendRequest.parentNode.removeChild(friendRequest);
         })
+}
+
+function sendGroup() {
+    var content = document.getElementById("msg").value;
+    var recipient = document.getElementById("usr").value;
+    var group = "group ";
+    var withGroup = group.concat(recipient);
+    var json = JSON.stringify({
+        "to":withGroup,
+        "content":content
+    });
+
+    ws.send(json);
+}
+
+function addMember() {
+
+    var host = document.location.host;
+    var pathname = document.location.pathname;
+    var addMemUrl = "ws://" + host + pathname + "group/" + "addUser";
+
+    var user = document.getElementById("usr").value;
+    var group = document.getElementById("msg").value;
+    var json = JSON.stringify({
+        "sender":sender,
+        "user":user,
+        "group":group
+    });
+
+    fetch(addMemUrl, {
+        method: 'post',
+        headers: {
+            "Content-Type": "application/json; charset=UTF-8"
+        },
+        body: json
+        })
+        .then(function (response) {
+            return response.text();
+        })
+        .then(function (text) {
+            console.log("Service: ", text);
+        })
+        .catch(function (error) {
+            console.log("Service: Error: ", error);
+        });
+
+    /*
+    addMemberRequest = new XMLHttpRequest();
+
+    var host = document.location.host;
+    var pathname = document.location.pathname;
+
+    addMemberRequest.open("PUT", "ws://" + host + pathname + "group/" + "addUser", true);
+    addMemberRequest.setRequestHeader("Content-Type", "application/json; charset=utf-8");
+
+
+    var user = document.getElementById("usr").value;
+    var group = document.getElementById("msg").value;
+    var json = JSON.stringify({
+            "sender":sender,
+            "user":user,
+            "group":group
+        });
+
+    addMemberRequest.onreadystatechange = function() {
+        if (this.readyState == 4) {
+            var log = document.getElementById("log");
+            var String = addMemberRequest.responseText;
+            console.log(addMemberRequest.responseText);
+            log.innerHTML += addMemberRequest.responseText;
+        } else {
+            log.innerHTML += addMemberRequest.responseText;
+        }
+    };
+
+    addMemberRequest.send(json);
+     */
+}
+
+function addMod() {
+
+    addModeratorRequest = new XMLHttpRequest();
+
+    var host = document.location.host;
+    var pathname = document.location.pathname;
+
+    addModeratorRequest.open("PUT", "ws://" + host + pathname + "group/" + "addModerator", true);
+
+    addModeratorRequest.setRequestHeader('Content-Type', 'application/json');
+
+    var user = document.getElementById("usr").value;
+    var group = document.getElementById("msg").value;
+    var json = JSON.stringify({
+            "sender":sender,
+            "user":user,
+            "group":group
+        });
+
+    addModeratorRequest.onreadystatechange = function() {
+      var log = document.getElementById("log");
+      console.log(addModeratorRequest.responseText);
+      log.innerHTML += addModeratorRequest.responseText;
+    };
+
+    addModeratorRequest.send(json);
+}
+
+function removeMember() {
+
+    removeMemberRequest = new XMLHttpRequest();
+
+    var host = document.location.host;
+    var pathname = document.location.pathname;
+
+    removeMemberRequest.open("PUT", "ws://" + host + pathname + "group/" + "removeUser", true);
+
+    removeMemberRequest.setRequestHeader('Content-Type', 'application/json');
+    var user = document.getElementById("usr").value;
+    var group = document.getElementById("msg").value;
+    var json = JSON.stringify({
+            "sender":sender,
+            "user":user,
+            "group":group
+        });
+
+    removeMemberRequest.onreadystatechange = function() {
+      var log = document.getElementById("log");
+      log.innerHTML += removeMemberRequest.responseText;
+    };
+
+    removeMemberRequest.send(json);
+}
+
+function removeMod() {
+
+    removeModeratorRequest = new XMLHttpRequest();
+
+    var host = document.location.host;
+    var pathname = document.location.pathname;
+    removeModeratorRequest.open("PUT", "ws://" + host + pathname + "group/" + "removeModerator", true);
+
+    removeModeratorRequest.setRequestHeader('Content-Type', 'application/json');
+    var user = document.getElementById("usr").value;
+    var group = document.getElementById("msg").value;
+    var json = JSON.stringify({
+            "sender":sender,
+            "user":user,
+            "group":group
+        });
+
+    removeModeratorRequest.onreadystatechange = function() {
+        var log = document.getElementById("log");
+        log.innerHTML += removeModeratorRequest.responseText;
+      };
+
+    removeModeratorRequest.send(json);
+}
+
+function deleteGroup() {
+
+    deleteGroupRequest = new XMLHttpRequest();
+
+    deleteGroupRequest.open("DELETE", "ws://" + host + pathname + "group/" + "delete", true);
+
+    var host = document.location.host;
+    var pathname = document.location.pathname;
+
+    deleteGroupRequest.setRequestHeader('Content-Type', 'application/json');
+    var group = document.getElementById("msg").value;
+    var json = JSON.stringify({
+            "sender":sender,
+            "user":sender,
+            "group":group
+        });
+
+    deleteGroupRequest.onreadystatechange = function() {
+        var log = document.getElementById("log");
+        log.innerHTML += deleteGroupRequest.responseText;
+     };
+
+    deleteGroupRequest.send(json);
+
 }
