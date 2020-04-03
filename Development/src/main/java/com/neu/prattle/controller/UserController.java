@@ -70,7 +70,6 @@ public class UserController {
         try {
             jsonString = mapper.writeValueAsString(user);
         } catch (IOException e) {
-            jsonString = String.format("{ \"id\" : \"%d\", \"name\" : \"%s\" }", user.getId(), user.getName());
             logger.log(Level.SEVERE, e.getMessage());
         }
         return Response.ok().type(MediaType.APPLICATION_JSON).entity(jsonString).build();

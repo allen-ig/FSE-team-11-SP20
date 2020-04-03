@@ -79,7 +79,7 @@ public class TestFriendService {
         Friend friend = new Friend(test1, test2);
         friendService.sendFriendRequest(friend);
         friendService.approveFriendRequest(test1, test2, true);
-        System.out.println(friendService.findAllFriends(test1));
+        assertEquals(1, friendService.findAllFriends(test1).size());
         friendService.deleteFriend(friend);
     }
 

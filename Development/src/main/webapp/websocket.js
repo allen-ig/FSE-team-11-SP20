@@ -9,7 +9,6 @@ function connect() {
     var pathname = document.location.pathname;
     
     ws = new WebSocket("ws://" + host + pathname + "chat/" + username);
-
     ws.onmessage = function(event) {
     var log = document.getElementById("log");
         console.log(event.data);
@@ -107,4 +106,23 @@ function handleFriendRequest(sender, recipient, response) {
             let friendRequest = document.getElementById("friendRequest");
             friendRequest.parentNode.removeChild(friendRequest);
         })
+}
+
+function getFriendList() {
+    let friendListNode = document.getElementById("friendList")
+    if (friendListNode){
+        friendListNode.remove();
+    }else {
+        fetch(`http://${document.location.host}${document.location.pathname}rest/friend/${ws.url.split('/').pop()}/friends`,)
+            .then(response => response.json())
+            .then(response => {
+                let connectField = document.getElementById("connect");
+                let friendList = "<tr><ul id='friendList'>";
+                response.map(user => {
+                    friendList += `<li>${user.name}</li>`;
+                })
+                friendList += "</ul></tr>";
+                connectField.innerHTML += friendList;
+            })
+    }
 }

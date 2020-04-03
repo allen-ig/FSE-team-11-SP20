@@ -79,7 +79,7 @@ public class TestFriendController {
         Friend friend = new Friend(test1, test2);
         friendController.sendFriendRequest(friend);
         friendController.respondToFriendRequest(test1.getName(),test2.getName(),"approve");
-        System.out.println(friendController.findAllFriends(test1.getName()).getStatus());
+        assertEquals(200, friendController.findAllFriends(test1.getName()).getStatus());
         friendService.deleteFriend(friend);
     }
 

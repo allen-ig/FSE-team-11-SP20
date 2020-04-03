@@ -51,7 +51,8 @@ public class FriendServiceImpl implements FriendService{
     }
     @Override
     public synchronized void sendFriendRequest(Friend friend) {
-        if (findFriendByUsers(friend.getSender(), friend.getRecipient()).isPresent()){
+        if (findFriendByUsers(friend.getSender(), friend.getRecipient()).isPresent() ||
+                findFriendByUsers(friend.getRecipient(), friend.getSender()).isPresent()){
             throw new FriendAlreadyPresentException(
                     String.format("Friend relationship between %s and %s already present!",
                             friend.getSender().getName(), friend.getRecipient().getName()));
