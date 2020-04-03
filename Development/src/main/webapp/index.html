@@ -20,7 +20,7 @@
             <tr>
                 <td id="searchAndFriend">
                     <input type="text" size="51" id="search" placeholder="Search for a User"/>
-                    <button type="button" onclick="search();" >search</button>
+                    <button type="button" onclick="search();" >Search</button>
                     <button type="button" onclick="addFriend();" id="addFriend" class="dontShow">Send Friend Request</button>
                 </td>
             </tr>
@@ -32,22 +32,37 @@
             <tr>
                 <td>
                     <input type="text" size="51" id="msg" placeholder="Message"/>
-                    <button type="button" onclick="send();" >Send to User</button>
-                    <button type="button" onclick="sendGroup();" >Send to Group</button>
+                    <div class="dropup">
+                        <button type="button">Send</button>
+                        <div class="dropup-content">
+                            <button type="button" onclick="send();" >Send to User</button>
+                            <button type="button" onclick="sendGroup();" >Send to Group</button>
+                        </div>
+                    </div>
                 </td>
             </tr>
             <tr>
                 <td>
-                    <button type="button" onclick="addMember();" >Add Member</button>
-                    <button type="button" onclick="addMod();" >Add Mod</button>
-                    <button type="button" onclick="removeMember();" >Delete Member</button>
-                    <button type="button" onclick="removeMod();" >Delete Mod</button>
-                    <button type="button" onclick="deleteGroup();" >Delete Group</button>
+                    <input type="text" size="12" id="gfGroup" placeholder="Group"/>
+                    <input type="text" size="12" id="gfUser" placeholder="User"/>
+                    <input type="text" size="11" id="gfModerator" placeholder="Mod"/>
+                    <div class="dropup">
+                        <button type="button">Group Func</button>
+                        <div class="dropup-content">
+                            <button type="button" onclick="addGroup();" >Create Group</button>
+                            <button type="button" onclick="addMember();" >Add Member</button>
+                            <button type="button" onclick="addMod();" >Add Moderator</button>
+                            <button type="button" onclick="removeMember();" >Delete Member</button>
+                            <button type="button" onclick="removeMod();" >Delete Moderator</button>
+                            <button type="button" onclick="deleteGroup();" >Delete Group</button>
+                        </div>
+                    </div>
                 </td>
             </tr>
         </table>
     </body>
 
     <script src="websocket.js"></script>
+    <script src="groupfunc.js"></script>
 
 </html>

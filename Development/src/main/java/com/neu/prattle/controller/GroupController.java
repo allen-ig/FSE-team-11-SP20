@@ -1,7 +1,9 @@
 package com.neu.prattle.controller;
 
 import com.neu.prattle.exceptions.GroupAlreadyPresentException;
+import com.neu.prattle.exceptions.GroupDeletedException;
 import com.neu.prattle.exceptions.SenderNotAuthorizedException;
+import com.neu.prattle.exceptions.UserAlreadyPresentException;
 import com.neu.prattle.model.BasicGroup;
 
 import com.neu.prattle.model.Request.GroupRequest;
@@ -50,16 +52,17 @@ public class GroupController {
     StringBuilder message = new StringBuilder();
     try {
       accountService.addGroup(group);
-    } catch (GroupAlreadyPresentException e) {
-      message.append("This group already exists");
-      return Response.status(409).entity(message.toString()).build();
-    } catch (IllegalArgumentException arg) {
-      message.append("No members listed");
-      return Response.status(409).entity(message.toString()).build();
+    } catch (GroupAlreadyPresentException | IllegalArgumentException e) {
+      message.append(e.getMessage());
+      return Response.status(409).type(MediaType.TEXT_PLAIN_TYPE).entity(message.toString()).build();
+    } catch (Exception e) {
+      logger.log(Level.SEVERE, e.getMessage());
+      message.append("Failed connecting to Database. Try again later.");
+      return Response.status(409).type(MediaType.TEXT_PLAIN_TYPE).entity(message.toString()).build();
     }
     message.append("Group Created: ");
     message.append(group.getName());
-    return Response.ok().entity(message.toString()).build();
+    return Response.ok().type(MediaType.TEXT_PLAIN_TYPE).entity(message.toString()).build();
   }
 
   /***
@@ -79,7 +82,7 @@ public class GroupController {
         .findGroupByName(request.getUser(), request.getGroup());
     Optional<User> sender = userService.findUserByName(request.getSender());
 
-    //check if found
+    //check if found, send error if not
     boolean allClear = true;
     if (!sender.isPresent()) {
       message.append("you have been lost");
@@ -90,18 +93,22 @@ public class GroupController {
       allClear = false;
     }
     if (!allClear) {
-      return Response.status(409).entity(message.toString()).build();
+      return Response.status(409).type(MediaType.TEXT_PLAIN_TYPE).entity(message.toString()).build();
     }
 
+    //try to delete, return result
     try {
       accountService.deleteGroup(sender.get(), foundGroup.get());
     } catch (SenderNotAuthorizedException e) {
+      return Response.status(409).type(MediaType.TEXT_PLAIN_TYPE).entity(e.getMessage()).build();
+    } catch (Exception e) {
       logger.log(Level.SEVERE, e.getMessage());
-      return Response.status(409).build();
+      message.append("Failed connecting to Database. Try again later.");
+      return Response.status(409).type(MediaType.TEXT_PLAIN_TYPE).entity(message.toString()).build();
     }
     message.append("Group Deleted: ");
     message.append(foundGroup.get().getName());
-    return Response.ok().entity(message.toString()).build();
+    return Response.ok().type(MediaType.TEXT_PLAIN_TYPE).entity(message.toString()).build();
   }
 
   /***
@@ -120,21 +127,24 @@ public class GroupController {
     StringBuilder message = pr.getMessage();
 
     if (!pr.allClear) {
-      message.append("Did not pass allClear");
-      return Response.status(409).entity(message.toString()).build();
+      return Response.status(409).type(MediaType.TEXT_PLAIN_TYPE).entity(message.toString()).build();
     }
 
     try {
       accountService.extendUsers(pr.getSender(), pr.getUser(), pr.getGroup());
+    } catch (SenderNotAuthorizedException | UserAlreadyPresentException e) {
+      message.append(e.getMessage());
+      return Response.status(409).type(MediaType.TEXT_PLAIN_TYPE).entity(message.toString()).build();
     } catch (Exception e) {
       logger.log(Level.SEVERE, e.getMessage());
-      return Response.status(409).entity(message.toString()).build();
+      message.append("Failed connecting to Database. Try again later.");
+      return Response.status(409).type(MediaType.TEXT_PLAIN_TYPE).entity(message.toString()).build();
     }
 
     message.append("members of ").append(pr.getGroup().getName());
     message.append(" appended: ").append(pr.getUser().getName());
-    // !!! Issue - no way to send a message to everyone except from JS or calling ChatEncPoint
-    return Response.ok().type(MediaType.TEXT_PLAIN).entity(message.toString()).build();
+    // !!! Issue - no way to send a message to everyone except from JS or calling ChatEndPoint
+    return Response.ok().type(MediaType.TEXT_PLAIN_TYPE).entity(message.toString()).build();
   }
 
   /***
@@ -153,13 +163,18 @@ public class GroupController {
     StringBuilder message = pr.getMessage();
 
     if (!pr.allClear) {
-      return Response.status(409).entity(message.toString()).build();
+      return Response.status(409).type(MediaType.TEXT_PLAIN_TYPE).entity(message.toString()).build();
     }
 
     try {
       accountService.extendModerators(pr.getSender(), pr.getUser(), pr.getGroup());
+    } catch (SenderNotAuthorizedException | UserAlreadyPresentException e) {
+      message.append(e.getMessage());
+      return Response.status(409).type(MediaType.TEXT_PLAIN_TYPE).entity(message.toString()).build();
     } catch (Exception e) {
-      return Response.status(409).build();
+      logger.log(Level.SEVERE, e.getMessage());
+      message.append("Failed connecting to Database. Try again later.");
+      return Response.status(409).type(MediaType.TEXT_PLAIN_TYPE).entity(message.toString()).build();
     }
 
     message.append("moderators of ");
@@ -167,7 +182,7 @@ public class GroupController {
     message.append(" appended: ");
     message.append(pr.getUser().getName());
     // !!! Issue - no way to send a message to everyone except from JS or calling ChatEndPoint
-    return Response.ok().entity(message.toString()).build();
+    return Response.ok().type(MediaType.TEXT_PLAIN_TYPE).entity(message.toString()).build();
   }
 
   /***
@@ -186,14 +201,18 @@ public class GroupController {
     StringBuilder message = pr.getMessage();
 
     if (!pr.allClear) {
-      return Response.status(409).entity(message.toString()).build();
+      return Response.status(409).type(MediaType.TEXT_PLAIN_TYPE).entity(message.toString()).build();
     }
 
     try {
       accountService.removeUser(pr.getSender(), pr.getUser(), pr.getGroup());
+    } catch (SenderNotAuthorizedException | GroupDeletedException e) {
+      message.append(e.getMessage());
+      return Response.status(409).type(MediaType.TEXT_PLAIN_TYPE).entity(message.toString()).build();
     } catch (Exception e) {
       logger.log(Level.SEVERE, e.getMessage());
-      return Response.status(409).build();
+      message.append("Failed connecting to Database. Try again later.");
+      return Response.status(409).type(MediaType.TEXT_PLAIN_TYPE).entity(message.toString()).build();
     }
 
     message.append("member of ");
@@ -201,7 +220,7 @@ public class GroupController {
     message.append(" removed: ");
     message.append(pr.getUser().getName());
 
-    return Response.ok().entity(message.toString()).build();
+    return Response.ok().type(MediaType.TEXT_PLAIN_TYPE).entity(message.toString()).build();
   }
 
   /***
@@ -220,20 +239,25 @@ public class GroupController {
     StringBuilder message = pr.getMessage();
 
     if (!pr.allClear) {
-      return Response.status(409).entity(message.toString()).build();
+      return Response.status(409).type(MediaType.TEXT_PLAIN_TYPE).entity(message.toString()).build();
     }
 
     try {
-      accountService.removeUser(pr.getSender(), pr.getUser(), pr.getGroup());
+      accountService.removeModerator(pr.getSender(), pr.getUser(), pr.getGroup());
+    } catch (SenderNotAuthorizedException | GroupDeletedException e) {
+      message.append(e.getMessage());
+      return Response.status(409).type(MediaType.TEXT_PLAIN_TYPE).entity(e.getMessage()).build();
     } catch (Exception e) {
-      return Response.status(409).entity(e.getMessage()).build();
+      logger.log(Level.SEVERE, e.getMessage());
+      message.append("Failed connecting to Database. Try again later.");
+      return Response.status(409).type(MediaType.TEXT_PLAIN_TYPE).entity(message.toString()).build();
     }
 
     message.append("moderator of ");
     message.append(pr.getGroup().getName());
     message.append(" removed: ").append(pr.getUser().getName());
 
-    return Response.ok().entity(message.toString()).build();
+    return Response.ok().type(MediaType.TEXT_PLAIN_TYPE).entity(message.toString()).build();
   }
 
   /**
