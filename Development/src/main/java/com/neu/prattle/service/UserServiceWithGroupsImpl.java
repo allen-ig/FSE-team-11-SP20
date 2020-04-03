@@ -211,13 +211,9 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
       throw new UserAlreadyPresentException("Group already has this user");
     }
     
-    //members.add(user);
-    //group.setMembers(members);
-    
     Session session = sessionFactory.openSession();
     session.beginTransaction();
 
-    //user.getGroups().add(group);
     members.add(user);
     group.setMembers(members);
 
@@ -226,6 +222,7 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
       session.getTransaction().commit();
     } catch (Exception e) {
       logger.log(Level.SEVERE, e.getMessage());
+      throw new UserAlreadyPresentException("failed connecting to database");
     } finally {
       session.disconnect();
       session.close();
@@ -255,8 +252,6 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
       throw new UserAlreadyPresentException("Group already has this moderator");
     }
 
-    //user.getModeratorFor().add(group);
-
     members.add(user);
     moderators.add(user);
     group.setMembers(members);
@@ -270,7 +265,7 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
       session.getTransaction().commit();
     } catch (Exception e) {
       logger.log(Level.SEVERE, e.getMessage());
-      throw new UserAlreadyPresentException("failed to add mod" + e.getMessage() + e.getCause());
+      throw new UserAlreadyPresentException("Failed updating database");
     } finally {
       session.disconnect();
       session.close();
