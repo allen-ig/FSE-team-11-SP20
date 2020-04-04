@@ -1,6 +1,5 @@
-package com.neu.prattle.testcontroller;
+package com.neu.prattle.controller;
 
-import com.neu.prattle.controller.FriendController;
 import com.neu.prattle.model.Friend;
 import com.neu.prattle.model.User;
 import com.neu.prattle.service.FriendService;

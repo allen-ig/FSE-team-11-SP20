@@ -3,11 +3,9 @@ package com.neu.prattle.websocket;
 import com.neu.prattle.model.BasicGroup;
 import com.neu.prattle.model.Message;
 import com.neu.prattle.model.User;
-
 import com.neu.prattle.service.UserServiceImpl;
 import com.neu.prattle.service.UserServiceWithGroups;
 import com.neu.prattle.service.UserServiceWithGroupsImpl;
-import java.util.HashSet;
 
 import org.junit.After;
 import org.junit.Before;
@@ -21,6 +19,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 

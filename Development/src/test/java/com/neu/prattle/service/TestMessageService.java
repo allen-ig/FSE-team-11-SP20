@@ -1,4 +1,4 @@
-package com.neu.prattle.testservice;
+package com.neu.prattle.service;
 
 import com.neu.prattle.model.Message;
 import com.neu.prattle.service.MessageService;

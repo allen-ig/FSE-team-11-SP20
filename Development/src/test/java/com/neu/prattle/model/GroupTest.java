@@ -1,4 +1,4 @@
-package com.neu.prattle.testmodels;
+package com.neu.prattle.model;
 
 import com.neu.prattle.model.BasicGroup;
 import com.neu.prattle.model.User;

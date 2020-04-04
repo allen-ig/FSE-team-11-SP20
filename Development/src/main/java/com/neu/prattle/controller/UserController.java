@@ -86,7 +86,10 @@ public class UserController {
         try {
             accountService.setUserStatus(user.getName(), user.getStatus());
         } catch (UserNotFoundException e) {
-            return Response.status(404).build();
+            return Response.status(404).entity(e.getMessage()).build();
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage());
+            return Response.status(500).entity("An internal server error occurred").build();
         }
         
         return Response.ok().build();
@@ -101,7 +104,7 @@ public class UserController {
       try {
         statusString = accountService.getUserStatus(username);
       } catch(UserNotFoundException e) {
-        return Response.status(404).build();
+        return Response.status(404).entity(e.getMessage()).build();
       }
       
       Gson gson = new Gson();

@@ -1,12 +1,8 @@
-package com.neu.prattle.testservice;
+package com.neu.prattle.service;
 import com.neu.prattle.exceptions.GroupAlreadyPresentException;
 import com.neu.prattle.exceptions.UserAlreadyPresentException;
 import com.neu.prattle.model.BasicGroup;
 import com.neu.prattle.model.User;
-import com.neu.prattle.service.UserService;
-import com.neu.prattle.service.UserServiceImpl;
-import com.neu.prattle.service.UserServiceWithGroups;
-import com.neu.prattle.service.UserServiceWithGroupsImpl;
 
 import org.junit.After;
 import org.junit.Before;

@@ -1,7 +1,5 @@
-package com.neu.prattle;
+package com.neu.prattle.controller;
 
-import com.neu.prattle.controller.GroupController;
-import com.neu.prattle.controller.UserController;
 import com.neu.prattle.model.BasicGroup;
 import com.neu.prattle.model.Request.GroupRequest;
 import com.neu.prattle.model.User;
