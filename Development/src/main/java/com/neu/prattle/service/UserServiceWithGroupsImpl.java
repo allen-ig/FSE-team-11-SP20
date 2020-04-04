@@ -8,6 +8,10 @@ import com.neu.prattle.main.HibernateUtil;
 import com.neu.prattle.model.BasicGroup;
 import com.neu.prattle.model.User;
 
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
+
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -15,9 +19,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.persistence.NoResultException;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.query.Query;
 
 public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
   
@@ -59,14 +60,6 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
       return accountService;
     }
     return accountService;
-  }
-  
-  private Object findUserByNameQuery(String name, Session session) {
-    String strQuery = "SELECT u FROM User u WHERE u.name = :name";
-    Query query = session.createQuery(strQuery);
-    query.setParameter("name", name);
-    
-    return query.getSingleResult();
   }
   
   public Optional<BasicGroup> findGroupByName(String username, String groupName) {
@@ -150,7 +143,7 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
     Set<User> updatedUsers = new HashSet<>();
     for (User user : usersToBeValidated) {
       try {
-        User userInDb = (User) findUserByNameQuery(user.getName(), session);
+        User userInDb = (User) UserServiceImpl.findUserByNameQuery(user.getName(), session);
         updatedUsers.add(userInDb);
       } catch (NoResultException ex) {
         logger.log(Level.SEVERE, ex.getMessage());

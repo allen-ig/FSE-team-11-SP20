@@ -1,39 +1,24 @@
-package com.neu.prattle;
+package com.neu.prattle.controller;
 
-import com.neu.prattle.controller.GroupController;
-import com.neu.prattle.controller.UserController;
 import com.neu.prattle.model.BasicGroup;
-import com.neu.prattle.model.Group;
 import com.neu.prattle.model.Request.GroupRequest;
 import com.neu.prattle.model.User;
 import com.neu.prattle.service.UserService;
 import com.neu.prattle.service.UserServiceImpl;
 import com.neu.prattle.service.UserServiceWithGroups;
 import com.neu.prattle.service.UserServiceWithGroupsImpl;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import javax.swing.text.html.Option;
-import javax.ws.rs.core.Response;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.codehaus.jackson.map.util.JSONPObject;
-import org.junit.After;
+
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+
+import javax.ws.rs.core.Response;
+
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 

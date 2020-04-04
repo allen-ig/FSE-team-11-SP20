@@ -1,23 +1,18 @@
-package com.neu.prattle.testservice;
+package com.neu.prattle.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import com.neu.prattle.main.PrattleApplication;
 import com.neu.prattle.model.Message;
 import com.neu.prattle.service.MessageService;
 import com.neu.prattle.service.MessageServiceImpl;
-import com.neu.prattle.service.UserService;
-import com.neu.prattle.service.UserServiceImpl;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class TestMessageService {
 

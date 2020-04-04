@@ -21,7 +21,6 @@ import javax.websocket.EncodeException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class MessageEncoderTest {
@@ -66,7 +65,6 @@ public class MessageEncoderTest {
       assertTrue(s.contains("\"from\":null"));
       assertTrue(s.contains("\"to\":null"));
       assertTrue(s.contains("\"content\":null"));
-      //assertTrue(messageEncoder.encode(sampleMessage).contains("\"from\":null,\"to\":null,\"content\":null}"));
     } catch (EncodeException e) {
       e.printStackTrace();
     }
