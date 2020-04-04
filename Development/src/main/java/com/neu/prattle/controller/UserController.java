@@ -9,6 +9,13 @@ import com.neu.prattle.model.User;
 import com.neu.prattle.service.UserService;
 import com.neu.prattle.service.UserServiceImpl;
 
+import org.codehaus.jackson.map.ObjectMapper;
+
+import java.io.IOException;
+import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -29,7 +36,11 @@ import javax.ws.rs.core.Response;
 public class UserController {
 
     // Usually Dependency injection will be used to inject the service at run-time
+    private UserService userService = UserServiceImpl.getInstance();
+    
     private UserService accountService = UserServiceImpl.getInstance();
+
+    private static Logger logger = Logger.getLogger(UserController.class.getName());
 
     /***
      * Handles a HTTP POST request for user creation
@@ -42,12 +53,30 @@ public class UserController {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response createUserAccount(User user) {
         try {
-            accountService.addUser(user);
+            userService.addUser(user);
         } catch (UserAlreadyPresentException e) {
             return Response.status(409).build();
         }
 
         return Response.ok().build();
+    }
+
+    @GET
+    @Path("/{name}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response findUserByName(@PathParam("name") String name){
+        Optional<User> res = accountService.findUserByName(name);
+        ObjectMapper mapper = new ObjectMapper();
+        if (!res.isPresent()) return Response.status(404).build();
+        User user = res.get();
+        String jsonString = "";
+        try {
+            jsonString = mapper.writeValueAsString(user);
+        } catch (IOException e) {
+            jsonString = String.format("{ \"id\" : \"%d\", \"name\" : \"%s\" }", user.getId(), user.getName());
+            logger.log(Level.SEVERE, e.getMessage());
+        }
+        return Response.ok().type(MediaType.APPLICATION_JSON).entity(jsonString).build();
     }
     
     @POST

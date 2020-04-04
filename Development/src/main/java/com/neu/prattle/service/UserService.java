@@ -46,4 +46,16 @@ public interface UserService {
    * @param status status to be set
    */
     void setUserStatus(String username, String status);
+
+    /***
+     * Tries to delete a User in the system
+     * @param user User object
+     */
+    void deleteUser(User user);
+
+    /**
+     * Returns value indicating whether UserService is configured for testing
+     * @return true if configured for testing else false
+     */
+    boolean isTest();
 }

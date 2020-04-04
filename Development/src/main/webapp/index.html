@@ -1,6 +1,7 @@
 <html>
     <head>
         <title>Chat</title>
+        <link rel="stylesheet" type="text/css" href="style.css">
     </head>
     <body>
 
@@ -14,6 +15,18 @@
             <tr>
                 <td>
                     <textarea readonly="true" rows="10" cols="80" id="log"></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td id="searchAndFriend">
+                    <input type="text" size="51" id="search" placeholder="Search for a User"/>
+                    <button type="button" onclick="search();" >search</button>
+                    <button type="button" onclick="addFriend();" id="addFriend" class="dontShow">Send Friend Request</button>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="text" size="51" id="usr" placeholder="Recipient"/>
                 </td>
             </tr>
             <tr>
