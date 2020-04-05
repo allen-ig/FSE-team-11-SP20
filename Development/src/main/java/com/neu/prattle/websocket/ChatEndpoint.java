@@ -116,6 +116,7 @@ public class ChatEndpoint {
       for (Message m : userMessages){
         if (!m.getContent().equals("friendRequest")) sendMessage(m);
       }
+    userService.setUserStatus(username, "online");
     }
   
 
@@ -197,6 +198,7 @@ public class ChatEndpoint {
     message.setFrom(users.get(session.getId()));
     message.setContent("Disconnected!");
     broadcast(message);
+    userService.setUserStatus(users.get(session.getId()), "offline");
   }
 
 

@@ -11,7 +11,6 @@ function connect() {
     ws = new WebSocket("ws://" + host + pathname + "chat/" + username);
     ws.onmessage = function(event) {
     var log = document.getElementById("log");
-        console.log(event.data);
         var message = JSON.parse(event.data);
         var searchAndFriend = document.getElementById("searchAndFriend");
         if (message.content != "friendRequest") {
@@ -119,7 +118,7 @@ function getFriendList() {
                 let connectField = document.getElementById("connect");
                 let friendList = "<tr><ul id='friendList'>";
                 response.map(user => {
-                    friendList += `<li>${user.name}</li>`;
+                    friendList += `<li>${user.name} &nbsp; <span>${user.status}</span></li>`;
                 })
                 friendList += "</ul></tr>";
                 connectField.innerHTML += friendList;
