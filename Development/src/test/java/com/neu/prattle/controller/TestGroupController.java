@@ -252,6 +252,7 @@ public class TestGroupController {
     //user already exists
     Response res5 = gc.extendModerators(request);
     Assert.assertEquals(res5.getStatus(), 409);
+    Assert.assertEquals(res5.getEntity(), "Group already has this moderator");
   }
 
   @Test
