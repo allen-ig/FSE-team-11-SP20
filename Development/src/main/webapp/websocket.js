@@ -2,8 +2,13 @@ var ws;
 var senderObj;
 var recipientObj;
 
+var sender;
+
+
+
 function connect() {
     var username = document.getElementById("username").value;
+    sender = document.getElementById("username").value;
     
     var host = document.location.host;
     var pathname = document.location.pathname;
@@ -111,3 +116,4 @@ function handleFriendRequest(sender, recipient, response) {
             friendRequest.parentNode.removeChild(friendRequest);
         })
 }
+
