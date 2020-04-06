@@ -175,7 +175,7 @@ public class GroupController {
    * @param request -> A GroupRequest object decoded from JSON Post. Has three strings.
    * @return -> A Response indicating the outcome of the requested operation.
    */
-  @PUT
+  @DELETE
   @Path("/removeUser")
   @Consumes(MediaType.APPLICATION_JSON)
   public Response removeUser(GroupRequest request) {
@@ -209,7 +209,7 @@ public class GroupController {
    * @param request -> A GroupRequest object decoded from JSON Post. Has three strings.
    * @return -> A Response indicating the outcome of the requested operation.
    */
-  @PUT
+  @DELETE
   @Path("/removeModerator")
   @Consumes(MediaType.APPLICATION_JSON)
   public Response removeModerator(GroupRequest request) {

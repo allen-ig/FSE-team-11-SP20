@@ -1,17 +1,27 @@
-package com.neu.prattle.testmodels;
+package com.neu.prattle.model;
 
-import com.neu.prattle.model.Friend;
-import com.neu.prattle.model.User;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Objects;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 public class FriendTest {
 
     Friend friend;
+    
+    @Before
+    public void setUp(){
+        System.setProperty("testing", "true");
+    }
+    
+    @After
+    public void tearDown() {
+        System.setProperty("testing", "false");
+    }
 
     @Test
     public void testEmptyConstructor(){
@@ -89,7 +99,7 @@ public class FriendTest {
         User test2 = new User("test2");
         Friend friend1 = new Friend(test1, test2);
         Friend friend2 = new Friend(test1, test2);
-        assertTrue(friend1.equals(friend2));
+        assertEquals(friend1, friend2);
     }
 
     @Test
@@ -98,7 +108,7 @@ public class FriendTest {
         User test2 = new User("test2");
         Friend friend1 = new Friend(test1, test2);
         Friend friend2 = new Friend(test2, test1);
-        assertFalse(friend1.equals(friend2));
+        assertNotEquals(friend1, friend2);
     }
 
     @Test
@@ -106,6 +116,6 @@ public class FriendTest {
         User test1 = new User("test1");
         User test2 = new User("test2");
         Friend friend1 = new Friend(test1, test2);
-        assertFalse(friend1.equals(test1));
+        assertNotEquals(friend1, test1);
     }
 }

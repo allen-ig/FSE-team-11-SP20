@@ -32,6 +32,20 @@ public interface UserService {
      *
      */
     void addUser(User user);
+  
+  /**
+   * Gets the status of a user
+   * @param username the user's username
+   * @return the user status
+   */
+  String getUserStatus(String username);
+  
+  /**
+   * Sets the status of the user
+   * @param username user's username
+   * @param status status to be set
+   */
+    void setUserStatus(String username, String status);
 
     /***
      * Tries to delete a User in the system

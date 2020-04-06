@@ -15,15 +15,15 @@
         <!-- Assume test is the database name -->
 
         <property name = "hibernate.connection.url">
-            jdbc:mysql://db4free.net:3306/fseproject
+            jdbc:mysql://134.122.120.24:3306/Nuslack-mysql-db
         </property>
 
         <property name = "hibernate.connection.username">
-            fseproject
+            jdbc
         </property>
 
         <property name = "hibernate.connection.password">
-            northeasternhuskies
+            chocolatecupcakes
         </property>
         <property name="hibernate.hbm2ddl.auto">
             update

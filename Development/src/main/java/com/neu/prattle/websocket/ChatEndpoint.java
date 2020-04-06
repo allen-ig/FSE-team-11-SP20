@@ -10,16 +10,31 @@ package com.neu.prattle.websocket;
 import com.neu.prattle.model.BasicGroup;
 import com.neu.prattle.model.Message;
 import com.neu.prattle.model.User;
-import com.neu.prattle.service.*;
+import com.neu.prattle.service.MessageService;
+import com.neu.prattle.service.MessageServiceImpl;
+import com.neu.prattle.service.UserService;
+import com.neu.prattle.service.UserServiceImpl;
+import com.neu.prattle.service.UserServiceWithGroups;
+import com.neu.prattle.service.UserServiceWithGroupsImpl;
 
-import javax.websocket.*;
-import javax.websocket.server.PathParam;
-import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.websocket.EncodeException;
+import javax.websocket.OnClose;
+import javax.websocket.OnError;
+import javax.websocket.OnMessage;
+import javax.websocket.OnOpen;
+import javax.websocket.Session;
+import javax.websocket.server.PathParam;
+import javax.websocket.server.ServerEndpoint;
 
 
 /**
@@ -226,7 +241,7 @@ public class ChatEndpoint {
   /**
    * Sends a direct message to a user. If the user can't be found, sends a message back to user.
    *
-   * @param message
+   * @param message message to be sent
    */
   private static synchronized void sendMessage(Message message) {
         ChatEndpoint recipientEndpoint = chatEndpoints.get(message.getTo());
@@ -258,7 +273,7 @@ public class ChatEndpoint {
   /**
    * Sends a message to a group. If group can't be found, does nothing.
    *
-   * @param message
+   * @param message message to be sent
    */
   private void sendGroupMessage(Message message) {
     //get groups
@@ -310,7 +325,6 @@ public class ChatEndpoint {
    * members. Groups are stores as a HashMap<User, HashMap<Group Name, Group>>.
    */
   private void addGroup(Message message) {
-    User user = new User(message.getFrom());
     String[] content = message.getContent().trim().split(" ");
     String name = content[0];
 

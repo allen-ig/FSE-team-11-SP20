@@ -1,10 +1,7 @@
 package com.neu.prattle.model;
 
-
 import javax.persistence.*;
 import java.util.*;
-
-
 
 /***
  * A User object represents a basic account information for a user.
@@ -30,6 +27,8 @@ public class User {
 
   @Column(name = "name", unique = true)
 	private String name;
+	
+	private String status;
 
 	@ManyToMany(mappedBy = "members", cascade = {CascadeType.ALL})
   private Set<BasicGroup> groups;
@@ -46,12 +45,14 @@ public class User {
   public User() {
     groups = new HashSet<>();
     moderatorFor = new HashSet<>();
+    this.status = "";
   }
   
   public User(String name) {
     this.name = name;
     groups = new HashSet<>();
     moderatorFor = new HashSet<>();
+    this.status = "";
   }
 	
     public List<Friend> getFriendList() {
@@ -123,5 +124,13 @@ public class User {
   
   public void setModeratorFor(Set<BasicGroup> moderatorFor) {
     this.moderatorFor = moderatorFor;
+  }
+  
+  public String getStatus() {
+    return status;
+  }
+  
+  public void setStatus(String status) {
+    this.status = status;
   }
 }

@@ -1,6 +1,5 @@
-package com.neu.prattle.testservice;
+package com.neu.prattle.service;
 
-import com.neu.prattle.controller.FriendController;
 import com.neu.prattle.exceptions.FriendAlreadyPresentException;
 import com.neu.prattle.model.Friend;
 import com.neu.prattle.model.User;
@@ -8,11 +7,10 @@ import com.neu.prattle.service.FriendService;
 import com.neu.prattle.service.FriendServiceImpl;
 import com.neu.prattle.service.UserService;
 import com.neu.prattle.service.UserServiceImpl;
+
 import org.junit.After;
 import org.junit.Before;
-import org.junit.FixMethodOrder;
 import org.junit.Test;
-import org.junit.runners.MethodSorters;
 
 import java.util.Optional;
 

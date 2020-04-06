@@ -1,6 +1,5 @@
-package com.neu.prattle.testmodels;
+package com.neu.prattle.model;
 
-import com.neu.prattle.model.Message;
 import com.neu.prattle.service.MessageService;
 import com.neu.prattle.service.MessageServiceImpl;
 
@@ -11,11 +10,13 @@ import org.junit.Test;
 import java.sql.Timestamp;
 import java.time.Instant;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class MessageTest {
 
-    Message.MessageBuilder messageBuilder;
+    private Message.MessageBuilder messageBuilder;
     private MessageService messageService;
 
     @Before

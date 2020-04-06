@@ -1,36 +1,36 @@
 package com.neu.prattle.model;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public interface Group {
 
-  public String getName();
+  String getName();
 
-  public void setName(String name);
+  void setName(String name);
 
-  public boolean hasMember(User user);
+  boolean hasMember(User user);
 
-  public void addMember(User user);
+  void addMember(User user);
 
-  public ArrayList<String> getMembers();
+  List<String> getMembers();
 
-  public void setMembers(Collection<User> members);
+  void setMembers(Collection<User> members);
 
-  public boolean isModerator(User user);
+  boolean isModerator(User user);
 
-  public void addModerator(User user);
+  void addModerator(User user);
 
-  public ArrayList<String> getModerators();
+  List<String> getModerators();
 
-  public void setModerators(Collection<User> moderators);
+  void setModerators(Collection<User> moderators);
 
-  public int size();
+  int size();
 
-  public int hashCode();
+  int hashCode();
 
-  public boolean equals(Object obj);
+  boolean equals(Object obj);
 
-  public Group copy();
+  Group copy();
 
 }
