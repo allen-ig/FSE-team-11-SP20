@@ -8,6 +8,7 @@ import com.neu.prattle.main.HibernateUtil;
 import com.neu.prattle.model.BasicGroup;
 import com.neu.prattle.model.User;
 
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
@@ -61,6 +62,7 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
     }
     return accountService;
   }
+
   
   public Optional<BasicGroup> findGroupByName(String username, String groupName) {
     Session session = sessionFactory.openSession();
@@ -68,7 +70,6 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
     
     try {
       BasicGroup result = (BasicGroup) findGroupByNameQuery(groupName, session);
-
       return Optional.of(result);
     } catch (NoResultException ex) {
       return Optional.empty();
@@ -282,17 +283,16 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
     if (!moderators.contains(sender) && !sender.getName().equals(user.getName())) {
       throw new SenderNotAuthorizedException("Not allowed to delete this user");
     }
+
+    //check if deleting the last member
+    if (members.size() == 1) {
+      deleteGroup(sender, group);
+      throw new GroupDeletedException("Last member removed, deleting");
+    }
     
     //ok if not there
     members.remove(user);
     moderators.remove(user);
-    
-    //check if deleting the last member
-    if (members.isEmpty() || moderators.isEmpty()) {
-      //already checked if moderator, so no errors
-      deleteGroup(sender, group);
-      throw new GroupDeletedException("Last user removed. Deleting " + group.getName());
-    }
     
     group.setMembers(members);
     group.setModerators(moderators);

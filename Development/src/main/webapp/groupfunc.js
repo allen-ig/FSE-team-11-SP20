@@ -14,7 +14,7 @@ function sendGroup() {
 }
 
 function addGroup() {
-    var log = document.getElementById("log");
+    var serviceLog = document.getElementById("serviceLog");
     var addGroupUrl = `http://${document.location.host}${document.location.pathname}rest/group/create`;
 
     var users = document.getElementById("gfUser").value.split(" ");
@@ -58,7 +58,7 @@ function addGroup() {
         })
         .then(function (text) {
             console.log("Service: ", text);
-            log.innerHTML += "Service: " + text + "\n";
+            serviceLog.innerHTML += "Service: " + text + "\n";
         })
         .then(function (text) {
             if (ok === true) {
@@ -71,12 +71,12 @@ function addGroup() {
 }
 
 function addMember() {
-    var log = document.getElementById("log");
+    let slog = document.getElementById("serviceLog");
     var addMemUrl = `http://${document.location.host}${document.location.pathname}rest/group/addUser`;
 
     var user = document.getElementById("gfUser").value;
     var group = document.getElementById("gfGroup").value;
-    if(user !== "" && group !== "") {
+    if (user !== "" && group !== "") {
         var json = JSON.stringify({
             "sender": sender,
             "user": user,
@@ -84,7 +84,7 @@ function addMember() {
         });
         console.log(json);
     } else {
-        log.innerHTML += "Service: no User or Group specified\n";
+        slog.innerHTML += "Service: no User or Group specified\n";
         return;
     }
 
@@ -105,7 +105,7 @@ function addMember() {
         })
         .then(function (text) {
             console.log("Service: ", text);
-            log.innerHTML += "Service: " + text + "\n";
+            slog.innerHTML += "Service: " + text + "\n";
         })
         .then(function (text) {
             if (ok === true) {
@@ -118,12 +118,12 @@ function addMember() {
 }
 
 function addMod() {
-    var log = document.getElementById("log");
+    let slog = document.getElementById("serviceLog");
     var addModUrl = `http://${document.location.host}${document.location.pathname}rest/group/addModerator`;
 
     var user = document.getElementById("gfModerator").value;
     var group = document.getElementById("gfGroup").value;
-    if(user !== "" && group !== "") {
+    if (user !== "" && group !== "") {
         var json = JSON.stringify({
             "sender": sender,
             "user": user,
@@ -131,7 +131,7 @@ function addMod() {
         });
         console.log(json);
     } else {
-        log.innerHTML += "Service: no Moderator or Group specified\n";
+        slog.innerHTML += "Service: no Moderator or Group specified\n";
         return;
     }
 
@@ -152,7 +152,7 @@ function addMod() {
         })
         .then(function (text) {
             console.log("Service: ", text);
-            log.innerHTML += "Service: " + text + "\n";
+            slog.innerHTML += "Service: " + text + "\n";
         })
         .then(function (text) {
             if (ok === true) {
@@ -165,12 +165,12 @@ function addMod() {
 }
 
 function removeMember() {
-    var log = document.getElementById("log");
+    let slog = document.getElementById("serviceLog");
     var remMemUrl = `http://${document.location.host}${document.location.pathname}rest/group/removeUser`;
 
     var user = document.getElementById("gfUser").value;
     var group = document.getElementById("gfGroup").value;
-    if(user !== "" && group !== "") {
+    if (user !== "" && group !== "") {
         var json = JSON.stringify({
             "sender": sender,
             "user": user,
@@ -178,7 +178,7 @@ function removeMember() {
         });
         console.log(json);
     } else {
-        log.innerHTML += "Service: no User or Group specified\n";
+        slog.innerHTML += "Service: no User or Group specified\n";
         return;
     }
 
@@ -186,7 +186,7 @@ function removeMember() {
     notifygroup(group, "attempting to remove " + user + " as member")
         .then(function () {
             fetch(remMemUrl, {
-                method: 'put',
+                method: 'delete',
                 headers: {
                     "Content-Type": "application/json; charset=UTF-8"
                 },
@@ -200,7 +200,7 @@ function removeMember() {
                 })
                 .then(function (text) {
                     console.log("Service: ", text);
-                    log.innerHTML += "Service: " + text + "\n";
+                    slog.innerHTML += "Service: " + text + "\n";
                 })
                 .then(function (text) {
                     if (ok === true) {
@@ -216,12 +216,12 @@ function removeMember() {
 }
 
 function removeMod() {
-    var log = document.getElementById("log");
+    let slog = document.getElementById("serviceLog");
     var remModUrl = `http://${document.location.host}${document.location.pathname}rest/group/removeModerator`;
 
     var user = document.getElementById("gfModerator").value;
     var group = document.getElementById("gfGroup").value;
-    if(user !== "" && group !== "") {
+    if (user !== "" && group !== "") {
         var json = JSON.stringify({
             "sender": sender,
             "user": user,
@@ -229,7 +229,7 @@ function removeMod() {
         });
         console.log(json);
     } else {
-        log.innerHTML += "Service: no User or Moderator specified\n";
+        slog += "Service: no User or Moderator specified\n";
         return;
     }
 
@@ -237,7 +237,7 @@ function removeMod() {
     var notified = notifygroup(group, "attempting to remove " + user + " as moderator")
         .then(function () {
             fetch(remModUrl, {
-                method: 'put',
+                method: 'delete',
                 headers: {
                     "Content-Type": "application/json; charset=UTF-8"
                 },
@@ -251,7 +251,7 @@ function removeMod() {
                 })
                 .then(function (text) {
                     console.log("Service: ", text);
-                    log.innerHTML += "Service: " + text + "\n";
+                    slog.innerHTML += "Service: " + text + "\n";
                 })
                 .then(function (text) {
                     if (ok === true) {
@@ -268,11 +268,11 @@ function removeMod() {
 
 function deleteGroup() {
 
-    var log = document.getElementById("log");
+    let slog = document.getElementById("serviceLog");
     var delGroupUrl = `http://${document.location.host}${document.location.pathname}rest/group/delete`;
 
     var group = document.getElementById("gfGroup").value;
-    if(group !== "") {
+    if (group !== "") {
         var json = JSON.stringify({
             "sender": sender,
             "user": sender,
@@ -280,7 +280,7 @@ function deleteGroup() {
         });
         console.log(json);
     } else {
-        log.innerHTML += "Service: no Group specified\n";
+        slog.innerHTML += "Service: no Group specified\n";
         return;
     }
 
@@ -298,7 +298,7 @@ function deleteGroup() {
                 })
                 .then(function (text) {
                     console.log("Service: ", text);
-                    log.innerHTML += "Service: " + text + "\n";
+                    slog.innerHTML += "Service: " + text + "\n";
                 })
                 .catch(function (error) {
                     console.log("Service: Error - ", error);
@@ -319,4 +319,72 @@ function notifygroup(groupName, groupMessage) {
     return new Promise(function (resolve, reject) {
         setTimeout(() => resolve(1), 1000);
     });
+}
+
+function printGroups() {
+    let printGroupsUrl = `http://${document.location.host}${document.location.pathname}rest/group/getGroups`;
+    let json = JSON.stringify({
+        "sender": sender,
+        "user": sender,
+    });
+
+    fetch(printGroupsUrl, {
+        method: 'put',
+        headers: {
+            "Content-Type": "application/json; charset=UTF-8"
+        },
+        body: json
+    })
+        .then(function (response) {
+            return response.text();
+        })
+        .then(function (text) {
+            let groupsLog = document.getElementById("groupsLog");
+            groupsLog.innerHTML = "";
+            groupsLog.innerHTML += text;
+            console.log("Service: ", text);
+        })
+        .catch(function (error) {
+            console.log("Service: Error - ", error);
+        });
+
+}
+
+function printGroupsJSON() {
+    let printGroupsUrl = `http://${document.location.host}${document.location.pathname}rest/group/getGroups`;
+    let json = JSON.stringify({
+        "sender": sender,
+        "user": sender,
+    });
+
+    fetch(printGroupsUrl, {
+        method: 'put',
+        headers: {
+            "Content-Type": "application/json; charset=UTF-8"
+        },
+        body: json
+    })
+        .then(function (response) {
+            return response.json();
+        })
+        .then(function (json) {
+            let groupsLog = document.getElementById("groupsLog");
+            groupsLog.innerHTML = "";
+            json.forEach(group => {
+                groupsLog.innerHTML += "[" + group.name + "]\n  Members:  ";
+
+                group.members.forEach(member => {
+                        groupsLog.innerHTML += member.name + " ";
+                });
+
+                groupsLog.innerHTML += "\n  Moderators:  ";
+                group.moderators.forEach(moderator => {
+                        groupsLog.innerHTML += moderator.name + " ";
+                });
+                groupsLog.innerHTML += "\n";
+            });
+        })
+        .catch(function (error) {
+            console.log("Service: Error - ", error);
+        });
 }

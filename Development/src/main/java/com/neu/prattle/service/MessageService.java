@@ -39,4 +39,8 @@ public interface MessageService {
    */
   List<Message> getUserMessages(String username);
 
+  List<Message> getDirectMessages(String user, String sender);
+
+  List<Message> getGroupMessages(String user, String group);
+
 }

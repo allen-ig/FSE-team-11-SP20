@@ -2,6 +2,7 @@ package com.neu.prattle.service;
 
 import com.neu.prattle.model.User;
 
+import javax.swing.text.html.Option;
 import java.util.Optional;
 
 /***
@@ -25,6 +26,13 @@ public interface UserService {
      * @return Optional object.
      */
     Optional<User> findUserByName(String name);
+
+    /**
+     * Returns an optional object that contains a User with related group objects. Only use if need access to groups.
+     * @param name - the name of the user.
+     * @return Optional object.
+     */
+    Optional<User> findUserByNameWithGroups(String name);
 
     /***
      * Tries to add a user in the system

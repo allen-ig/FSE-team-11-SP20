@@ -3,6 +3,7 @@ var senderObj;
 var recipientObj;
 
 var sender;
+var numRequests = 0;
 
 
 
@@ -17,7 +18,7 @@ function connect() {
     ws.onmessage = function(event) {
     var log = document.getElementById("log");
         var message = JSON.parse(event.data);
-        var searchAndFriend = document.getElementById("searchAndFriend");
+        var searchAndFriend = document.getElementById("popUpBody");
         if (message.content != "friendRequest") {
           var newMessage = message.from + " : " + message.content;
           if (message.timestamp){
@@ -27,6 +28,8 @@ function connect() {
           log.innerHTML += newMessage
         }
         else {
+            numRequests += 1;
+            document.getElementById("frButton").classList.remove("dontShow");
             searchAndFriend.innerHTML +=
                 `<div id="friendRequest"><span>${message.from} just send you a friend request!</span>
                 <button id="approveFriendRequest" onclick="handleFriendRequest('${message.from}', '${message.to}', 'approve');">Approve</button>
@@ -36,8 +39,12 @@ function connect() {
 }
 
 function formatDate(d){
-    return " on " + (d.getMonth()+1) + "-" + d.getDate() + "-"+ d.getFullYear() + " at " +
-    d.getHours() + ":" + d.getMinutes();
+    let mins = d.getMinutes();
+    if (mins < 10) {
+        mins = "0" + mins;
+    }
+    return "\n---" + (d.getMonth()+1) + "." + d.getDate() + "."+ d.getFullYear() + " at " +
+    d.getHours() + ":" + mins + "\n";
 }
 
 function send() {
@@ -69,7 +76,7 @@ function search() {
             .then(response => response.json())
             .then(response => {
                 senderObj = response;
-            }))
+            }));
 }
 
 function addFriend(){
@@ -110,6 +117,10 @@ function handleFriendRequest(sender, recipient, response) {
             let friendRequest = document.getElementById("friendRequest");
             friendRequest.parentNode.removeChild(friendRequest);
         })
+    numRequests -= 1;
+    if (numRequests == 0) {
+        document.getElementById("frButton").classList.add("dontShow");
+    }
 }
 
 
@@ -117,7 +128,7 @@ function getFriendList() {
     let friendListNode = document.getElementById("friendList")
     if (friendListNode){
         friendListNode.remove();
-    }else {
+    } else {
         fetch(`http://${document.location.host}${document.location.pathname}rest/friend/${ws.url.split('/').pop()}/friends`,)
             .then(response => response.json())
             .then(response => {
@@ -125,9 +136,21 @@ function getFriendList() {
                 let friendList = "<tr><ul id='friendList'>";
                 response.map(user => {
                     friendList += `<li>${user.name} &nbsp; <span>${user.status}</span></li>`;
-                })
+                });
                 friendList += "</ul></tr>";
                 connectField.innerHTML += friendList;
             })
     }
+}
+
+function printFriendList () {
+        fetch(`http://${document.location.host}${document.location.pathname}rest/friend/${ws.url.split('/').pop()}/friends`,)
+            .then(response => response.json())
+            .then(response => {
+                let friendList = document.getElementById("friendsLog");
+                friendList.innerHTML = "";
+                response.forEach(user => {
+                    friendList.innerHTML += "[" + user.name + "]  " + user.status + "\n";
+                });
+            })
 }

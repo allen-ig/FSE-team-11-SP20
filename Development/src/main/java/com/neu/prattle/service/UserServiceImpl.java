@@ -4,6 +4,7 @@ import com.neu.prattle.exceptions.UserAlreadyPresentException;
 import com.neu.prattle.exceptions.UserNotFoundException;
 import com.neu.prattle.main.HibernateUtil;
 import com.neu.prattle.model.User;
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
@@ -87,11 +88,26 @@ public class UserServiceImpl implements UserService {
     }
   }
 
+  @Override
+  public Optional<User> findUserByNameWithGroups(String name) {
+    Session session = sessionFactory.openSession();
+    session.beginTransaction();
+    try {
+      User result = (User) findUserByNameQuery(name, session);
+      Hibernate.initialize(result.getGroups());
+      return Optional.of(result);
+    } catch (NoResultException ex) {
+      return Optional.empty();
+    } finally {
+      session.disconnect();
+      session.close();
+    }
+  }
+
   static Object findUserByNameQuery(String name, Session session) {
     String strQuery = "SELECT u FROM User u WHERE u.name = :name";
     Query query = session.createQuery(strQuery);
     query.setParameter("name", name);
-
     return query.getSingleResult();
   }
 

@@ -1,6 +1,7 @@
 package com.neu.prattle.controller;
 
 import com.neu.prattle.model.BasicGroup;
+import com.neu.prattle.model.Group;
 import com.neu.prattle.model.Request.GroupRequest;
 import com.neu.prattle.model.User;
 import com.neu.prattle.service.UserService;
@@ -13,10 +14,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 
 import static org.junit.Assert.assertTrue;
@@ -298,7 +301,7 @@ public class TestGroupController {
     String nonMod = r3.getName();
     GroupRequest req5 = GroupRequest.groupRequestBuilder().setSender(nonMod).setUser(user).setGroup(gName).build();
     Response res5 = gc.removeUser(req5);
-    Assert.assertEquals(res5.getStatus(), 409);
+    Assert.assertEquals(res5.getStatus(), 410);
 
     //proper
     GroupRequest request = GroupRequest.groupRequestBuilder().setSender(sender).setUser(user).setGroup(gName).build();
@@ -311,7 +314,7 @@ public class TestGroupController {
     //remove last member and delete
     GroupRequest req6 = GroupRequest.groupRequestBuilder().setSender(found.get().getModerators().iterator().next().getName()).setUser(ra.getName()).setGroup(gName).build();
     Response res6 = gc.removeUser(req6);
-    Assert.assertEquals(res6.getStatus(), 409);
+    Assert.assertEquals(res6.getStatus(), 410);
   }
 
   @Test
@@ -322,9 +325,14 @@ public class TestGroupController {
     //new user
     User rmb = new User("rmb");
     userService.addUser(rmb);
+
+    User rmc = new User("rmc");
+    userService.addUser(rmc);
+
     Set<User> mem = new HashSet<>();
     mem.add(rma);
     mem.add(rmb);
+    mem.add(rmc);
     Set<User> mod = new HashSet<>();
     mod.add(rma);
     mod.add(rmb);
@@ -355,6 +363,10 @@ public class TestGroupController {
     Response res4 = gc.removeModerator(req4);
     Assert.assertEquals(res4.getStatus(), 409);
 
+    //wrong user
+    GroupRequest wrUserReq = GroupRequest.groupRequestBuilder().setSender(rmc.getName()).setUser(rmb.getName()).setGroup(gName).build();
+    Response wrUser = gc.removeModerator(wrUserReq);
+    Assert.assertEquals(wrUser.getStatus(), 409);
 
     //proper
     GroupRequest request = GroupRequest.groupRequestBuilder().setSender(sender).setUser(user).setGroup(gName).build();
@@ -365,11 +377,50 @@ public class TestGroupController {
     //remove last member and delete
     GroupRequest req6 = GroupRequest.groupRequestBuilder().setSender("rmb").setUser("rmb").setGroup(gName).build();
     Response res6 = gc.removeUser(req6);
-    Assert.assertEquals(res6.getStatus(), 409);
+    Assert.assertEquals(res6.getStatus(), 200);
+
+    //remove last member and delete
+    GroupRequest req7 = GroupRequest.groupRequestBuilder().setSender("rmb").setUser("rmb").setGroup(gName).build();
+    Response res7 = gc.removeUser(req7);
+    Assert.assertEquals(res7.getStatus(), 409);
   }
 
+  @Test
+  public void getGroupsTest() {
+    //existing user
+    User gga = new User("gga");
+    userService.addUser(gga);
+    //new user
+    User ggb = new User("ggb");
+    userService.addUser(ggb);
 
+    User ggc = new User("ggc");
+    userService.addUser(ggc);
 
+    Set<User> mem = new HashSet<>();
+    mem.add(gga);
+    mem.add(ggb);
 
+    Set<User> mod = new HashSet<>();
+    mod.add(gga);
+
+    BasicGroup ggg = BasicGroup.groupBuilder().setMembers(mem).setModerators(mod).setName("ggg").build();
+    us.addGroup(ggg);
+
+    //not allClear
+    GroupRequest req1 = GroupRequest.groupRequestBuilder().setSender("randoo").build();
+    Response res1 = gc.getGroups(req1);
+    Assert.assertEquals(res1.getStatus(), 409);
+
+    //zero size
+    GroupRequest req2 = GroupRequest.groupRequestBuilder().setSender(ggc.getName()).build();
+    Response res2 = gc.getGroups(req2);
+    Assert.assertEquals(res2.getStatus(), 201);
+
+    //proper
+    GroupRequest req = GroupRequest.groupRequestBuilder().setSender(gga.getName()).build();
+    Response res3 = gc.getGroups(req);
+    Assert.assertEquals(res3.getStatus(), 200);
+  }
 
 }
