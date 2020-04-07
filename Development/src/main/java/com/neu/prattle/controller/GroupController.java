@@ -286,8 +286,8 @@ public class GroupController {
 
         if (groups.size() != 0) {
             for (BasicGroup group : groups) {
-                    BasicGroup groupE = accountService.findGroupByName(sender.get().getName(), group.getName()).get();
-                    out.add(groupE);
+                    Optional<BasicGroup> groupE = accountService.findGroupByName(sender.get().getName(), group.getName());
+                groupE.ifPresent(out::add);
             }
             try {
                 String response = mapper.writeValueAsString(out);
