@@ -92,12 +92,20 @@ public class FriendController {
     }
 
     @DELETE
-    @Path("/remove")
+    @Path("/{sender}/{recipient}/remove")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response removeFriend(Friend friend){
-        Optional<Friend> optionalFriend = friendService.findFriendByUsers(friend.getSender(), friend.getRecipient());
-        if (!optionalFriend.isPresent()) return Response.status(404).entity("The friend you requested does not exist!").build();
-        friendService.deleteFriend(optionalFriend.get());
+    public Response removeFriend(
+            @PathParam("sender") String sender,
+            @PathParam("recipient") String recipient){
+        Optional<User> optionalSender = userService.findUserByName(sender);
+        Optional<User> optionalRecipient = userService.findUserByName(recipient);
+        if (!optionalRecipient.isPresent() || !optionalSender.isPresent())
+            return Response.status(404).entity("The friend you requested does not exist!").build();
+        Optional<Friend> optionalFriend = friendService.findFriendByUsers(optionalSender.get(), optionalRecipient.get());
+        Optional<Friend> optionalFriendReverse = friendService.findFriendByUsers(optionalRecipient.get(), optionalSender.get());
+        if (!optionalFriend.isPresent() && !optionalFriendReverse.isPresent())
+            return Response.status(404).entity("The friend you requested does not exist!").build();
+        friendService.deleteFriend(optionalFriend.orElseGet(optionalFriendReverse::get));
         return Response.ok().build();
     }
 }

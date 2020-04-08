@@ -165,3 +165,21 @@ function printFriendList () {
                 });
             })
 }
+
+function removeFriend() {
+    let friendToRemove = document.getElementById("removeFriend").value;
+    let slog;
+    fetch(
+        `http://${document.location.host}${document.location.pathname}rest/friend/${ws.url.split('/').pop()}/${friendToRemove}/remove`,
+        {
+            method: 'DELETE'
+        }
+    ).then(response => {
+        slog = document.getElementById("serviceLog");
+        if (response.status === 404) {
+            slog.innerHTML += "Service: Friend does not exist!\n";
+        }else {
+            printFriendList();
+        }
+    })
+}

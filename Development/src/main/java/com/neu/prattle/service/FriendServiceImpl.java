@@ -135,6 +135,7 @@ public class FriendServiceImpl implements FriendService{
         session.beginTransaction();
         try{
             session.delete(friend);
+            session.getTransaction().commit();
         }catch (Exception e){
             logger.log(Level.SEVERE, e.getMessage());
         }finally {
