@@ -42,10 +42,13 @@ public class User {
 	@OneToMany(mappedBy = "recipient", cascade = CascadeType.ALL)
     private List<Friend> friendByList = new ArrayList<>();
   
+	private boolean isSubpoenaed;
+	
   public User() {
     groups = new HashSet<>();
     moderatorFor = new HashSet<>();
     this.status = "";
+    this.isSubpoenaed = false;
   }
   
   public User(String name) {
@@ -53,6 +56,7 @@ public class User {
     groups = new HashSet<>();
     moderatorFor = new HashSet<>();
     this.status = "";
+    this.isSubpoenaed = false;
   }
 	
     public List<Friend> getFriendList() {
@@ -132,5 +136,13 @@ public class User {
   
   public void setStatus(String status) {
     this.status = status;
+  }
+  
+  public boolean isSubpoenaed() {
+    return isSubpoenaed;
+  }
+  
+  public void setSubpoenaed(boolean subpoenaed) {
+    isSubpoenaed = subpoenaed;
   }
 }
