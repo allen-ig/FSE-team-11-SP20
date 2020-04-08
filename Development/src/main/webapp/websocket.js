@@ -150,7 +150,7 @@ function printFriendList () {
                 let friendList = document.getElementById("friendsLog");
                 friendList.innerHTML = "";
                 response.forEach(user => {
-                    friendList.innerHTML += "[" + user.name + "]  " + user.status + "\n";
+                    friendList.innerHTML += "[" + user.name + "]  " + user.isOnline + " " + user.status + "\n";
                 });
             })
 }

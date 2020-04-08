@@ -181,6 +181,26 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  public void setUserIsOnline(String username, boolean isOnline){
+    Session session = sessionFactory.openSession();
+    session.beginTransaction();
+
+    try {
+      User user = (User) findUserByNameQuery(username, session);
+      user.setIsOnline(isOnline ? "online" : "offline");
+      session.saveOrUpdate(user);
+      session.getTransaction().commit();
+    } catch (NoResultException e) {
+      throw new UserNotFoundException("User not found");
+    } catch (Exception e) {
+      throw e;
+    } finally {
+      session.disconnect();
+      session.close();
+    }
+  }
+
+  @Override
   public boolean isTest() {
     return isTest;
   }

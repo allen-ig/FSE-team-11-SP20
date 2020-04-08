@@ -12,7 +12,6 @@ import com.neu.prattle.service.MessageServiceImpl;
 import com.neu.prattle.service.UserService;
 import com.neu.prattle.service.UserServiceImpl;
 
-import jdk.nashorn.internal.objects.annotations.Getter;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.IOException;

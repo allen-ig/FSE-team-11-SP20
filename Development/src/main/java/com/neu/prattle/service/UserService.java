@@ -62,6 +62,13 @@ public interface UserService {
     void deleteUser(User user);
 
     /**
+     * set user's online/offline status
+     * @param username user's username
+     * @param isOnline the user is online or not
+     */
+    void setUserIsOnline(String username, boolean isOnline);
+
+    /**
      * Returns value indicating whether UserService is configured for testing
      * @return true if configured for testing else false
      */

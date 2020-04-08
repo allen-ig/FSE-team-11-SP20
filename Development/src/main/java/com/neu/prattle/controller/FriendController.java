@@ -9,6 +9,7 @@ import com.neu.prattle.service.UserService;
 import com.neu.prattle.service.UserServiceImpl;
 import org.codehaus.jackson.map.ObjectMapper;
 
+import javax.swing.text.html.Option;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -32,6 +33,9 @@ public class FriendController {
     @Path("/create")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response sendFriendRequest(Friend friend){
+        if (friend.getSender() == friend.getRecipient()) {
+            return Response.status(405).entity("You can't add yourself as a friend!").build();
+        }
         try {
             friendService.sendFriendRequest(friend);
         }catch (FriendAlreadyPresentException e){
@@ -86,5 +90,15 @@ public class FriendController {
         if (!senderOp.isPresent()) message.append("Could not find sender!\n");
         if (!recipientOp.isPresent()) message.append("Could not find recipient!");
         return Response.status(404).entity(message.toString()).build();
+    }
+
+    @DELETE
+    @Path("/remove")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response removeFriend(Friend friend){
+        Optional<Friend> optionalFriend = friendService.findFriendByUsers(friend.getSender(), friend.getRecipient());
+        if (!optionalFriend.isPresent()) return Response.status(404).entity("The friend you requested does not exist!").build();
+        friendService.deleteFriend(optionalFriend.get());
+        return Response.ok().build();
     }
 }
