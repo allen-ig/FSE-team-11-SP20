@@ -9,7 +9,6 @@ import com.neu.prattle.service.UserService;
 import com.neu.prattle.service.UserServiceImpl;
 import org.codehaus.jackson.map.ObjectMapper;
 
-import javax.swing.text.html.Option;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -33,7 +32,7 @@ public class FriendController {
     @Path("/create")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response sendFriendRequest(Friend friend){
-        if (friend.getSender() == friend.getRecipient()) {
+        if (friend.getSender().getName().equals(friend.getRecipient().getName())) {
             return Response.status(405).entity("You can't add yourself as a friend!").build();
         }
         try {

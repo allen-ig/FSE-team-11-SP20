@@ -89,7 +89,6 @@ function addFriend(){
         "content": "friendRequest",
         "to": recipient
     })
-    ws.send(json);
     let postBody = {
         "sender": senderObj,
         "recipient": recipientObj
@@ -100,11 +99,23 @@ function addFriend(){
             headers: {
                 'Content-Type': 'application/json; charset=utf-8'
             }})
-        .then(() => console.log("friend request sent!"))
+        .then(response => {
+            let slog = document.getElementById("serviceLog");
+            if (response.status === 409){
+                slog.innerHTML += "Service: friend relationship already exist!\n";
+            }else if (response.status === 405) {
+                slog.innerHTML += "Service: you can't add yourself as a friend!\n";
+            }
+            else{
+                ws.send(json)
+                console.log("friend request sent!")
+            }
+        })
+        .catch(err => console.log(err))
 }
 
-function handleFriendRequest(sender, recipient, response) {
-    fetch(`http://${document.location.host}${document.location.pathname}rest/friend/${sender}/${recipient}/${response}`,
+function handleFriendRequest(_sender, recipient, response) {
+    fetch(`http://${document.location.host}${document.location.pathname}rest/friend/${_sender}/${recipient}/${response}`,
         {method: "PATCH",
                 body: JSON.stringify({
                     response: response
