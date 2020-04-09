@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="warn">
     <Properties>
-        <Property name="basePath">C:\\Users\\thomasdohle\\Desktop\\fse-project-2</Property>
+
     </Properties>
 
     <Appenders>
@@ -11,26 +11,30 @@
         >
             <PatternLayout>
                 <Pattern>
-                    [%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n
+                    %d %p %c{1.} [%t] %m%n
                 </Pattern>
             </PatternLayout>
             <Policies>
-                <TimeBasedTriggeringPolicy interval="1" modulate="true" />
+                <TimeBasedTriggeringPolicy />
+                <SizeBasedTriggeringPolicy size="250 MB"/>
             </Policies>
             <DefaultRolloverStrategy max="20"/>
         </RollingFile>
         <Console name="console" target="SYSTEM_OUT">
-            <PatternLayout   pattern="[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n" />
+            <Pattern>
+                %d %p %c{1.} [%t] %m%n
+            </Pattern>
         </Console>
     </Appenders>
     <Loggers>
-        <Logger name="com.neu.prattle">
-            <appender-ref ref="fileLogger" level="debug" />
-        </Logger>
+        <!--
         <Root level="debug" additivity="false">
             <appender-ref ref="console"/>
-        </Root>
+        </Root> -->
         <Root level="error">
+            <AppenderRef ref="fileLogger"/>
+        </Root>
+        <Root level="debug">
             <AppenderRef ref="fileLogger"/>
         </Root>
     </Loggers>
