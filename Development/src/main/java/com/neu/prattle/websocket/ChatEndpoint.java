@@ -113,7 +113,7 @@ public class ChatEndpoint {
       }
     }
 
-    userService.setUserStatus(username, true);
+    userService.setUserIsOnline(username, true);
   }
 
 
