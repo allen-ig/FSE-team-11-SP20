@@ -33,7 +33,7 @@
                     <button class="messageTabLink" id="linkGroup" onclick="openTabGroup(this)">Group</button>
                 </div>
                 <div id="all" class="messageTabContentAll">
-                    <textarea readonly="true" rows="10" cols="54" id="log"></textarea>
+                    <textarea readonly="true"  rows="10" cols="54" id="log"></textarea>
                 </div>
                 <div id="user" class="messageTabContentUser">
                     <textarea readonly="true" rows="10" cols="54" id="userLog"></textarea>
@@ -47,6 +47,7 @@
                     <button class="serviceTabLink" id="linkServ" onclick="openTabService(this)">Service</button>
                     <button class="serviceTabLink" id="linkFriends" onclick="openTabFriends(this)">Friends</button>
                     <button class="serviceTabLink" id="linkGroups" onclick="openTabMyGroups(this)">Groups</button>
+                    <button class="serviceTabLink" id="linkOnline" onclick="openOnline(this)">Online</button>
                 </div>
                 <div id="service" class="contentService">
                     <textarea readonly="true" rows="10" cols="35" id="serviceLog"></textarea>
@@ -56,6 +57,9 @@
                 </div>
                 <div id="groups" class="contentGroups">
                     <textarea readonly="true" wrap="off" rows="10" cols="35" id="groupsLog"></textarea>
+                </div>
+                <div id="online" class="contentOnline">
+                    <textarea readonly="true" wrap="off" rows="10" cols="35" id="onlineLog"></textarea>
                 </div>
             </td>
         </table>
@@ -136,6 +140,7 @@
         <div id="aliasbody" class="aliasBody">
             <input type="text" size="51" id="alias" placeholder="Alias"/>
             <button type="button" onclick="sendAlias();" id="sendAliasButton">Send</button>
+            <button type="button" onclick="groupAlias()" id="groupAliasButton">Send to Group</button>
         </div>
     </div>
 </div>
