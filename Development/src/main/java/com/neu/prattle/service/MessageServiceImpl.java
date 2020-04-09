@@ -16,7 +16,7 @@ public class MessageServiceImpl implements MessageService {
   
   private SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
   private boolean isTest;
-  private Logger logger = LogManager.getLogger(this.getClass().getName());
+  private Logger logger = LogManager.getLogger();
 
   /**
    * MessageServiceImpl is a "Singleton" class
@@ -54,11 +54,10 @@ public class MessageServiceImpl implements MessageService {
     try {
       session.delete(message);
       session.getTransaction().commit();
+      logger.info("Message " + message.getId() + " deleted.");
     } catch (Exception e){
      logger.error(e.getMessage());
     } finally{
-      logger.info("Message " + message.toString() + " deleted.");
-      logger.error("Message not actual error");
       session.close();
     }
   }
@@ -70,11 +69,11 @@ public class MessageServiceImpl implements MessageService {
     try {
       session.save(message);
       session.getTransaction().commit();
+      logger.info("Message " + message.getId() + " created.");
     } catch (Exception e){
       logger.error(e.getMessage());
     } finally{
       session.close();
-      logger.info("Message " + message.toString() + " created.");
     }
     return message;
   }
@@ -94,6 +93,7 @@ public class MessageServiceImpl implements MessageService {
     query.setParameter("username", username);
     userMessages = query.getResultList();
     session.close();
+    logger.info(userMessages.size() + " messages for User " +username + " found.");
     return userMessages;
   }
 }

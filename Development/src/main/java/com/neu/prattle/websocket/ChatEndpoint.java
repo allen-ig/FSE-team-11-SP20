@@ -108,7 +108,6 @@ public class ChatEndpoint {
           .build();
        session.getBasicRemote().sendObject(error);
       logger.error("User " + username + " attempted to sign in, but does not exist.");
-      logger.fatal("User " + username + " attempted to sign in, but does not exist.");
       return;
     }
         addEndpoint(session, username);
@@ -147,7 +146,7 @@ public class ChatEndpoint {
     chatEndpoints.put(username, this);
     /* users is a hashmap between session ids and users */
     users.put(session.getId(), username);
-    logger.info("User " + username + " signed in");
+    logger.info("User " + username + " signed in.");
   }
 
   /**
@@ -200,6 +199,7 @@ public class ChatEndpoint {
     message.setFrom(users.get(session.getId()));
     message.setContent("Disconnected!");
     broadcast(message);
+    logger.info("User " + users.get(session.getId()) + " has disconnected.");
   }
 
 
@@ -236,6 +236,9 @@ public class ChatEndpoint {
            *       output should be moved to a logger.
            */
           logger.error(e.getMessage());
+        } finally{
+          logger.info("Message broadcasted from " + message.getFrom() +
+                  " with content " + message.getContent());
         }
       }
     });
@@ -253,6 +256,8 @@ public class ChatEndpoint {
             Message errorMessage = new Message();
             errorMessage.setFrom("SYSTEM");
             errorMessage.setContent("The recipient does not exist or is currently offline");
+            logger.warn("User " + message.getFrom() + " attempted to send a message to "
+                    + message.getTo() + " but failed");
             try {
                 senderEndpoint.session.getBasicRemote()
                         .sendObject(errorMessage);
@@ -306,8 +311,6 @@ public class ChatEndpoint {
                    *       output should be moved to a logger.
                    */
                   logger.error(e.getMessage());
-
-
                 }
               }
             }
@@ -340,6 +343,8 @@ public class ChatEndpoint {
                   .setMessageContent("No Members specified :(").build());
         } catch (IOException | EncodeException e) {
           logger.error(e.getMessage());
+        } finally{
+          logger.warn("User " + message.getFrom() + " attemped to form a group with no members.");
         }
       }
     }
@@ -384,6 +389,7 @@ public class ChatEndpoint {
                   .setMessageContent("group created: " + group.getName()).build());
 
         }
+        logger.info("A new group was formed called " + group.getName());
       }
     } catch (Exception e) {
       logger.error(e.getMessage());
