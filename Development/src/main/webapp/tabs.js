@@ -32,6 +32,7 @@ function openTabUser(e) {
     document.getElementsByClassName("messageTabContentGroup").item(0).style.display = "none";
     document.getElementsByClassName("messageTabContentAll").item(0).style.display = "none";
     document.getElementsByClassName("messageTabContentUser").item(0).style.display = "block";
+
     e.style.backgroundColor = "#ccc";
 }
 
@@ -59,8 +60,21 @@ function switchTabUser() {
             console.log(messages);
             if (ok) {
                 messages.forEach(message => {
-                    userLog.innerHTML += message.from + ": " + message.content;
+                    let indexOfMe = message.from.indexOf(sender);
+                    while (true) {
+                        let ind = message.from.indexOf(sender, indexOfMe + 1);
+                        if (ind !== -1) {
+                            indexOfMe = ind;
+                        } else {
+                            break;
+                        }
+                    }
+                    if (indexOfMe !== -1 && indexOfMe + sender.length === message.from.length) {
+                        userLog.innerHTML += "[Me] ";
+                    }
+                    userLog.innerHTML += message.from + " : " + message.content;
                     userLog.innerHTML += formatDate(new Date(message.timestamp)) + "\n";
+                    userLog.scrollTop = userLog.scrollHeight;
                 });
             } else {
                 userLog.innerHTML += messages + "\n";
@@ -69,6 +83,8 @@ function switchTabUser() {
         .catch(function (error) {
             console.log("Service: Error - ", error);
         });
+    document.getElementById("linkUser").innerText = user;
+    document.getElementById("usr").value = user;
     openTabUser(document.getElementById("linkUser"));
 }
 
@@ -96,8 +112,21 @@ function switchTabGroup() {
             console.log(messages);
             if (ok) {
                 messages.forEach(message => {
+                    let indexOfMe = message.from.indexOf(sender);
+                    while (true) {
+                        let ind = message.from.indexOf(sender, indexOfMe + 1);
+                        if (ind !== -1) {
+                            indexOfMe = ind;
+                        } else {
+                            break;
+                        }
+                    }
+                    if (indexOfMe !== -1 && indexOfMe + sender.length === message.from.length) {
+                        groupLog.innerHTML += "[Me] ";
+                    }
                     groupLog.innerHTML += message.from + ": " + message.content;
                     groupLog.innerHTML += formatDate(new Date(message.timestamp)) + "\n";
+                    groupLog.scrollTop = groupLog.scrollHeight;
                 });
             } else {
                 groupLog.innerHTML += messages + "\n";
@@ -106,6 +135,8 @@ function switchTabGroup() {
         .catch(function (error) {
             console.log("Service: Error - ", error);
         });
+    document.getElementById("linkGroup").innerText = group;
+    document.getElementById("usr").value = group;
     openTabGroup(document.getElementById("linkGroup"));
 }
 
@@ -115,6 +146,7 @@ function openTabService(e) {
         stLinks[i].style.backgroundColor = "";
     }
 
+    document.getElementsByClassName("contentOnline").item(0).style.display = "none";
     document.getElementsByClassName("contentService").item(0).style.display = "block";
     document.getElementsByClassName("contentFriends").item(0).style.display = "none";
     document.getElementsByClassName("contentGroups").item(0).style.display = "none";
@@ -128,6 +160,7 @@ function openTabFriends(e) {
         stLinks[i].style.backgroundColor = "";
     }
 
+    document.getElementsByClassName("contentOnline").item(0).style.display = "none";
     document.getElementsByClassName("contentService").item(0).style.display = "none";
     document.getElementsByClassName("contentFriends").item(0).style.display = "block";
     document.getElementsByClassName("contentGroups").item(0).style.display = "none";
@@ -141,8 +174,54 @@ function openTabMyGroups(e) {
         stLinks[i].style.backgroundColor = "";
     }
 
+    document.getElementsByClassName("contentOnline").item(0).style.display = "none";
     document.getElementsByClassName("contentService").item(0).style.display = "none";
     document.getElementsByClassName("contentFriends").item(0).style.display = "none";
     document.getElementsByClassName("contentGroups").item(0).style.display = "block";
     e.style.backgroundColor = "#ccc";
+}
+
+function openOnline(e) {
+    let onlineLog = document.getElementById("onlineLog");
+    onlineLog.innerHTML = "";
+
+    var getOnlineUrl = `http://${document.location.host}${document.location.pathname}rest/user/getAllUsersOnline/500`;
+    var ok = false;
+
+    fetch(getOnlineUrl, {
+        method: "get",
+    })
+    .then(function (response) {
+        if (response.status === 200) {
+            ok = true;
+            return response.json();
+        }
+        console.log(response);
+        return response.text();
+    })
+    .then(function (online) {
+        console.log(online);
+        if (ok) {
+            online.forEach(user => {
+                onlineLog.innerHTML += user.name + "\n";
+            });
+        } else {
+            online.innerHTML += online + "\n";
+        }
+    })
+    .catch(function (error) {
+        console.log("Service: Error - ", error);
+    });
+
+    let stLinks = document.getElementsByClassName("serviceTabLink");
+    for (i = 0; i < stLinks.length; i++) {
+        stLinks[i].style.backgroundColor = "";
+    }
+
+    document.getElementsByClassName("contentService").item(0).style.display = "none";
+    document.getElementsByClassName("contentFriends").item(0).style.display = "none";
+    document.getElementsByClassName("contentGroups").item(0).style.display = "none";
+    document.getElementsByClassName("contentOnline").item(0).style.display = "block";
+    e.style.backgroundColor = "#ccc";
+
 }

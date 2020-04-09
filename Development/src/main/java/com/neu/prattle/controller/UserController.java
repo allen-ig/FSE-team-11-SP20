@@ -16,6 +16,7 @@ import jdk.nashorn.internal.objects.annotations.Getter;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -39,7 +40,7 @@ import javax.ws.rs.core.Response;
  */
 @Path(value = "/user")
 public class UserController {
-    
+
     private UserService accountService = UserServiceImpl.getInstance();
 
     private MessageService messageService = MessageServiceImpl.getInstance();
@@ -48,7 +49,7 @@ public class UserController {
 
     /***
      * Handles a HTTP POST request for user creation
-     * 
+     *
      * @param user -> The User object decoded from the payload of POST request.
      * @return -> A Response indicating the outcome of the requested operation.
      */
@@ -68,7 +69,7 @@ public class UserController {
     @GET
     @Path("/{name}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response findUserByName(@PathParam("name") String name){
+    public Response findUserByName(@PathParam("name") String name) {
         Optional<User> res = accountService.findUserByName(name);
         ObjectMapper mapper = new ObjectMapper();
         if (!res.isPresent()) return Response.status(404).build();
@@ -81,7 +82,7 @@ public class UserController {
         }
         return Response.ok().type(MediaType.APPLICATION_JSON).entity(jsonString).build();
     }
-    
+
     @POST
     @Path("/status")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -94,27 +95,27 @@ public class UserController {
             logger.log(Level.SEVERE, e.getMessage());
             return Response.status(500).entity("An internal server error occurred").build();
         }
-        
+
         return Response.ok().build();
     }
-    
+
     @GET
     @Path("/{username}/status")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUserStatus(@PathParam("username") final String username) {
-  
-      String statusString;
-      try {
-        statusString = accountService.getUserStatus(username);
-      } catch(UserNotFoundException e) {
-        return Response.status(404).entity(e.getMessage()).build();
-      }
-      
-      Gson gson = new Gson();
-      JsonObject user = new JsonObject();
-      user.addProperty("status", statusString);
-      
-      return Response.ok().type(MediaType.APPLICATION_JSON).entity(gson.toJson(user)).build();
+
+        String statusString;
+        try {
+            statusString = accountService.getUserStatus(username);
+        } catch (UserNotFoundException e) {
+            return Response.status(404).entity(e.getMessage()).build();
+        }
+
+        Gson gson = new Gson();
+        JsonObject user = new JsonObject();
+        user.addProperty("status", statusString);
+
+        return Response.ok().type(MediaType.APPLICATION_JSON).entity(gson.toJson(user)).build();
     }
 
     @GET
@@ -127,6 +128,10 @@ public class UserController {
         ObjectMapper mapper = new ObjectMapper();
         StringBuilder message = new StringBuilder();
         List<Message> messages = messageService.getDirectMessages(user, sender);
+        messages.addAll(messageService.getDirectMessages(sender, user));
+        //Timsort should work well enough.
+        messages.sort(new messageSorter());
+
         if (messages.size() != 0) {
             try {
                 String out = mapper.writeValueAsString(messages);
@@ -151,6 +156,7 @@ public class UserController {
         ObjectMapper mapper = new ObjectMapper();
         StringBuilder message = new StringBuilder();
         List<Message> messages = messageService.getGroupMessages(user, group);
+        messages.sort(new messageSorter());
         if (messages.size() != 0) {
             try {
                 String out = mapper.writeValueAsString(messages);
@@ -164,4 +170,40 @@ public class UserController {
             return Response.status(203).type(MediaType.TEXT_PLAIN).entity(message.toString()).build();
         }
     }
+
+    /**
+     * Gets all users that are currently online in JSON format.
+     * @return - Response with JSON body on success, text of error on failure.
+     */
+    @GET
+    @Path("/getAllUsersOnline/{maxResults}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAllUsersOnline(@PathParam("maxResults") int maxResults) {
+        ObjectMapper mapper = new ObjectMapper();
+        StringBuilder message = new StringBuilder();
+        List<User> online = accountService.getAllUsersOnline(maxResults);
+        if (online.size() != 0) {
+            try {
+                String out = mapper.writeValueAsString(online);
+                return Response.ok().type(MediaType.APPLICATION_JSON).entity(out).build();
+            } catch (IOException e) {
+                message.append("could not get online users from database");
+                return Response.status(409).type(MediaType.TEXT_PLAIN).entity(message.toString()).build();
+            }
+        } else {
+            message.append("no users currently online");
+            return Response.status(203).type(MediaType.TEXT_PLAIN).entity(message.toString()).build();
+        }
+    }
 }
+
+/**
+ * Simple comparator for messages.
+ */
+class messageSorter implements Comparator<Message> {
+    @Override
+    public int compare(Message m1, Message m2) {
+        return m1.getTimestamp().compareTo(m2.getTimestamp());
+    }
+}
+

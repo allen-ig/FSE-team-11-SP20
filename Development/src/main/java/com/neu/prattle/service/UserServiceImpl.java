@@ -3,7 +3,9 @@ package com.neu.prattle.service;
 import com.neu.prattle.exceptions.UserAlreadyPresentException;
 import com.neu.prattle.exceptions.UserNotFoundException;
 import com.neu.prattle.main.HibernateUtil;
+import com.neu.prattle.model.Message;
 import com.neu.prattle.model.User;
+import java.util.List;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -178,6 +180,23 @@ public class UserServiceImpl implements UserService {
       session.disconnect();
       session.close();
     }
+  }
+
+  /**
+   * Returns first 500 users online.
+   * @return
+   */
+  @Override
+  public List<User> getAllUsersOnline(int maxResults) {
+    List<User> online;
+    Session session = sessionFactory.openSession();
+    session.beginTransaction();
+    String strQuery = "SELECT u FROM User u  WHERE u.status = :online";
+    Query query = session.createQuery(strQuery).setFirstResult(0).setMaxResults(maxResults);
+    query.setParameter("online", "online");
+    online = query.getResultList();
+    session.close();
+    return online;
   }
 
   @Override
