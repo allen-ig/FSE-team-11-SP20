@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="warn">
     <Properties>
-        <Property name="basePath">var/logs/nuslack-logs</Property>
+        <Property name="basePath">/var/logs/nuslack-logs</Property>
     </Properties>
 
     <Appenders>
