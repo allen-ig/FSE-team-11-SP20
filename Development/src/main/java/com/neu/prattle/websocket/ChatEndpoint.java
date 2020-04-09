@@ -113,7 +113,7 @@ public class ChatEndpoint {
       }
     }
 
-    userService.setUserStatus(username, "online");
+    userService.setUserStatus(username, true);
   }
 
 
@@ -196,7 +196,7 @@ public class ChatEndpoint {
     message.setFrom(users.get(session.getId()));
     message.setContent("Disconnected!");
     broadcast(message);
-    userService.setUserStatus(users.get(session.getId()), "offline");
+    userService.setUserIsOnline(users.get(session.getId()), false);
   }
 
 

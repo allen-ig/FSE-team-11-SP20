@@ -32,6 +32,9 @@ public class FriendController {
     @Path("/create")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response sendFriendRequest(Friend friend){
+        if (friend.getSender().getName().equals(friend.getRecipient().getName())) {
+            return Response.status(405).entity("You can't add yourself as a friend!").build();
+        }
         try {
             friendService.sendFriendRequest(friend);
         }catch (FriendAlreadyPresentException e){
@@ -86,5 +89,23 @@ public class FriendController {
         if (!senderOp.isPresent()) message.append("Could not find sender!\n");
         if (!recipientOp.isPresent()) message.append("Could not find recipient!");
         return Response.status(404).entity(message.toString()).build();
+    }
+
+    @DELETE
+    @Path("/{sender}/{recipient}/remove")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response removeFriend(
+            @PathParam("sender") String sender,
+            @PathParam("recipient") String recipient){
+        Optional<User> optionalSender = userService.findUserByName(sender);
+        Optional<User> optionalRecipient = userService.findUserByName(recipient);
+        if (!optionalRecipient.isPresent() || !optionalSender.isPresent())
+            return Response.status(404).entity("The friend you requested does not exist!").build();
+        Optional<Friend> optionalFriend = friendService.findFriendByUsers(optionalSender.get(), optionalRecipient.get());
+        Optional<Friend> optionalFriendReverse = friendService.findFriendByUsers(optionalRecipient.get(), optionalSender.get());
+        if (!optionalFriend.isPresent() && !optionalFriendReverse.isPresent())
+            return Response.status(404).entity("The friend you requested does not exist!").build();
+        friendService.deleteFriend(optionalFriend.orElseGet(optionalFriendReverse::get));
+        return Response.ok().build();
     }
 }

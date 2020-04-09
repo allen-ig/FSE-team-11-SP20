@@ -32,6 +32,8 @@ public class User {
 
     private String status;
 
+    private String isOnline;
+
     @JsonIgnore
     @ManyToMany(mappedBy = "members", cascade = {CascadeType.ALL})
     private Set<BasicGroup> groups;
@@ -139,5 +141,13 @@ public class User {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getIsOnline() {
+        return isOnline;
+    }
+
+    public void setIsOnline(String isOnline) {
+        this.isOnline = isOnline;
     }
 }

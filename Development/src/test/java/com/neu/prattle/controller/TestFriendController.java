@@ -123,4 +123,20 @@ public class TestFriendController {
         assertEquals(404, response.getStatus());
         assertEquals("Could not find the target user ghost", response.getEntity());
     }
+
+    @Test
+    public void testDeleteFriend(){
+        Friend friend = new Friend(test1, test2);
+        friendController.sendFriendRequest(friend);
+        Response response = friendController.respondToFriendRequest(test1.getName(), test2.getName(), "approve");
+        assertEquals(response.getStatus(), Response.status(200).build().getStatus());
+        Response response1 = friendController.removeFriend("test1", "test2");
+        assertEquals(200, response1.getStatus());
+    }
+
+    @Test
+    public void testDeleteFriendDoesNotExist(){
+        Friend friend = new Friend(test1, test2);
+        assertEquals(404, friendController.removeFriend("test1", "test2").getStatus());
+    }
 }

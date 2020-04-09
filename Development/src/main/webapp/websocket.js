@@ -159,53 +159,60 @@ function search() {
   }));
 }
 
-function addFriend() {
-  let addFriendBtn = document.getElementById("addFriend");
-  addFriendBtn.classList.add("dontShow");
-  let searchField = document.getElementById("search");
-  let recipient = searchField.value;
-  searchField.value = "";
-  let json = JSON.stringify({
-    "content": "friendRequest",
-    "to": recipient
-  })
-  ws.send(json);
-  let postBody = {
-    "sender": senderObj,
-    "recipient": recipientObj
-  }
-  fetch(
-      `http://${document.location.host}${document.location.pathname}rest/friend/create`,
-      {
-        method: "POST",
-        body: JSON.stringify(postBody),
-        headers: {
-          'Content-Type': 'application/json; charset=utf-8'
-        }
-      })
-  .then(() => console.log("friend request sent!"))
+
+function addFriend(){
+    let addFriendBtn = document.getElementById("addFriend");
+    addFriendBtn.classList.add("dontShow");
+    let searchField = document.getElementById("search");
+    let recipient = searchField.value;
+    searchField.value = "";
+    let json = JSON.stringify({
+        "content": "friendRequest",
+        "to": recipient
+    })
+    let postBody = {
+        "sender": senderObj,
+        "recipient": recipientObj
+    }
+    fetch(`http://${document.location.host}${document.location.pathname}rest/friend/create`,
+        {method: "POST",
+            body: JSON.stringify(postBody),
+            headers: {
+                'Content-Type': 'application/json; charset=utf-8'
+            }})
+        .then(response => {
+            let slog = document.getElementById("serviceLog");
+            if (response.status === 409){
+                slog.innerHTML += "Service: friend relationship already exist!\n";
+            }else if (response.status === 405) {
+                slog.innerHTML += "Service: you can't add yourself as a friend!\n";
+            }
+            else{
+                ws.send(json)
+                console.log("friend request sent!")
+            }
+        })
+        .catch(err => console.log(err))
 }
 
-function handleFriendRequest(sender, recipient, response) {
-  fetch(
-      `http://${document.location.host}${document.location.pathname}rest/friend/${sender}/${recipient}/${response}`,
-      {
-        method: "PATCH",
-        body: JSON.stringify({
-          response: response
-        }),
-        headers: {
-          'Content-Type': 'application/json; charset=utf-8'
-        }
-      })
-  .then(() => {
-    let friendRequest = document.getElementById("friendRequest");
-    friendRequest.parentNode.removeChild(friendRequest);
-  })
-  numRequests -= 1;
-  if (numRequests == 0) {
-    document.getElementById("frButton").classList.add("dontShow");
-  }
+function handleFriendRequest(_sender, recipient, response) {
+    fetch(`http://${document.location.host}${document.location.pathname}rest/friend/${_sender}/${recipient}/${response}`,
+        {method: "PATCH",
+                body: JSON.stringify({
+                    response: response
+                }),
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8'
+                }
+        })
+        .then(() => {
+            let friendRequest = document.getElementById("friendRequest");
+            friendRequest.parentNode.removeChild(friendRequest);
+        })
+    numRequests -= 1;
+    if (numRequests == 0) {
+        document.getElementById("frButton").classList.add("dontShow");
+    }
 }
 
 function getFriendList() {
@@ -229,16 +236,33 @@ function getFriendList() {
   }
 }
 
-function printFriendList() {
-  fetch(
-      `http://${document.location.host}${document.location.pathname}rest/friend/${ws.url.split(
-          '/').pop()}/friends`,)
-  .then(response => response.json())
-  .then(response => {
-    let friendList = document.getElementById("friendsLog");
-    friendList.innerHTML = "";
-    response.forEach(user => {
-      friendList.innerHTML += "[" + user.name + "]  " + user.status + "\n";
-    });
-  })
+
+function printFriendList () {
+        fetch(`http://${document.location.host}${document.location.pathname}rest/friend/${ws.url.split('/').pop()}/friends`,)
+            .then(response => response.json())
+            .then(response => {
+                let friendList = document.getElementById("friendsLog");
+                friendList.innerHTML = "";
+                response.forEach(user => {
+                    friendList.innerHTML += "[" + user.name + "]  " + user.isOnline + " " + user.status + "\n";
+                });
+            })
+}
+
+function removeFriend() {
+    let friendToRemove = document.getElementById("removeFriend").value;
+    let slog;
+    fetch(
+        `http://${document.location.host}${document.location.pathname}rest/friend/${ws.url.split('/').pop()}/${friendToRemove}/remove`,
+        {
+            method: 'DELETE'
+        }
+    ).then(response => {
+        slog = document.getElementById("serviceLog");
+        if (response.status === 404) {
+            slog.innerHTML += "Service: Friend does not exist!\n";
+        }else {
+            printFriendList();
+        }
+    })
 }

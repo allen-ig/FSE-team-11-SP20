@@ -80,4 +80,12 @@ public interface UserService {
    * @return
    */
   List<User> getAllUsersOnline(int maxResults);
+
+    /**
+     * set user's online/offline status
+     * @param username user's username
+     * @param isOnline the user is online or not
+     */
+    void setUserIsOnline(String username, boolean isOnline);
+
 }
