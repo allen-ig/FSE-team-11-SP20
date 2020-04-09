@@ -58,6 +58,7 @@ public class MessageServiceImpl implements MessageService {
      logger.error(e.getMessage());
     } finally{
       logger.info("Message " + message.toString() + " deleted.");
+      logger.error("Message not actual error");
       session.close();
     }
   }

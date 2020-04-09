@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>;
+<?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="warn">
     <Properties>
         <Property name="basePath">var/logs/nuslack-logs</Property>
@@ -20,14 +20,13 @@
         <Console name="console" target="SYSTEM_OUT">
             <PatternLayout   pattern="[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n" />
         </Console>
-        <appender>
-        </appender>
     </Appenders>
     <Loggers>
-        <Logger name="name1">
+        <Logger name="com.neu.prattle">
+            <appender-ref ref="fileLogger" level="debug" />
         </Logger>
-        <Root level="level">
-            <AppenderRef ref="name"/>
+        <Root level="debug" additivity="false">
+            <appender-ref ref="console"/>
         </Root>
     </Loggers>
 </Configuration>

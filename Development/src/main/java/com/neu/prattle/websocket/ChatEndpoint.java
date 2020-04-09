@@ -24,8 +24,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.websocket.EncodeException;
 import javax.websocket.OnClose;
@@ -72,7 +72,7 @@ public class ChatEndpoint {
   /**
    * The logger.
    */
-  private static Logger logger = Logger.getLogger(ChatEndpoint.class.getName());
+  private static Logger logger = LogManager.getLogger(ChatEndpoint.class.getName());
 
   private void setAccountService(UserServiceWithGroups groupService) {
     this.groupService = groupService;
@@ -107,6 +107,8 @@ public class ChatEndpoint {
           .setMessageContent(String.format("User %s could not be found", username))
           .build();
        session.getBasicRemote().sendObject(error);
+      logger.error("User " + username + " attempted to sign in, but does not exist.");
+      logger.fatal("User " + username + " attempted to sign in, but does not exist.");
       return;
     }
         addEndpoint(session, username);
@@ -145,6 +147,7 @@ public class ChatEndpoint {
     chatEndpoints.put(username, this);
     /* users is a hashmap between session ids and users */
     users.put(session.getId(), username);
+    logger.info("User " + username + " signed in");
   }
 
   /**
@@ -232,7 +235,7 @@ public class ChatEndpoint {
           /* note: in production, who exactly is looking at the console.  This exception's
            *       output should be moved to a logger.
            */
-          logger.log(Level.SEVERE, e.getMessage());
+          logger.error(e.getMessage());
         }
       }
     });
@@ -254,7 +257,7 @@ public class ChatEndpoint {
                 senderEndpoint.session.getBasicRemote()
                         .sendObject(errorMessage);
             }catch (IOException | EncodeException | NullPointerException e){
-                logger.log(Level.SEVERE, e.getMessage());
+                logger.error(e.getMessage());
             }
             return;
         }
@@ -264,7 +267,7 @@ public class ChatEndpoint {
             if(!message.getContent().equals("friendRequest")) senderEndpoint.session.getBasicRemote()
                     .sendObject(message);
         }catch (IOException | EncodeException | NullPointerException e){
-            logger.log(Level.SEVERE, e.getMessage());
+            logger.error(e.getMessage());
         }
     }
   
@@ -302,7 +305,7 @@ public class ChatEndpoint {
                   /* note: in production, who exactly is looking at the console.  This exception's
                    *       output should be moved to a logger.
                    */
-                  logger.log(Level.SEVERE, e.getMessage());
+                  logger.error(e.getMessage());
 
 
                 }
@@ -336,7 +339,7 @@ public class ChatEndpoint {
               .sendObject(Message.messageBuilder().setTo(message.getFrom())
                   .setMessageContent("No Members specified :(").build());
         } catch (IOException | EncodeException e) {
-          logger.log(Level.SEVERE, e.getMessage());
+          logger.error(e.getMessage());
         }
       }
     }
@@ -362,7 +365,7 @@ public class ChatEndpoint {
               .sendObject(Message.messageBuilder().setTo(message.getFrom())
                   .setMessageContent("Members not found in service: " + usersNotExist).build());
         } catch (IOException | EncodeException e) {
-          logger.log(Level.SEVERE, e.getMessage());
+          logger.error(e.getMessage());
         }
 
       }
@@ -383,7 +386,7 @@ public class ChatEndpoint {
         }
       }
     } catch (Exception e) {
-      logger.log(Level.SEVERE, e.getMessage());
+      logger.error(e.getMessage());
     }
   }
 }
