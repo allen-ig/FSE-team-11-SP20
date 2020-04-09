@@ -72,7 +72,7 @@ public class ChatEndpoint {
   /**
    * The logger.
    */
-  private static Logger logger = LogManager.getLogger(ChatEndpoint.class);
+  private static Logger logger = LogManager.getLogger();
 
   private void setAccountService(UserServiceWithGroups groupService) {
     this.groupService = groupService;
