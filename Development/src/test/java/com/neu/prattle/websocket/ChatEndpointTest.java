@@ -291,7 +291,7 @@ public class ChatEndpointTest {
     }
 
     chatEndpoint.onClose(mockSession);
-    verify(mockSession, times(3)).getId();
+    verify(mockSession, times(4)).getId();
   }
 
   @Test
