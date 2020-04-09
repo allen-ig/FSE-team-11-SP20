@@ -272,26 +272,20 @@ public class ChatEndpointTest {
     this.mockSession = Mockito.mock(Session.class);
 
     Mockito.when(this.mockSession.getId()).thenReturn("sessionId");
+    Mockito.when(this.mockSession.getBasicRemote()).thenReturn(this.mockBasic);
 
-    Method privateMethod = null;
+    UserServiceWithGroups u = UserServiceWithGroupsImpl.getInstance();
+    User user = new User("onCloseUser");
+    UserServiceImpl.getInstance().addUser(user);
 
     try {
-      privateMethod = ChatEndpoint.class
-          .getDeclaredMethod("addEndpoint", Session.class, String.class);
-    } catch (NoSuchMethodException e) {
+      chatEndpoint.onOpen(mockSession, "onCloseUser");
+      chatEndpoint.onClose(mockSession);
+    } catch (IOException | EncodeException e) {
       e.printStackTrace();
     }
 
-    privateMethod.setAccessible(true);
-
-    try {
-      privateMethod.invoke(chatEndpoint, mockSession, username);
-    } catch (IllegalAccessException | InvocationTargetException e) {
-      e.printStackTrace();
-    }
-
-    chatEndpoint.onClose(mockSession);
-    verify(mockSession, times(3)).getId();
+    UserServiceImpl.getInstance().deleteUser(user);
   }
 
   @Test

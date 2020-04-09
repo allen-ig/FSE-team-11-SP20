@@ -20,10 +20,6 @@ import javax.persistence.Table;
 /**
  * POJO for a Group of users. Could fairly easily be used instead of User. Has Builder and
  * classically named getters/setters if we need a convenient way to create them from js.
- * <p>
- * Needs Doing: (1) Currently hashing by name so will have collisions with users/sameNamedGroups if
- * not careful. (2) I'm not sure how to place the groupBuilder() function in the interface without
- * dependency to this concrete class, so currently the interface is purely ornamental.
  */
 @Entity
 @Table(name="nuslack_group")

@@ -118,4 +118,17 @@ public class UserTest {
         alice.setStatus("Hello world");
         assertEquals("Hello world", alice.getStatus());
     }
+
+    @Test
+    public void testGetUserIsOnline(){
+        User alice  = new User("alice");
+        assertNull(alice.getIsOnline());
+    }
+
+    @Test
+    public void testSetUserIsOnline(){
+        User alice = new User("alice");
+        alice.setIsOnline("online");
+        assertEquals("online", alice.getIsOnline());
+    }
 }

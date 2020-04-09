@@ -50,7 +50,7 @@ public class TestFriendService {
     public void testSendFriendRequest(){
         Friend friend = new Friend(test1, test2);
         friendService.sendFriendRequest(friend);
-//        assertEquals(friend, friendService.findFriendByUsers(test1, test2));
+        assertEquals(friend, friendService.findFriendByUsers(test1, test2).get());
         friendService.deleteFriend(friend);
     }
 
@@ -59,18 +59,16 @@ public class TestFriendService {
         Friend friend = new Friend(test1, test2);
         friendService.sendFriendRequest(friend);
         friendService.approveFriendRequest(test1, test2, true);
-//        assertEquals("APPROVED", friendService.findFriendByUsers(test1, test2).get().getStatus());
+        assertEquals("APPROVED", friendService.findFriendByUsers(test1, test2).get().getStatus());
         friendService.deleteFriend(friend);
     }
 
     @Test
     public void testDenyFriendRequest(){
-        userService.addUser(new User("test3"));
-        User test3 = userService.findUserByName("test3").get();
-        Friend friend = new Friend(test1, test3);
+        Friend friend = new Friend(test1, test2);
         friendService.sendFriendRequest(friend);
-        friendService.approveFriendRequest(test1, test3, false);
-//        assertEquals("DENIED", friendService.findFriendByUsers(test1, test2).get().getStatus());
+        friendService.approveFriendRequest(test1, test2, false);
+        assertEquals("DENIED", friendService.findFriendByUsers(test1, test2).get().getStatus());
         friendService.deleteFriend(friend);
     }
 
@@ -79,6 +77,7 @@ public class TestFriendService {
         Friend friend = new Friend(test1, test2);
         friendService.sendFriendRequest(friend);
         friendService.approveFriendRequest(test1, test2, true);
+        assertEquals(1, friendService.findAllFriends(test1).size());
         friendService.deleteFriend(friend);
     }
 

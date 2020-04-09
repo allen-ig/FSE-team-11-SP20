@@ -2,19 +2,23 @@ var ws;
 var senderObj;
 var recipientObj;
 
+var sender;
+var numRequests = 0;
+
+
+
 function connect() {
     var username = document.getElementById("username").value;
-    
+    sender = document.getElementById("username").value;
+
     var host = document.location.host;
     var pathname = document.location.pathname;
     
     ws = new WebSocket("ws://" + host + pathname + "chat/" + username);
-
     ws.onmessage = function(event) {
     var log = document.getElementById("log");
-        console.log(event.data);
         var message = JSON.parse(event.data);
-        var searchAndFriend = document.getElementById("searchAndFriend");
+        var searchAndFriend = document.getElementById("popUpBody");
         if (message.content != "friendRequest") {
           var newMessage = message.from + " : " + message.content;
           if (message.timestamp){
@@ -24,19 +28,23 @@ function connect() {
           log.innerHTML += newMessage
         }
         else {
-            // friendId = message.friendId;
+            numRequests += 1;
+            document.getElementById("frButton").classList.remove("dontShow");
             searchAndFriend.innerHTML +=
                 `<div id="friendRequest"><span>${message.from} just send you a friend request!</span>
-                <button id="approveFriendRequest" onclick="handleFriendRequest(senderObj.name, recipientObj.name, 'approve');">Approve</button>
-                <button id="denyFriendRequest" onclick="handleFriendRequest(senderObj.name, recipientObj.name, 'deny');">Deny</button> </div>`;
+                <button id="approveFriendRequest" onclick="handleFriendRequest('${message.from}', '${message.to}', 'approve');">Approve</button>
+                <button id="denyFriendRequest" onclick="handleFriendRequest('${message.from}', '${message.to}', 'deny');">Deny</button> </div>`;
         }
-        
     };
 }
 
 function formatDate(d){
-    return " on " + (d.getMonth()+1) + "-" + d.getDate() + "-"+ d.getFullYear() + " at " +
-    d.getHours() + ":" + d.getMinutes();
+    let mins = d.getMinutes();
+    if (mins < 10) {
+        mins = "0" + mins;
+    }
+    return "\n---" + (d.getMonth()+1) + "." + d.getDate() + "."+ d.getFullYear() + " at " +
+    d.getHours() + ":" + mins + "\n";
 }
 
 function send() {
@@ -56,7 +64,6 @@ function search() {
     fetch(`http://${document.location.host}${document.location.pathname}rest/user/${userToSearch}`)
         .then(response => response.json())
         .then(response => {
-            console.log(response)
             recipientObj = response;
             if (response.name) {
                 console.log(`you can add ${response.name} as a friend!`);
@@ -69,7 +76,7 @@ function search() {
             .then(response => response.json())
             .then(response => {
                 senderObj = response;
-            }))
+            }));
 }
 
 function addFriend(){
@@ -82,7 +89,6 @@ function addFriend(){
         "content": "friendRequest",
         "to": recipient
     })
-    ws.send(json);
     let postBody = {
         "sender": senderObj,
         "recipient": recipientObj
@@ -93,11 +99,23 @@ function addFriend(){
             headers: {
                 'Content-Type': 'application/json; charset=utf-8'
             }})
-        .then(() => console.log("friend request sent!"))
+        .then(response => {
+            let slog = document.getElementById("serviceLog");
+            if (response.status === 409){
+                slog.innerHTML += "Service: friend relationship already exist!\n";
+            }else if (response.status === 405) {
+                slog.innerHTML += "Service: you can't add yourself as a friend!\n";
+            }
+            else{
+                ws.send(json)
+                console.log("friend request sent!")
+            }
+        })
+        .catch(err => console.log(err))
 }
 
-function handleFriendRequest(sender, recipient, response) {
-    fetch(`http://${document.location.host}${document.location.pathname}rest/friend/${sender}/${recipient}/${response}`,
+function handleFriendRequest(_sender, recipient, response) {
+    fetch(`http://${document.location.host}${document.location.pathname}rest/friend/${_sender}/${recipient}/${response}`,
         {method: "PATCH",
                 body: JSON.stringify({
                     response: response
@@ -110,4 +128,58 @@ function handleFriendRequest(sender, recipient, response) {
             let friendRequest = document.getElementById("friendRequest");
             friendRequest.parentNode.removeChild(friendRequest);
         })
+    numRequests -= 1;
+    if (numRequests == 0) {
+        document.getElementById("frButton").classList.add("dontShow");
+    }
+}
+
+
+function getFriendList() {
+    let friendListNode = document.getElementById("friendList")
+    if (friendListNode){
+        friendListNode.remove();
+    } else {
+        fetch(`http://${document.location.host}${document.location.pathname}rest/friend/${ws.url.split('/').pop()}/friends`,)
+            .then(response => response.json())
+            .then(response => {
+                let connectField = document.getElementById("connect");
+                let friendList = "<tr><ul id='friendList'>";
+                response.map(user => {
+                    friendList += `<li>${user.name} &nbsp; <span>${user.status}</span></li>`;
+                });
+                friendList += "</ul></tr>";
+                connectField.innerHTML += friendList;
+            })
+    }
+}
+
+function printFriendList () {
+        fetch(`http://${document.location.host}${document.location.pathname}rest/friend/${ws.url.split('/').pop()}/friends`,)
+            .then(response => response.json())
+            .then(response => {
+                let friendList = document.getElementById("friendsLog");
+                friendList.innerHTML = "";
+                response.forEach(user => {
+                    friendList.innerHTML += "[" + user.name + "]  " + user.isOnline + " " + user.status + "\n";
+                });
+            })
+}
+
+function removeFriend() {
+    let friendToRemove = document.getElementById("removeFriend").value;
+    let slog;
+    fetch(
+        `http://${document.location.host}${document.location.pathname}rest/friend/${ws.url.split('/').pop()}/${friendToRemove}/remove`,
+        {
+            method: 'DELETE'
+        }
+    ).then(response => {
+        slog = document.getElementById("serviceLog");
+        if (response.status === 404) {
+            slog.innerHTML += "Service: Friend does not exist!\n";
+        }else {
+            printFriendList();
+        }
+    })
 }

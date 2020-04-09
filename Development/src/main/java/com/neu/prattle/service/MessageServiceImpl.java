@@ -92,4 +92,34 @@ public class MessageServiceImpl implements MessageService {
     session.close();
     return userMessages;
   }
+
+  @Override
+  public List<Message> getDirectMessages(String user, String sender) {
+    List<Message> userMessages;
+    Session session = sessionFactory.openSession();
+    session.beginTransaction();
+    String strQuery = "SELECT m FROM Message m WHERE m.toUser = :inq AND m.fromUser = :sender";
+    Query query = session.createQuery(strQuery);
+    query.setParameter("inq", user);
+    query.setParameter("sender", sender);
+    userMessages = query.getResultList();
+    session.close();
+    return userMessages;
+  }
+
+  @Override
+  public List<Message> getGroupMessages(String user, String group) {
+    List<Message> userMessages;
+    Session session = sessionFactory.openSession();
+    session.beginTransaction();
+    String strQuery = "SELECT m FROM Message m WHERE m.toUser = :inq AND m.fromUser LIKE ?1";
+    Query query = session.createQuery(strQuery);
+    query.setParameter("inq", user);
+    query.setParameter(1, group+":%");
+    userMessages = query.getResultList();
+    session.close();
+    return userMessages;
+  }
+
+
 }

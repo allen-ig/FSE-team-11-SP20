@@ -1,43 +1,151 @@
 <html>
-    <head>
-        <title>Chat</title>
-        <link rel="stylesheet" type="text/css" href="style.css">
-    </head>
-    <body>
-
+<head>
+    <title>Chat</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<table>
+    <tr>
+        <img src="NuSlackClearEnvelope.jpg">
+    </tr>
+    <tr id="connect">
+        <td colspan="2">
+            <input type="text" id="username" placeholder="Username"/>
+            <button type="button" onclick="connect();">Connect</button>
+            <button type="button" id="frButton"class="dontShow">Friend Requests</button>
+            <!-- <button type="button" onclick="getFriendList();">My Friends</button> -->
+        </td>
+    </tr>
+    <tr>
+        <table id="display">
+            <tr bgcolor="#f1f1f1" height="100%" width="100%">
+                <th align="left" id="lefthead">
+                    Chat:
+                </th>
+                <th align="left" id="righthead">
+                    Info:
+                </th>
+            </tr>
+            <td width="60%" id="leftDisplay">
+                <div class="messageTab">
+                    <button class="messageTabLink" id="linkAll" onclick="openTabAll(this)">All</button>
+                    <button class="messageTabLink" id="linkUser" onclick="openTabUser(this)">User</button>
+                    <button class="messageTabLink" id="linkGroup" onclick="openTabGroup(this)">Group</button>
+                </div>
+                <div id="all" class="messageTabContentAll">
+                    <textarea readonly="true" rows="10" cols="54" id="log"></textarea>
+                </div>
+                <div id="user" class="messageTabContentUser">
+                    <textarea readonly="true" rows="10" cols="54" id="userLog"></textarea>
+                </div>
+                <div id="group" class="messageTabContentGroup">
+                    <textarea readonly="true" rows="10" cols="54" id="groupLog"></textarea>
+                </div>
+            </td>
+            <td width="40%" id="rightDisplay">
+                <div class="serviceTab">
+                    <button class="serviceTabLink" id="linkServ" onclick="openTabService(this)">Service</button>
+                    <button class="serviceTabLink" id="linkFriends" onclick="openTabFriends(this)">Friends</button>
+                    <button class="serviceTabLink" id="linkGroups" onclick="openTabMyGroups(this)">Groups</button>
+                </div>
+                <div id="service" class="contentService">
+                    <textarea readonly="true" rows="10" cols="35" id="serviceLog"></textarea>
+                </div>
+                <div id="friends" class="contentFriends">
+                    <textarea readonly="true" rows="10" cols="35" id="friendsLog"></textarea>
+                </div>
+                <div id="groups" class="contentGroups">
+                    <textarea readonly="true" wrap="off" rows="10" cols="35" id="groupsLog"></textarea>
+                </div>
+            </td>
+        </table>
         <table>
             <tr>
-                <td colspan="2">
-                    <input type="text" id="username" placeholder="Username"/>
-                    <button type="button" onclick="connect();" >Connect</button>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <textarea readonly="true" rows="10" cols="80" id="log"></textarea>
-                </td>
-            </tr>
-            <tr>
                 <td id="searchAndFriend">
-                    <input type="text" size="51" id="search" placeholder="Search for a User"/>
-                    <button type="button" onclick="search();" >search</button>
-                    <button type="button" onclick="addFriend();" id="addFriend" class="dontShow">Send Friend Request</button>
+                    <input type="text" size="51" id="search" placeholder="User/Group..."/>
+                    <div class="dropup">
+                        <button type="button">Search</button>
+                        <div class="dropup-content">
+                            <button type="button" onclick="switchTabUser();">Select User</button>
+                            <button type="button" onclick="switchTabGroup();">Select Group</button>
+                            <button type="button" onclick="search();">Search for User</button>
+                        </div>
+                    </div>
+                    <button type="button" onclick="addFriend();" id="addFriend" class="dontShow">Send Friend
+                        Request
+                    </button>
                 </td>
             </tr>
             <tr>
                 <td>
-                    <input type="text" size="51" id="usr" placeholder="Recipient"/>
+                    <input type="text" size="12" id="usr" placeholder="Recipient"/>
+                    <input type="text" size="31" id="msg" placeholder="Message"/>
+                    <div class="dropup">
+                        <button type="button">Send</button>
+                        <div class="dropup-content">
+                            <button type="button" id="aliasButton">Send as Alias</button>
+                            <button type="button" onclick="sendGroup();">Send to Group</button>
+                            <button type="button" onclick="send();">Send to User</button>
+                        </div>
+                    </div>
                 </td>
             </tr>
             <tr>
                 <td>
-                    <input type="text" size="51" id="msg" placeholder="Message"/>
-                    <button type="button" onclick="send();" >Send</button>
+                    <input type="text" size="12" id="gfGroup" placeholder="Group"/>
+                    <input type="text" size="12" id="gfUser" placeholder="User"/>
+                    <input type="text" size="11" id="gfModerator" placeholder="Mod"/>
+                    <div class="dropup">
+                        <button type="button">Group</button>
+                        <div class="dropup-content">
+                            <button type="button" onclick="addGroup();">Create Group</button>
+                            <button type="button" onclick="addMember();">Add Member</button>
+                            <button type="button" onclick="addMod();">Add Moderator</button>
+                            <button type="button" onclick="removeMember();">Delete Member</button>
+                            <button type="button" onclick="removeMod();">Delete Moderator</button>
+                            <button type="button" onclick="deleteGroup();">Delete Group</button>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="text" size="20" id="removeFriend" placeholder="friend to remove">
+                    <button id="removeFriendBtn" onclick="removeFriend()">remove</button>
                 </td>
             </tr>
         </table>
-    </body>
+    </tr>
+</table>
+<div id="friendsPopUp" class="popup">
+    <div class="friendsPopupContent">
+        <div class="popupHead">
+            <span id="closePopup" class="closePopup">&times;</span>
+            <h2>Friend Requests</h2>
+        </div>
+        <div id="popUpBody" class="popupBody">
+        </div>
+    </div>
+</div>
+<div id="aliasPopUp" class="popupAlias">
+    <div id="aliasContent" class="aliasPopupContent">
+        <div id="aliasHead" class="aliasHead">
+            <span id="closeAlias" class="closeAlias">&times;</span>
+            <h2>Pick an Alias</h2>
+        </div>
+        <div id="aliasbody" class="aliasBody">
+            <input type="text" size="51" id="alias" placeholder="Alias"/>
+            <button type="button" onclick="sendAlias();" id="sendAliasButton">Send</button>
+        </div>
+    </div>
+</div>
+</body>
 
-    <script src="websocket.js"></script>
+<script src="websocket.js"></script>
+<script src="groupfunc.js"></script>
+<script src="tabs.js"></script>
+<script src="alias.js"></script>
+<script src="friendReqPopUp.js"></script>
+<script src="aliasPopup.js"></script>
 
 </html>
