@@ -8,14 +8,15 @@ import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class MessageServiceImpl implements MessageService {
   
   private SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
   private boolean isTest;
-  private Logger logger = Logger.getLogger(this.getClass().getName());
+  private Logger logger = LogManager.getLogger(this.getClass().getName());
 
   /**
    * MessageServiceImpl is a "Singleton" class
@@ -54,8 +55,9 @@ public class MessageServiceImpl implements MessageService {
       session.delete(message);
       session.getTransaction().commit();
     } catch (Exception e){
-     logger.log(Level.SEVERE, e.getMessage());
+     logger.error(e.getMessage());
     } finally{
+      logger.info("Message " + message.toString() + " deleted.");
       session.close();
     }
   }
@@ -68,9 +70,10 @@ public class MessageServiceImpl implements MessageService {
       session.save(message);
       session.getTransaction().commit();
     } catch (Exception e){
-      logger.log(Level.SEVERE, (e.getMessage()));
+      logger.error(e.getMessage());
     } finally{
       session.close();
+      logger.info("Message " + message.toString() + " created.");
     }
     return message;
   }
