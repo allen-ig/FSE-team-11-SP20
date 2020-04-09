@@ -3,11 +3,9 @@ package com.neu.prattle.websocket;
 import com.neu.prattle.model.BasicGroup;
 import com.neu.prattle.model.Message;
 import com.neu.prattle.model.User;
-
 import com.neu.prattle.service.UserServiceImpl;
 import com.neu.prattle.service.UserServiceWithGroups;
 import com.neu.prattle.service.UserServiceWithGroupsImpl;
-import java.util.HashSet;
 
 import org.junit.After;
 import org.junit.Before;
@@ -21,6 +19,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -273,26 +272,20 @@ public class ChatEndpointTest {
     this.mockSession = Mockito.mock(Session.class);
 
     Mockito.when(this.mockSession.getId()).thenReturn("sessionId");
+    Mockito.when(this.mockSession.getBasicRemote()).thenReturn(this.mockBasic);
 
-    Method privateMethod = null;
+    UserServiceWithGroups u = UserServiceWithGroupsImpl.getInstance();
+    User user = new User("onCloseUser");
+    UserServiceImpl.getInstance().addUser(user);
 
     try {
-      privateMethod = ChatEndpoint.class
-          .getDeclaredMethod("addEndpoint", Session.class, String.class);
-    } catch (NoSuchMethodException e) {
+      chatEndpoint.onOpen(mockSession, "onCloseUser");
+      chatEndpoint.onClose(mockSession);
+    } catch (IOException | EncodeException e) {
       e.printStackTrace();
     }
 
-    privateMethod.setAccessible(true);
-
-    try {
-      privateMethod.invoke(chatEndpoint, mockSession, username);
-    } catch (IllegalAccessException | InvocationTargetException e) {
-      e.printStackTrace();
-    }
-
-    chatEndpoint.onClose(mockSession);
-    verify(mockSession, times(3)).getId();
+    UserServiceImpl.getInstance().deleteUser(user);
   }
 
   @Test
@@ -610,5 +603,111 @@ public class ChatEndpointTest {
       e.printStackTrace();
     }
   }
+
+  @Test
+  public void testSecretMessage() {
+    Mockito.when(this.mockSession.getId()).thenReturn("sessionId");
+    Mockito.when(this.mockSession.getBasicRemote()).thenReturn(this.mockBasic);
+
+    Method privateMethod = null;
+    try {
+      privateMethod = ChatEndpoint.class.getDeclaredMethod("sendSecretMessage", Message.class);
+    } catch (NoSuchMethodException e) {
+      e.printStackTrace();
+    }
+    assert privateMethod != null;
+    privateMethod.setAccessible(true);
+    try {
+      privateMethod.invoke(chatEndpoint, message);
+    } catch (IllegalAccessException | InvocationTargetException e) {
+      e.printStackTrace();
+    }
+
+    User omu = new User("OnMessageUserSecret");
+    User omu2 = new User("OnMessageUserSecret2");
+    Set<User> mems = new HashSet<>();
+    mems.add(omu);
+    mems.add(omu2);
+
+    BasicGroup secretGroup = BasicGroup.groupBuilder().setName("secretMessageGroup").setMembers(mems).build();
+    UserServiceWithGroups us = UserServiceWithGroupsImpl.getInstance();
+    UserServiceImpl.getInstance().addUser(omu);
+    UserServiceImpl.getInstance().addUser(omu2);
+    us.addGroup(secretGroup);
+
+    Message message5 = Message.messageBuilder().setFrom(omu.getName()).setTo("alias OnMessageUserSecret a")
+        .setMessageContent("content").build();
+    //chatEndpoint.onMessage(mockSession, message5);
+
+    Message message6 = Message.messageBuilder().setFrom(omu.getName()).setTo("alias OnMessageUserSecret2")
+        .setMessageContent("content").build();
+    //chatEndpoint.onMessage(mockSession, message6);
+
+    Message message7 = Message.messageBuilder().setFrom(omu.getName()).setTo("alias a ")
+        .setMessageContent("content").build();
+    //chatEndpoint.onMessage(mockSession, message7);
+
+    try {
+      privateMethod.invoke(chatEndpoint, message5);
+      privateMethod.invoke(chatEndpoint, message6);
+      privateMethod.invoke(chatEndpoint, message7);
+    } catch (IllegalAccessException | InvocationTargetException e) {
+      e.printStackTrace();
+    }
+  }
+
+  @Test
+  public void testSecretGroupMessage() {
+    Mockito.when(this.mockSession.getId()).thenReturn("sessionId");
+    Mockito.when(this.mockSession.getBasicRemote()).thenReturn(this.mockBasic);
+
+    Method privateMethod = null;
+    try {
+      privateMethod = ChatEndpoint.class.getDeclaredMethod("sendSecretGroupMessage", Message.class);
+    } catch (NoSuchMethodException e) {
+      e.printStackTrace();
+    }
+    assert privateMethod != null;
+    privateMethod.setAccessible(true);
+    try {
+      privateMethod.invoke(chatEndpoint, message);
+    } catch (IllegalAccessException | InvocationTargetException e) {
+      e.printStackTrace();
+    }
+
+    User omu = new User("OnMessageUserSecretGroup");
+    User omu2 = new User("OnMessageUserSecretGroup2");
+    Set<User> mems = new HashSet<>();
+    mems.add(omu);
+    mems.add(omu2);
+
+    BasicGroup secretGroup = BasicGroup.groupBuilder().setName("secretMessageGroup2").setMembers(mems).build();
+    UserServiceWithGroups us = UserServiceWithGroupsImpl.getInstance();
+    UserServiceImpl.getInstance().addUser(omu);
+    UserServiceImpl.getInstance().addUser(omu2);
+    us.addGroup(secretGroup);
+
+    Message message5 = Message.messageBuilder().setFrom(omu.getName()).setTo("groupalias OnMessageUserSecretGroup a")
+        .setMessageContent("content").build();
+    //chatEndpoint.onMessage(mockSession, message5);
+
+    Message message6 = Message.messageBuilder().setFrom(omu.getName()).setTo("groupalias OnMessageUserSecretGroup2")
+        .setMessageContent("content").build();
+    //chatEndpoint.onMessage(mockSession, message6);
+
+    Message message7 = Message.messageBuilder().setFrom(omu.getName()).setTo("groupalias a ")
+        .setMessageContent("content").build();
+    //chatEndpoint.onMessage(mockSession, message7);
+
+    try {
+      privateMethod.invoke(chatEndpoint, message5);
+      privateMethod.invoke(chatEndpoint, message6);
+      privateMethod.invoke(chatEndpoint, message7);
+    } catch (IllegalAccessException | InvocationTargetException e) {
+      e.printStackTrace();
+    }
+  }
+
+
 }
 

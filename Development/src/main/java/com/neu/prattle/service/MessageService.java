@@ -1,7 +1,6 @@
 package com.neu.prattle.service;
 
 import com.neu.prattle.model.Message;
-import com.neu.prattle.model.User;
 
 import java.util.List;
 
@@ -21,7 +20,7 @@ public interface MessageService {
 
   /**
    * Creates/saves a new Message
-   * @param message
+   * @param message message to be created
    * @return the newly saved Message
    */
   Message createMessage(Message message);
@@ -35,9 +34,13 @@ public interface MessageService {
 
   /**
    * Returns a List of all Messages sent to a User
-   * @param username
+   * @param username of the user whose messages are to be retrieved
    * @return A List of all messages sent to a User
    */
   List<Message> getUserMessages(String username);
+
+  List<Message> getDirectMessages(String user, String sender);
+
+  List<Message> getGroupMessages(String user, String group);
 
 }

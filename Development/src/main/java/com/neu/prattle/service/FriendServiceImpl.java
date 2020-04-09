@@ -51,7 +51,8 @@ public class FriendServiceImpl implements FriendService{
     }
     @Override
     public synchronized void sendFriendRequest(Friend friend) {
-        if (findFriendByUsers(friend.getSender(), friend.getRecipient()).isPresent()){
+        if (findFriendByUsers(friend.getSender(), friend.getRecipient()).isPresent() ||
+                findFriendByUsers(friend.getRecipient(), friend.getSender()).isPresent()){
             throw new FriendAlreadyPresentException(
                     String.format("Friend relationship between %s and %s already present!",
                             friend.getSender().getName(), friend.getRecipient().getName()));
@@ -90,14 +91,14 @@ public class FriendServiceImpl implements FriendService{
     }
 
     @Override
-    public Collection<Friend> findAllFriends(String username) {
+    public Collection<Friend> findAllFriends(User user) {
         List<Friend> friends = new ArrayList<>();
         Session session = sessionFactory.openSession();
         session.beginTransaction();
-        String strQuery = "SELECT f FROM Friend f WHERE f.status = :status and (f.recipient.name = :username or f.sender.name = :username)";
+        String strQuery = "SELECT f FROM Friend f WHERE f.status = :status and (f.recipient = :user or f.sender = :user)";
         Query query = session.createQuery(strQuery);
         query.setParameter("status", "APPROVED");
-        query.setParameter("username", username);
+        query.setParameter("user", user);
         try{
             friends = query.getResultList();
         }catch (Exception e){
@@ -134,6 +135,7 @@ public class FriendServiceImpl implements FriendService{
         session.beginTransaction();
         try{
             session.delete(friend);
+            session.getTransaction().commit();
         }catch (Exception e){
             logger.log(Level.SEVERE, e.getMessage());
         }finally {

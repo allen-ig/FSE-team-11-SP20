@@ -40,6 +40,7 @@ public class Message {
      */
     private String content;
 
+
     @Override
     public String toString() {
         return new StringBuilder()
@@ -61,15 +62,18 @@ public class Message {
         return toUser;
     }
 
-    public int getId(){return this.id;}
+    public int getId() {
+        return this.id;
+    }
 
     public void setTo(String to) {
         this.toUser = to;
     }
 
-    public Timestamp getTimestamp(){
+    public Timestamp getTimestamp() {
         return this.timestamp;
     }
+
 
     public String getContent() {
         return content;
@@ -79,26 +83,27 @@ public class Message {
         this.content = content;
     }
 
-    public static MessageBuilder messageBuilder()   {
+
+    public static MessageBuilder messageBuilder() {
         return new MessageBuilder();
     }
 
     @Override
-    public boolean equals(Object o){
-        if (o == this){
+    public boolean equals(Object o) {
+        if (o == this) {
             return true;
         }
         if (!(o instanceof Message)) {
             return false;
         }
-        Message message = (Message)o;
+        Message message = (Message) o;
         long diff = Math.abs(this.getTimestamp().getTime() - message.getTimestamp().getTime());
         return (
                 (this.getTo().equals(message.getTo())) &&
                         (this.getFrom().equals(message.getFrom())) &&
                         (this.getContent().equals(message.getContent())) &&
-                        (diff<5000)
-                );
+                        (diff < 5000)
+        );
     }
 
     @Override
@@ -106,45 +111,45 @@ public class Message {
         return Objects.hash(toUser + fromUser + content);
     }
 
-    public void setTimestamp(){
+    public void setTimestamp() {
         this.timestamp = Timestamp.from(Instant.now());
     }
-
 
 
     /***
      * A Builder helper class to create instances of {@link Message}
      */
-    public static class MessageBuilder    {
+    public static class MessageBuilder {
         /***
          * Invoking the build method will return this message object.
          */
         private MessageService messageService = MessageServiceImpl.getInstance();
         Message message;
 
-         MessageBuilder()    {
+        MessageBuilder() {
             message = new Message();
             message.setFrom("Service");
-           message.setTimestamp();
+            message.setTimestamp();
 
         }
 
-        public MessageBuilder setFrom(String from)    {
+        public MessageBuilder setFrom(String from) {
             message.setFrom(from);
             return this;
         }
 
-        public MessageBuilder setTo(String to)    {
+        public MessageBuilder setTo(String to) {
             message.setTo(to);
             return this;
         }
 
-        public MessageBuilder setMessageContent(String content)   {
+        public MessageBuilder setMessageContent(String content) {
             message.setContent(content);
             return this;
         }
 
-        public Message build()  {
+
+        public Message build() {
             return messageService.createMessage(message);
         }
     }

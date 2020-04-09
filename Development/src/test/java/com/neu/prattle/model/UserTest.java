@@ -1,17 +1,30 @@
-package com.neu.prattle.testmodels;
+package com.neu.prattle.model;
 
-import com.neu.prattle.model.Friend;
-import com.neu.prattle.model.User;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class UserTest {
 
+    @Before
+    public void setUp() {
+        System.setProperty("testing", "true");
+    }
+    
+    @After
+    public void tearDown(){
+        System.setProperty("testing", "false");
+    }
+    
     @Test
     public void testEmptyConstructor(){
         User user = new User();
@@ -96,5 +109,26 @@ public class UserTest {
         friendList.add(friend);
         alice.setFriendByList(friendList);
         assertEquals(friendList, alice.getFriendByList());
+    }
+    
+    @Test
+    public void testGetAndSetUserStatus(){
+        User alice = new User("alice");
+        assertEquals("", alice.getStatus());
+        alice.setStatus("Hello world");
+        assertEquals("Hello world", alice.getStatus());
+    }
+
+    @Test
+    public void testGetUserIsOnline(){
+        User alice  = new User("alice");
+        assertNull(alice.getIsOnline());
+    }
+
+    @Test
+    public void testSetUserIsOnline(){
+        User alice = new User("alice");
+        alice.setIsOnline("online");
+        assertEquals("online", alice.getIsOnline());
     }
 }

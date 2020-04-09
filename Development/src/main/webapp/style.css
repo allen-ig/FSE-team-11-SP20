@@ -138,3 +138,287 @@ p {
 .dontShow {
     display: none;
 }
+
+
+
+/* Here be dropups */
+
+.dropup {
+    position: relative;
+    display: inline-block;
+}
+
+.dropup-content {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 0px;
+    bottom: 0px;
+    z-index: 1;
+}
+
+.dropup-content a {
+    color: black;
+    padding: 6px 8px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropup-content a:hover {background-color: #ccc}
+
+.dropup:hover .dropup-content {
+    display: block;
+}
+
+.dropup:hover .dropbtn {
+    background-color: #2980B9;
+}
+
+/* </dropups> */
+
+
+
+
+/* Here be tabs */
+
+#display, #leftDisplay, #rightDisplay {
+    position: relative;
+}
+
+#lefthead, #righthead {
+    border: 2px solid #ccc;
+    background-color: #f1f1f1;;
+}
+
+.messageTab {
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+}
+
+.messageTab button {
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 7px 8px;
+    transition: 0.3s;
+    font-size: 15px;
+}
+
+.messageTab button:hover {
+    background-color: #ddd;
+}
+
+.messageTabContentAll {
+    display: block;
+}
+
+.messageTabContentUser {
+    display: none;
+}
+
+.messageTabContentGroup {
+    display: none;
+}
+
+.serviceTab {
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+}
+
+/* Style the buttons inside the tab */
+.serviceTab button {
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 7px 8px;
+    transition: 0.3s;
+    font-size: 15px;
+}
+
+.serviceTab button:hover {
+    background-color: #ddd;
+}
+
+.serviceTab button.active {
+    background-color: #cc3f47;
+
+}
+
+.contentService {
+    display: block;
+    border-top: none;
+}
+
+.contentFriends {
+    display: none;
+    border-top: none;
+}
+
+.contentGroups {
+    display: none;
+    border-top: none;
+}
+
+.contentOnline {
+    display: none;
+    border-top: none;
+}
+
+/* </tabs> */
+
+
+
+/* Here be popup*/
+.popup {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.4);
+    -webkit-animation-name: fadeIn;
+    -webkit-animation-duration: 0.4s;
+    animation-name: fadeIn;
+    animation-duration: 0.4s
+}
+
+.friendsPopupContent {
+    position: fixed;
+    bottom: 0;
+    background-color: #fefefe;
+    width: 100%;
+    -webkit-animation-name: slideIn;
+    -webkit-animation-duration: 0.4s;
+    animation-name: slideIn;
+    animation-duration: 0.4s
+}
+
+.closePopup {
+    color: #2e3132;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.closePopup:hover,
+.closePopup:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.popupHead {
+    padding: 2px;
+    font-size: 12px;
+    background-color: #0f90d1;
+    color: #2e3132;
+}
+
+.popupBody {padding: 2px 16px;}
+
+
+@-webkit-keyframes slideIn {
+    from {bottom: -300px; opacity: 0}
+    to {bottom: 0; opacity: 1}
+}
+
+@keyframes slideIn {
+    from {bottom: -300px; opacity: 0}
+    to {bottom: 0; opacity: 1}
+}
+
+@-webkit-keyframes fadeIn {
+    from {opacity: 0}
+    to {opacity: 1}
+}
+
+@keyframes fadeIn {
+    from {opacity: 0}
+    to {opacity: 1}
+}
+
+.popupAlias {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.4);
+    -webkit-animation-name: fadeIn;
+    -webkit-animation-duration: 0.4s;
+    animation-name: fadeIn;
+    animation-duration: 0.4s
+}
+
+.aliasPopupContent {
+    position: fixed;
+    bottom: 0;
+    background-color: #fefefe;
+    width: 100%;
+    -webkit-animation-name: slideIn;
+    -webkit-animation-duration: 0.4s;
+    animation-name: slideIn;
+    animation-duration: 0.4s
+}
+
+.closeAlias {
+    color: #2e3132;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.closeAlias:hover,
+.closeAlias:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.aliasHead {
+    padding: 2px;
+    font-size: 12px;
+    background-color: #0f90d1;
+    color: #2e3132;
+}
+
+.aliasBody {padding: 2px 16px;}
+
+
+@-webkit-keyframes slideIn {
+    from {bottom: -300px; opacity: 0}
+    to {bottom: 0; opacity: 1}
+}
+
+@keyframes slideIn {
+    from {bottom: -300px; opacity: 0}
+    to {bottom: 0; opacity: 1}
+}
+
+@-webkit-keyframes fadeIn {
+    from {opacity: 0}
+    to {opacity: 1}
+}
+
+@keyframes fadeIn {
+    from {opacity: 0}
+    to {opacity: 1}
+}
+
+#serviceLog, #friendsLog, #groupsLog, #log, #userLog, #groupLog, #onlineLog {
+    resize: none;
+}

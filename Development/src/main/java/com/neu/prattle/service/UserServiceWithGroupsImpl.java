@@ -8,6 +8,11 @@ import com.neu.prattle.main.HibernateUtil;
 import com.neu.prattle.model.BasicGroup;
 import com.neu.prattle.model.User;
 
+import org.hibernate.Hibernate;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
+
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -15,9 +20,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.persistence.NoResultException;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.query.Query;
 
 public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
   
@@ -60,14 +62,7 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
     }
     return accountService;
   }
-  
-  private Object findUserByNameQuery(String name, Session session) {
-    String strQuery = "SELECT u FROM User u WHERE u.name = :name";
-    Query query = session.createQuery(strQuery);
-    query.setParameter("name", name);
-    
-    return query.getSingleResult();
-  }
+
   
   public Optional<BasicGroup> findGroupByName(String username, String groupName) {
     Session session = sessionFactory.openSession();
@@ -75,7 +70,6 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
     
     try {
       BasicGroup result = (BasicGroup) findGroupByNameQuery(groupName, session);
-
       return Optional.of(result);
     } catch (NoResultException ex) {
       return Optional.empty();
@@ -96,7 +90,6 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
   /**
    * Adds a group to the system. If users in group do not exist, simply does not send to them.
    * If there are no moderators set, the user creating the group becomes the moderator.
-   * Needs Doing: Check user existence. Add moderator support. Add other users in the group.
    * @param group - Group.class
    */
   @Override
@@ -116,6 +109,8 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
     
     Set<User> updatedMembers = getUsersInDatabase(group.getMembers(), session);
     Set<User> updatedModerators = getUsersInDatabase(group.getModerators(), session);
+    updatedMembers.addAll(updatedModerators); //make sure mods are users as well
+
     group.setMembers(updatedMembers);
     group.setModerators(updatedModerators);
     
@@ -150,7 +145,7 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
     Set<User> updatedUsers = new HashSet<>();
     for (User user : usersToBeValidated) {
       try {
-        User userInDb = (User) findUserByNameQuery(user.getName(), session);
+        User userInDb = (User) UserServiceImpl.findUserByNameQuery(user.getName(), session);
         updatedUsers.add(userInDb);
       } catch (NoResultException ex) {
         logger.log(Level.SEVERE, ex.getMessage());
@@ -172,7 +167,7 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
     
     Set<User> mods = group.getModerators();
     if (!mods.contains(sender)) {
-      throw new SenderNotAuthorizedException("You are not authorized to delete this message");
+      throw new SenderNotAuthorizedException("You are not authorized to delete this group");
     }
     
     group.getMembers().clear();
@@ -210,16 +205,18 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
       throw new UserAlreadyPresentException("Group already has this user");
     }
     
-    members.add(user);
-    group.setMembers(members);
-    
     Session session = sessionFactory.openSession();
     session.beginTransaction();
+
+    members.add(user);
+    group.setMembers(members);
+
     try {
       session.saveOrUpdate(group);
       session.getTransaction().commit();
     } catch (Exception e) {
       logger.log(Level.SEVERE, e.getMessage());
+      throw new UserAlreadyPresentException("failed connecting to database");
     } finally {
       session.disconnect();
       session.close();
@@ -248,10 +245,8 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
     if (moderators.contains(user)) {
       throw new UserAlreadyPresentException("Group already has this moderator");
     }
-    
-    //no need to check if already added for set.
+
     members.add(user);
-    
     moderators.add(user);
     group.setMembers(members);
     group.setModerators(moderators);
@@ -264,6 +259,7 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
       session.getTransaction().commit();
     } catch (Exception e) {
       logger.log(Level.SEVERE, e.getMessage());
+      throw new UserAlreadyPresentException("Failed updating database");
     } finally {
       session.disconnect();
       session.close();
@@ -287,23 +283,23 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
     if (!moderators.contains(sender) && !sender.getName().equals(user.getName())) {
       throw new SenderNotAuthorizedException("Not allowed to delete this user");
     }
+
+    //check if deleting the last member
+    if (members.size() == 1) {
+      deleteGroup(sender, group);
+      throw new GroupDeletedException("Last member removed, deleting");
+    }
     
     //ok if not there
     members.remove(user);
     moderators.remove(user);
-    
-    //check if deleting the last member
-    if (members.isEmpty() || moderators.isEmpty()) {
-      //already checked if moderator, so no errors
-      deleteGroup(sender, group);
-      throw new GroupDeletedException(group.getName());
-    }
     
     group.setMembers(members);
     group.setModerators(moderators);
     
     Session session = sessionFactory.openSession();
     session.beginTransaction();
+
     try {
       session.saveOrUpdate(group);
       session.getTransaction().commit();
@@ -325,22 +321,21 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
    * @throws SenderNotAuthorizedException - if sender is not a moderator.
    */
   public synchronized void removeModerator(User sender, User user, BasicGroup group) throws SenderNotAuthorizedException {
-    //check if sender is member
+
     Set<User> moderators = group.getModerators();
-    if (!(moderators.contains(sender) || sender == user)) {
-      throw new SenderNotAuthorizedException("Not allowed to delete this user");
+    if ( !(moderators.contains(sender)) || !(moderators.contains(user)) ) {
+      throw new SenderNotAuthorizedException("Not allowed to delete this moderator");
     }
-    
-    //ok if not there
-    moderators.remove(user);
     
     //check if deleting the last member
-    if (moderators.isEmpty()) {
+    if (moderators.size() == 1) {
       //already checked if moderator, so no errors
       deleteGroup(sender, group);
-      return;
+      throw new GroupDeletedException("Last moderator removed, deleting");
     }
-    
+
+
+    moderators.remove(user);
     group.setModerators(moderators);
     
     Session session = sessionFactory.openSession();
