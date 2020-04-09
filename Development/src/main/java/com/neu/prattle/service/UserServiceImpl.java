@@ -191,7 +191,7 @@ public class UserServiceImpl implements UserService {
     List<User> online;
     Session session = sessionFactory.openSession();
     session.beginTransaction();
-    String strQuery = "SELECT u FROM User u  WHERE u.status = :online";
+    String strQuery = "SELECT u FROM User u  WHERE u.isOnline = :online";
     Query query = session.createQuery(strQuery).setFirstResult(0).setMaxResults(maxResults);
     query.setParameter("online", "online");
     online = query.getResultList();
