@@ -16,14 +16,14 @@ import org.hibernate.query.Query;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.persistence.NoResultException;
 
 public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
   
-  private Logger logger = Logger.getLogger(this.getClass().getName());
+  private Logger logger = LogManager.getLogger();
   private SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
   private boolean isTest;
   
@@ -70,8 +70,10 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
     
     try {
       BasicGroup result = (BasicGroup) findGroupByNameQuery(groupName, session);
+      logger.info("Group " + groupName + " found");
       return Optional.of(result);
     } catch (NoResultException ex) {
+      logger.info("No Group called " + groupName + " found");
       return Optional.empty();
     } finally {
       session.disconnect();
@@ -95,13 +97,16 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
   @Override
   public void addGroup(BasicGroup group) {
     if(group.getMembers().isEmpty()) {
+      logger.error("A Group called " + group.getName()
+              + " could not be created without any members");
       throw new IllegalArgumentException(
         "The group must contain at least one member.");
     }
     
     if (findGroupByName(group.getMembers().iterator().next().getName(), group.getName()).isPresent()) {
-      throw new GroupAlreadyPresentException(
-        String.format("Group already present with name: %s", group.getName()));
+      String msg = String.format("Group already present with name: %s", group.getName());
+      logger.error(msg);
+      throw new GroupAlreadyPresentException(msg);
     }
     
     Session session = sessionFactory.openSession();
@@ -133,8 +138,10 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
     try {
       session.saveOrUpdate(group);
       session.getTransaction().commit();
+      logger.info("Group " + group.getName()
+              + " created with " + updatedMembers.size() + " members");
     } catch (Exception e) {
-      logger.log(Level.SEVERE, e.getMessage());
+      logger.error(e.getMessage());
     } finally {
       session.disconnect();
       session.close();
@@ -148,7 +155,7 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
         User userInDb = (User) UserServiceImpl.findUserByNameQuery(user.getName(), session);
         updatedUsers.add(userInDb);
       } catch (NoResultException ex) {
-        logger.log(Level.SEVERE, ex.getMessage());
+        logger.error(ex.getMessage());
       }
     }
     
@@ -176,8 +183,9 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
     try {
       session.remove(group);
       session.getTransaction().commit();
+      logger.info("Group " + group.getName() + " deleted");
     } catch (Exception e) {
-      logger.log(Level.SEVERE, e.getMessage());
+      logger.error(e.getMessage());
     } finally {
       session.disconnect();
       session.close();
@@ -215,7 +223,7 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
       session.saveOrUpdate(group);
       session.getTransaction().commit();
     } catch (Exception e) {
-      logger.log(Level.SEVERE, e.getMessage());
+      logger.error(e.getMessage());
       throw new UserAlreadyPresentException("failed connecting to database");
     } finally {
       session.disconnect();
@@ -258,7 +266,7 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
       session.saveOrUpdate(group);
       session.getTransaction().commit();
     } catch (Exception e) {
-      logger.log(Level.SEVERE, e.getMessage());
+      logger.error(e.getMessage());
       throw new UserAlreadyPresentException("Failed updating database");
     } finally {
       session.disconnect();
@@ -303,8 +311,9 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
     try {
       session.saveOrUpdate(group);
       session.getTransaction().commit();
+      logger.info("User " + user.getName() + " removed from group " + group.getName());
     } catch (Exception e) {
-      logger.log(Level.SEVERE, e.getMessage());
+      logger.error(e.getMessage());
     } finally {
       session.disconnect();
       session.close();
@@ -343,8 +352,9 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
     try {
       session.saveOrUpdate(group);
       session.getTransaction().commit();
+      logger.info("Moderator " + user.getName() + " removed from " + group.getName());
     } catch (Exception e) {
-      logger.log(Level.SEVERE, e.getMessage());
+      logger.error(e.getMessage());
     } finally {
       session.disconnect();
       session.close();

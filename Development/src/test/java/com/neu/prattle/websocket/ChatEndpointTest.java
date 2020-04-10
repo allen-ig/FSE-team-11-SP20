@@ -284,7 +284,8 @@ public class ChatEndpointTest {
     } catch (IOException | EncodeException e) {
       e.printStackTrace();
     }
-
+    chatEndpoint.onClose(mockSession);
+    verify(mockSession, times(9)).getId();
     UserServiceImpl.getInstance().deleteUser(user);
   }
 
