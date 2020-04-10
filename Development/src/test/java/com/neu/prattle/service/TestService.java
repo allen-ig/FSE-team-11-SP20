@@ -96,7 +96,7 @@ public class TestService {
   public void testSetUserIsOnline(){
     User alice = new User("alice");
     us.addUser(alice);
-    assertNull(alice.getIsOnline());
+    assertEquals("offline", alice.getIsOnline());
     us.setUserIsOnline("alice", true);
     assertEquals("online", us.findUserByName("alice").get().getIsOnline());
   }
