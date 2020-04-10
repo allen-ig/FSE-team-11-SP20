@@ -176,7 +176,7 @@ public class UserServiceImpl implements UserService {
       session.getTransaction().commit();
       logger.info("User " + username + " updated their status to " + status);
     } catch (NoResultException e) {
-      throw new UserNotFoundException("User not found");
+      throw new UserNotFoundException("User could not be found");
     } catch (Exception e) {
       logger.error(e.getMessage());
       throw e;
