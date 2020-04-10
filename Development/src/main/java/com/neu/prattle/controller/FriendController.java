@@ -17,8 +17,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Path(value = "/friend")
 public class FriendController {
@@ -26,7 +26,7 @@ public class FriendController {
     private FriendService friendService = FriendServiceImpl.getInstance();
     private UserService userService = UserServiceImpl.getInstance();
 
-    private static Logger logger = Logger.getLogger(FriendController.class.getName());
+    private static Logger logger = LogManager.getLogger();
 
     @POST
     @Path("/create")
@@ -64,7 +64,7 @@ public class FriendController {
                 resString = mapper.writeValueAsString(userList);
                 return Response.ok().type(MediaType.APPLICATION_JSON).entity(resString).build();
             } catch (IOException e) {
-                logger.log(Level.SEVERE, e.getMessage());
+                logger.error(e.getMessage());
             }
         }else {
             resString = "Could not find the target user " + username;

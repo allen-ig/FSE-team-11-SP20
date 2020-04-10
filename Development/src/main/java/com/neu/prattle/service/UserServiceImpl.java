@@ -3,7 +3,6 @@ package com.neu.prattle.service;
 import com.neu.prattle.exceptions.UserAlreadyPresentException;
 import com.neu.prattle.exceptions.UserNotFoundException;
 import com.neu.prattle.main.HibernateUtil;
-import com.neu.prattle.model.Message;
 import com.neu.prattle.model.User;
 import java.util.List;
 import org.hibernate.Hibernate;
@@ -12,8 +11,8 @@ import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.persistence.NoResultException;
 
@@ -31,7 +30,7 @@ public class UserServiceImpl implements UserService {
   
   private SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
   private boolean isTest;
-  private Logger logger = Logger.getLogger(this.getClass().getName());
+  private Logger logger = LogManager.getLogger();
 
   /***
    * UserServiceImpl is a Singleton class.
@@ -83,6 +82,7 @@ public class UserServiceImpl implements UserService {
       User result = (User) findUserByNameQuery(name, session);
       return Optional.of(result);
     } catch (NoResultException ex) {
+      logger.warn("User " + name + " was searched for, but does not exist");
       return Optional.empty();
     } finally {
       session.disconnect();
@@ -124,8 +124,9 @@ public class UserServiceImpl implements UserService {
     try {
       session.save(user);
       session.getTransaction().commit();
+      logger.info("User " + user.getName() + " was added");
     } catch (Exception e) {
-      logger.log(Level.SEVERE, e.getMessage());
+      logger.error(e.getMessage());
     } finally {
       session.disconnect();
       session.close();
@@ -138,8 +139,9 @@ public class UserServiceImpl implements UserService {
       try{
         session.delete(user);
         session.getTransaction().commit();
+        logger.info("User " + user.getName() + " was deleted.");
       } catch(Exception e){
-        logger.log(Level.SEVERE,(e.getMessage()));
+        logger.error(e.getMessage());
       } finally{
         session.disconnect();
         session.close();
@@ -172,9 +174,11 @@ public class UserServiceImpl implements UserService {
       user.setStatus(status);
       session.saveOrUpdate(user);
       session.getTransaction().commit();
+      logger.info("User " + username + " updated their status to " + status);
     } catch (NoResultException e) {
       throw new UserNotFoundException("User not found");
     } catch (Exception e) {
+      logger.error(e.getMessage());
       throw e;
     } finally {
       session.disconnect();

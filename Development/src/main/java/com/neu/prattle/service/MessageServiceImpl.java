@@ -8,14 +8,15 @@ import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class MessageServiceImpl implements MessageService {
 
   private SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
   private boolean isTest;
-  private Logger logger = Logger.getLogger(this.getClass().getName());
+  private Logger logger = LogManager.getLogger();
 
   /**
    * MessageServiceImpl is a "Singleton" class
@@ -54,9 +55,10 @@ public class MessageServiceImpl implements MessageService {
     try {
       session.delete(message);
       session.getTransaction().commit();
-    } catch (Exception e) {
-      logger.log(Level.SEVERE, e.getMessage());
-    } finally {
+      logger.info("Message " + message.getId() + " deleted.");
+    } catch (Exception e){
+     logger.error(e.getMessage());
+    } finally{
       session.close();
     }
   }
@@ -68,9 +70,10 @@ public class MessageServiceImpl implements MessageService {
     try {
       session.save(message);
       session.getTransaction().commit();
-    } catch (Exception e) {
-      logger.log(Level.SEVERE, (e.getMessage()));
-    } finally {
+      logger.info("Message created: " + message.toString());
+    } catch (Exception e){
+      logger.error(e.getMessage());
+    } finally{
       session.close();
     }
     return message;
@@ -91,6 +94,7 @@ public class MessageServiceImpl implements MessageService {
     query.setParameter("username", username);
     userMessages = query.getResultList();
     session.close();
+    logger.info(userMessages.size() + " messages for User " +username + " found.");
     return userMessages;
   }
 
@@ -133,6 +137,7 @@ public class MessageServiceImpl implements MessageService {
     query.setParameter(1, group + ":%");
     userMessages = query.getResultList();
     session.close();
+    logger.info(userMessages.size() + " messages found for " + user + " from group "+ group);
     return userMessages;
   }
 
@@ -152,6 +157,7 @@ public class MessageServiceImpl implements MessageService {
     query.setParameter("username", username);
     userMessages = query.getResultList();
     session.close();
+    logger.info(userMessages.size() + " messages sent from " + username + " found.");
     return userMessages;
   }
 }
