@@ -285,7 +285,7 @@ public class ChatEndpointTest {
       e.printStackTrace();
     }
     chatEndpoint.onClose(mockSession);
-    verify(mockSession, times(4)).getId();
+    verify(mockSession, times(9)).getId();
     UserServiceImpl.getInstance().deleteUser(user);
   }
 
