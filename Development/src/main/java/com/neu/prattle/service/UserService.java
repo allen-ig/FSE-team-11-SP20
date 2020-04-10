@@ -2,6 +2,7 @@ package com.neu.prattle.service;
 
 import com.neu.prattle.model.User;
 
+import java.util.List;
 import javax.swing.text.html.Option;
 import java.util.Optional;
 
@@ -17,49 +18,68 @@ import java.util.Optional;
  *
  */
 public interface UserService {
-    /***
-     * Returns an optional object which might be empty or wraps an object
-     * if the System contains a {@link User} object having the same name
-     * as the parameter.
-     *
-     * @param name The name of the user
-     * @return Optional object.
-     */
-    Optional<User> findUserByName(String name);
 
-    /**
-     * Returns an optional object that contains a User with related group objects. Only use if need access to groups.
-     * @param name - the name of the user.
-     * @return Optional object.
-     */
-    Optional<User> findUserByNameWithGroups(String name);
+  /***
+   * Returns an optional object which might be empty or wraps an object
+   * if the System contains a {@link User} object having the same name
+   * as the parameter.
+   *
+   * @param name The name of the user
+   * @return Optional object.
+   */
+  Optional<User> findUserByName(String name);
 
-    /***
-     * Tries to add a user in the system
-     * @param user User object
-     *
-     */
-    void addUser(User user);
-  
+  /**
+   * Returns an optional object that contains a User with related group objects. Only use if need
+   * access to groups.
+   *
+   * @param name - the name of the user.
+   * @return Optional object.
+   */
+  Optional<User> findUserByNameWithGroups(String name);
+
+  /***
+   * Tries to add a user in the system
+   * @param user User object
+   *
+   */
+  void addUser(User user);
+
   /**
    * Gets the status of a user
+   *
    * @param username the user's username
    * @return the user status
    */
   String getUserStatus(String username);
-  
+
   /**
    * Sets the status of the user
+   *
    * @param username user's username
-   * @param status status to be set
+   * @param status   status to be set
    */
-    void setUserStatus(String username, String status);
+  void setUserStatus(String username, String status);
 
-    /***
-     * Tries to delete a User in the system
-     * @param user User object
-     */
-    void deleteUser(User user);
+  /***
+   * Tries to delete a User in the system
+   * @param user User object
+   */
+  void deleteUser(User user);
+
+  /**
+   * Returns value indicating whether UserService is configured for testing
+   *
+   * @return true if configured for testing else false
+   */
+  boolean isTest();
+
+  /**
+   * Retrieves all users from database that have an "online" status flag.
+   *
+   * @return
+   */
+  List<User> getAllUsersOnline(int maxResults);
 
     /**
      * set user's online/offline status
@@ -68,9 +88,4 @@ public interface UserService {
      */
     void setUserIsOnline(String username, boolean isOnline);
 
-    /**
-     * Returns value indicating whether UserService is configured for testing
-     * @return true if configured for testing else false
-     */
-    boolean isTest();
 }

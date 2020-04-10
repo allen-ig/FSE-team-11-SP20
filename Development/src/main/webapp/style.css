@@ -247,6 +247,7 @@ p {
 
 .serviceTab button.active {
     background-color: #cc3f47;
+
 }
 
 .contentService {
@@ -260,6 +261,11 @@ p {
 }
 
 .contentGroups {
+    display: none;
+    border-top: none;
+}
+
+.contentOnline {
     display: none;
     border-top: none;
 }
@@ -411,4 +417,8 @@ p {
 @keyframes fadeIn {
     from {opacity: 0}
     to {opacity: 1}
+}
+
+#serviceLog, #friendsLog, #groupsLog, #log, #userLog, #groupLog, #onlineLog {
+    resize: none;
 }
