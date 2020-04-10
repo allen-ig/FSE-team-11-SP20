@@ -122,7 +122,7 @@ public class UserTest {
     @Test
     public void testGetUserIsOnline(){
         User alice  = new User("alice");
-        assertNull(alice.getIsOnline());
+        assertEquals("offline", alice.getIsOnline());
     }
 
     @Test
