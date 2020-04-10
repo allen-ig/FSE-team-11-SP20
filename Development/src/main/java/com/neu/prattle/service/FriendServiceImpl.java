@@ -12,15 +12,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class FriendServiceImpl implements FriendService{
   
     private SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
     private boolean isTest;
 
-    private Logger logger = Logger.getLogger(this.getClass().getName());
+    private Logger logger = LogManager.getLogger();
 
     private FriendServiceImpl() { }
 
@@ -62,8 +62,10 @@ public class FriendServiceImpl implements FriendService{
         try{
             session.save(friend);
             session.getTransaction().commit();
+            logger.info("Friend request sent from "
+                    + friend.getSender() + " to " + friend.getRecipient());
         }catch (Exception e){
-            logger.log(Level.SEVERE, e.getMessage());
+            logger.error(e.getMessage());
         }finally {
             session.disconnect();
             session.close();
@@ -82,8 +84,10 @@ public class FriendServiceImpl implements FriendService{
             Friend friend = (Friend) query.getSingleResult();
             friend.setStatus(isApproved ? "APPROVED" : "DENIED");
             session.getTransaction().commit();
+            logger.info("Friend request from " + sender + " to "
+                    + recipient + " was responded to with " + isApproved);
         }catch (Exception e){
-            logger.log(Level.SEVERE, e.getMessage());
+            logger.error(e.getMessage());
         }finally {
             session.disconnect();
             session.close();
@@ -101,8 +105,9 @@ public class FriendServiceImpl implements FriendService{
         query.setParameter("user", user);
         try{
             friends = query.getResultList();
+            logger.info(friends.size() + " found for " + user.getName());
         }catch (Exception e){
-            logger.log(Level.SEVERE, e.getMessage());
+            logger.error(e.getMessage());
         }finally {
             session.disconnect();
             session.close();
@@ -120,8 +125,10 @@ public class FriendServiceImpl implements FriendService{
         query.setParameter("recipient", recipient);
         try{
             Friend friend = (Friend) query.getSingleResult();
+            logger.info("Friend found for " + sender + " and " + recipient);
             return Optional.of(friend);
         }catch (NoResultException e){
+            logger.info("No friend found for " + sender + " and " + recipient);
             return Optional.empty();
         }finally {
             session.disconnect();
@@ -136,8 +143,10 @@ public class FriendServiceImpl implements FriendService{
         try{
             session.delete(friend);
             session.getTransaction().commit();
+            logger.info("Friend for " + friend.getSender()
+                    + " and " + friend.getRecipient() + " deleted");
         }catch (Exception e){
-            logger.log(Level.SEVERE, e.getMessage());
+            logger.error(e.getMessage());
         }finally {
             session.disconnect();
             session.close();

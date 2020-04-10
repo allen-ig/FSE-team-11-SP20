@@ -70,7 +70,7 @@ public class MessageServiceImpl implements MessageService {
     try {
       session.save(message);
       session.getTransaction().commit();
-      logger.info("Message " + message.getId() + " created.");
+      logger.info("Message created: " + message.toString());
     } catch (Exception e){
       logger.error(e.getMessage());
     } finally{
@@ -137,6 +137,7 @@ public class MessageServiceImpl implements MessageService {
     query.setParameter(1, group + ":%");
     userMessages = query.getResultList();
     session.close();
+    logger.info(userMessages.size() + " messages found for " + user + " from group "+ group);
     return userMessages;
   }
 
@@ -156,6 +157,7 @@ public class MessageServiceImpl implements MessageService {
     query.setParameter("username", username);
     userMessages = query.getResultList();
     session.close();
+    logger.info(userMessages.size() + " messages sent from " + username + " found.");
     return userMessages;
   }
 }
