@@ -173,7 +173,7 @@ public class UserServiceImpl implements UserService {
       session.saveOrUpdate(user);
       session.getTransaction().commit();
     } catch (NoResultException e) {
-      throw new UserNotFoundException("User not found");
+      throw new UserNotFoundException("User could not be found");
     } catch (Exception e) {
       throw e;
     } finally {
