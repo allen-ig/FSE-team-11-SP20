@@ -9,8 +9,7 @@ import org.junit.Test;
 
 import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class TestService {
@@ -91,5 +90,14 @@ public class TestService {
   @Test(expected = UserNotFoundException.class)
   public void testGetUserStatusUserDoesNotExist() {
     us.getUserStatus("Test2");
+  }
+
+  @Test
+  public void testSetUserIsOnline(){
+    User alice = new User("alice");
+    us.addUser(alice);
+    assertNull(alice.getIsOnline());
+    us.setUserIsOnline("alice", true);
+    assertEquals("online", us.findUserByName("alice").get().getIsOnline());
   }
 }

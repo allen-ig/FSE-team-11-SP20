@@ -13,7 +13,9 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,6 +32,9 @@ public class FriendController {
     @Path("/create")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response sendFriendRequest(Friend friend){
+        if (friend.getSender().getName().equals(friend.getRecipient().getName())) {
+            return Response.status(405).entity("You can't add yourself as a friend!").build();
+        }
         try {
             friendService.sendFriendRequest(friend);
         }catch (FriendAlreadyPresentException e){
@@ -42,16 +47,29 @@ public class FriendController {
     @Path("/{username}/friends")
     @Produces(MediaType.APPLICATION_JSON)
     public Response findAllFriends(@PathParam("username") String username){
-        Collection<Friend> friendList = friendService.findAllFriends(username);
+        Optional<User> user = userService.findUserByName(username);
+        String resString = "";
+        if (user.isPresent()) {
+            Collection<Friend> friendList = friendService.findAllFriends(user.get());
+            ObjectMapper mapper = new ObjectMapper();
+            List<User> userList = new ArrayList<>();
+            for (Friend friend : friendList){
+                if (friend.getSender().getName().equals(username))
+                    userList.add(friend.getRecipient());
+                else if (friend.getRecipient().getName().equals(username))
+                    userList.add(friend.getSender());
+            }
 
-        ObjectMapper mapper = new ObjectMapper();
-        String jsonString = "";
-        try {
-            jsonString = mapper.writeValueAsString(friendList);
-        } catch (IOException e) {
-            logger.log(Level.SEVERE, e.getMessage());
+            try {
+                resString = mapper.writeValueAsString(userList);
+                return Response.ok().type(MediaType.APPLICATION_JSON).entity(resString).build();
+            } catch (IOException e) {
+                logger.log(Level.SEVERE, e.getMessage());
+            }
+        }else {
+            resString = "Could not find the target user " + username;
         }
-        return Response.ok().type(MediaType.APPLICATION_JSON).entity(jsonString).build();
+        return Response.status(404).type(MediaType.APPLICATION_JSON).entity(resString).build();
     }
 
     @PATCH
@@ -71,5 +89,23 @@ public class FriendController {
         if (!senderOp.isPresent()) message.append("Could not find sender!\n");
         if (!recipientOp.isPresent()) message.append("Could not find recipient!");
         return Response.status(404).entity(message.toString()).build();
+    }
+
+    @DELETE
+    @Path("/{sender}/{recipient}/remove")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response removeFriend(
+            @PathParam("sender") String sender,
+            @PathParam("recipient") String recipient){
+        Optional<User> optionalSender = userService.findUserByName(sender);
+        Optional<User> optionalRecipient = userService.findUserByName(recipient);
+        if (!optionalRecipient.isPresent() || !optionalSender.isPresent())
+            return Response.status(404).entity("The friend you requested does not exist!").build();
+        Optional<Friend> optionalFriend = friendService.findFriendByUsers(optionalSender.get(), optionalRecipient.get());
+        Optional<Friend> optionalFriendReverse = friendService.findFriendByUsers(optionalRecipient.get(), optionalSender.get());
+        if (!optionalFriend.isPresent() && !optionalFriendReverse.isPresent())
+            return Response.status(404).entity("The friend you requested does not exist!").build();
+        friendService.deleteFriend(optionalFriend.orElseGet(optionalFriendReverse::get));
+        return Response.ok().build();
     }
 }

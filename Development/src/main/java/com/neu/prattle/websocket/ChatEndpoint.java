@@ -7,6 +7,7 @@ package com.neu.prattle.websocket;
  * @version dated 2017-03-05
  */
 
+
 import com.neu.prattle.model.BasicGroup;
 import com.neu.prattle.model.Message;
 import com.neu.prattle.model.User;
@@ -18,11 +19,7 @@ import com.neu.prattle.service.UserServiceWithGroups;
 import com.neu.prattle.service.UserServiceWithGroupsImpl;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,10 +33,8 @@ import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
-
 /**
- * The Class ChatEndpoint.
- * This class handles Messages that arrive on the server.
+ * The Class ChatEndpoint. This class handles Messages that arrive on the server.
  */
 @ServerEndpoint(value = "/chat/{username}", decoders = MessageDecoder.class, encoders = MessageEncoder.class)
 public class ChatEndpoint {
@@ -52,7 +47,7 @@ public class ChatEndpoint {
   private UserService userService = UserServiceImpl.getInstance();
   private MessageService messageService = MessageServiceImpl.getInstance();
 
-  
+
   /**
    * The session.
    */
@@ -100,7 +95,6 @@ public class ChatEndpoint {
   public void onOpen(Session session, @PathParam("username") String username)
       throws IOException, EncodeException {
 
-
     Optional<User> user = userService.findUserByName(username);
     if (!user.isPresent()) {
       Message error = Message.messageBuilder()
@@ -110,15 +104,18 @@ public class ChatEndpoint {
       logger.error("User " + username + " attempted to sign in, but does not exist.");
       return;
     }
-        addEndpoint(session, username);
-        Message message = createConnectedMessage(username);
-        broadcast(message);
-      List<Message> userMessages = messageService.getUserMessages(username);
-      for (Message m : userMessages){
-        sendMessage(m);
+    addEndpoint(session, username);
+    Message message = createConnectedMessage(username);
+    broadcast(message);
+    List<Message> userMessages = messageService.getUserMessages(username);
+    for (Message m : userMessages) {
+      if (!m.getContent().equals("friendRequest")) {
+        session.getBasicRemote().sendObject(m);
       }
     }
-  
+
+    userService.setUserIsOnline(username, true);
+  }
 
 
   /**
@@ -160,24 +157,26 @@ public class ChatEndpoint {
   @OnMessage
   public void onMessage(Session session, Message message) {
     message.setFrom(users.get(session.getId()));
-        message.setTimestamp();
-        messageService.createMessage(message);
-        if (message.getTo() == null || message.getTo().length() == 0) {
-            broadcast(message);
-          return;
-        }
+    message.setTimestamp();
+    messageService.createMessage(message);
+    if (message.getTo() == null || message.getTo().length() == 0) {
+      broadcast(message);
+      return;
+    }
 
     String[] to = message.getTo().trim().split(" ");
     switch (to[0].toUpperCase()) {
       case "GROUP":
         sendGroupMessage(message);
         break;
-      case "NEWGROUP":
+      case "NEWGROUP": //Depreciated
         addGroup(message);
         break;
-      case "":
-        broadcast(message);
+      case "ALIAS":
+        sendSecretMessage(message);
         break;
+      case "GROUPALIAS":
+        sendSecretGroupMessage(message);
       default:
         sendMessage(message);
         break;
@@ -200,6 +199,7 @@ public class ChatEndpoint {
     message.setContent("Disconnected!");
     broadcast(message);
     logger.info("User " + users.get(session.getId()) + " has disconnected.");
+    userService.setUserIsOnline(users.get(session.getId()), false);
   }
 
 
@@ -231,7 +231,7 @@ public class ChatEndpoint {
         try {
           endpoint.session.getBasicRemote()
               .sendObject(message);
-        } catch (IOException | EncodeException |  NullPointerException e) {
+        } catch (IOException | EncodeException | NullPointerException e) {
           /* note: in production, who exactly is looking at the console.  This exception's
            *       output should be moved to a logger.
            */
@@ -250,32 +250,32 @@ public class ChatEndpoint {
    * @param message message to be sent
    */
   private static synchronized void sendMessage(Message message) {
-        ChatEndpoint recipientEndpoint = chatEndpoints.get(message.getTo());
-        ChatEndpoint senderEndpoint = chatEndpoints.get(message.getFrom());
-        if (!chatEndpoints.containsKey(message.getTo())){
-            Message errorMessage = new Message();
-            errorMessage.setFrom("SYSTEM");
-            errorMessage.setContent("The recipient does not exist or is currently offline");
-            logger.warn("User " + message.getFrom() + " attempted to send a message to "
-                    + message.getTo() + " but failed");
-            try {
-                senderEndpoint.session.getBasicRemote()
-                        .sendObject(errorMessage);
-            }catch (IOException | EncodeException | NullPointerException e){
-                logger.error(e.getMessage());
-            }
-            return;
-        }
-        try{
-            recipientEndpoint.session.getBasicRemote()
-                    .sendObject(message);
-            if(!message.getContent().equals("friendRequest")) senderEndpoint.session.getBasicRemote()
-                    .sendObject(message);
-        }catch (IOException | EncodeException | NullPointerException e){
-            logger.error(e.getMessage());
-        }
+    ChatEndpoint recipientEndpoint = chatEndpoints.get(message.getTo());
+    ChatEndpoint senderEndpoint = chatEndpoints.get(message.getFrom());
+    if (!chatEndpoints.containsKey(message.getTo())) {
+      Message errorMessage = new Message();
+      errorMessage.setFrom("SYSTEM");
+      errorMessage.setContent("The recipient does not exist or is currently offline");
+      try {
+        senderEndpoint.session.getBasicRemote()
+            .sendObject(errorMessage);
+      } catch (IOException | EncodeException | NullPointerException e) {
+        logger.error(e.getMessage());
+      }
+      return;
     }
-  
+    try {
+      recipientEndpoint.session.getBasicRemote()
+          .sendObject(message);
+      if (!message.getContent().equals("friendRequest")) {
+        message.setFrom("->" + message.getTo() + "-> " + message.getFrom());
+        senderEndpoint.session.getBasicRemote()
+            .sendObject(message);
+      }
+    } catch (IOException | EncodeException | NullPointerException e) {
+      logger.error(e.getMessage());
+    }
+  }
 
 
   /**
@@ -290,10 +290,10 @@ public class ChatEndpoint {
     //user already registered to send messages
     Optional<User> op = userService.findUserByName(message.getFrom());
     User sender = new User();
-    if(op.isPresent()) {
+    if (op.isPresent()) {
       sender = op.get();
     }
-    
+
     //if group is found, sentMessage to all members
     if (instructions.length > 1) {
       for (int i = 0; i < instructions.length - 1; i++) {
@@ -301,7 +301,9 @@ public class ChatEndpoint {
             .findGroupByName(message.getFrom(), instructions[i + 1]);
         if (group.isPresent() && group.get().getMembers().contains(sender)) {
           for (User mem : group.get().getMembers()) {
-            Message m = Message.messageBuilder().setFrom(group.get().getName() + ": " + message.getFrom()).setTo(mem.getName()).setMessageContent(message.getContent()).build();
+            Message m = Message.messageBuilder()
+                .setFrom(group.get().getName() + ": " + message.getFrom()).setTo(mem.getName())
+                .setMessageContent(message.getContent()).build();
             if (chatEndpoints.containsKey(mem.getName())) {
               synchronized (chatEndpoints.get(mem.getName())) {
                 try {
@@ -320,15 +322,109 @@ public class ChatEndpoint {
     }
   }
 
+  private void sendSecretMessage(Message message) {
+    String[] instructions = message.getTo().trim().split(" ");
+
+    if (instructions.length == 2) {
+      List<String> newInst = new ArrayList<String>(Arrays.asList(instructions));
+      newInst.remove(" ");
+      newInst.add("anonymous");
+      instructions = newInst.toArray(instructions);
+    } else if (instructions.length != 3) {
+      logger.error("SecretMessage getting wrong amount of arguments", instructions);
+      return;
+    }
+
+    ChatEndpoint recipientEndpoint = chatEndpoints.get(instructions[1]);
+    ChatEndpoint senderEndpoint = chatEndpoints.get(message.getFrom());
+    if (!chatEndpoints.containsKey(instructions[1])) {
+      Message errorMessage = new Message();
+      errorMessage.setFrom("SYSTEM");
+      errorMessage.setContent("The recipient does not exist or is currently offline");
+      try {
+        senderEndpoint.session.getBasicRemote()
+            .sendObject(errorMessage);
+      } catch (IOException | EncodeException | NullPointerException e) {
+        logger.error(e.getMessage());
+      }
+      return;
+    }
+    try {
+      //not stored as its stored on introduction to chatendpoint
+      Message m = Message.messageBuilder().setFrom("(Alias) " + instructions[2])
+          .setTo(instructions[1]).setMessageContent(message.getContent()).build();
+      recipientEndpoint.session.getBasicRemote()
+          .sendObject(m);
+      Message m2 = Message.messageBuilder().setFrom("->" + message.getTo() + "-> " + m.getFrom())
+          .setTo(instructions[1]).setMessageContent(message.getContent()).build();
+      senderEndpoint.session.getBasicRemote()
+          .sendObject(m2);
+    } catch (IOException | EncodeException | NullPointerException e) {
+      logger.error(e.getMessage());
+    }
+  }
 
   /**
+   * Send message with an alias to a group. Only with one group.
    *
+   * @param message
+   */
+  private void sendSecretGroupMessage(Message message) {
+    //get groups
+    String[] instructions = message.getTo().trim().split(" ");
+
+    if (instructions.length == 2 || instructions[2].equalsIgnoreCase(" ")) {
+      List<String> newInst = new ArrayList<String>(Arrays.asList(instructions));
+      newInst.remove(" ");
+      newInst.add("anonymous");
+      instructions = newInst.toArray(instructions);
+    }
+
+    //user already registered to send messages
+    Optional<User> op = userService.findUserByName(message.getFrom());
+    User sender = new User();
+    if (op.isPresent()) {
+      sender = op.get();
+    } else {
+      Message errorMessage = new Message();
+      errorMessage.setFrom("SYSTEM");
+      errorMessage.setContent("Cannot authenticate your account");
+    }
+
+    //if group is found, sentMessage to all members
+    if (instructions.length == 3) {
+      Optional<BasicGroup> group = groupService
+          .findGroupByName(message.getFrom(), instructions[1]);
+      if (group.isPresent() && group.get().getMembers().contains(sender)) {
+        for (User mem : group.get().getMembers()) {
+          Message m = Message.messageBuilder()
+              .setFrom(group.get().getName() + ": " + "(Alias) " + instructions[2])
+              .setTo(mem.getName()).setMessageContent(message.getContent()).build();
+          if (chatEndpoints.containsKey(mem.getName())) {
+            synchronized (chatEndpoints.get(mem.getName())) {
+              try {
+                chatEndpoints.get(mem.getName()).session.getBasicRemote().sendObject(m);
+              } catch (IOException | EncodeException e) {
+                /* note: in production, who exactly is looking at the console.  This exception's
+                 *       output should be moved to a logger.
+                 */
+                logger.error(e.getMessage());
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+
+  /**
    * Depreciated. Using GroupController to add a group.
-   *
+   * <p>
    * Adds a group to the UserServiceWithGroup groupSet.
    *
    * @param message - received message. Group specifications in body. Space separated: name then
-   * members. Groups are stores as a HashMap<User, HashMap<Group Name, Group>>.
+   *                members. Groups are stores as a HashMap<User, HashMap<Group Name, Group>>.
    */
   private void addGroup(Message message) {
     String[] content = message.getContent().trim().split(" ");
@@ -396,4 +492,3 @@ public class ChatEndpoint {
     }
   }
 }
-

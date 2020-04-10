@@ -12,7 +12,7 @@ public interface FriendService {
 
     void approveFriendRequest(User sender, User recipient, boolean isApproved);
 
-    Collection<Friend> findAllFriends(String username);
+    Collection<Friend> findAllFriends(User user);
 
     Optional<Friend> findFriendByUsers(User sender, User recipient);
 

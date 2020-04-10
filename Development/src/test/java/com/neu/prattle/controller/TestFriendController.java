@@ -1,5 +1,6 @@
 package com.neu.prattle.controller;
 
+import com.neu.prattle.exceptions.FriendAlreadyPresentException;
 import com.neu.prattle.model.Friend;
 import com.neu.prattle.model.User;
 import com.neu.prattle.service.FriendService;
@@ -73,7 +74,20 @@ public class TestFriendController {
 
     @Test
     public void testFindAllFriends(){
-        friendController.findAllFriends(test1.getName());
+        Friend friend = new Friend(test1, test2);
+        friendController.sendFriendRequest(friend);
+        friendController.respondToFriendRequest(test1.getName(),test2.getName(),"approve");
+        assertEquals(200, friendController.findAllFriends(test1.getName()).getStatus());
+        friendService.deleteFriend(friend);
+    }
+
+    @Test
+    public void testFindAllFriendsForRecipient(){
+        Friend friend = new Friend(test1, test2);
+        friendController.sendFriendRequest(friend);
+        friendController.respondToFriendRequest(test1.getName(),test2.getName(),"approve");
+        assertEquals(200, friendController.findAllFriends(test2.getName()).getStatus());
+        friendService.deleteFriend(friend);
     }
 
     @Test
@@ -94,5 +108,35 @@ public class TestFriendController {
         assertEquals(response.getStatus(), Response.status(404).build().getStatus());
         assertEquals("Could not find recipient!", response.getEntity());
         friendService.deleteFriend(friend);
+    }
+
+    @Test
+    public void testFriendAlreadyExist(){
+        Friend friend = new Friend(test1, test2);
+        friendController.sendFriendRequest(friend);
+        assertEquals(409, friendController.sendFriendRequest(friend).getStatus());
+    }
+
+    @Test
+    public void testFindAllFriendsForNoneExistingUser(){
+        Response response = friendController.findAllFriends("ghost");
+        assertEquals(404, response.getStatus());
+        assertEquals("Could not find the target user ghost", response.getEntity());
+    }
+
+    @Test
+    public void testDeleteFriend(){
+        Friend friend = new Friend(test1, test2);
+        friendController.sendFriendRequest(friend);
+        Response response = friendController.respondToFriendRequest(test1.getName(), test2.getName(), "approve");
+        assertEquals(response.getStatus(), Response.status(200).build().getStatus());
+        Response response1 = friendController.removeFriend("test1", "test2");
+        assertEquals(200, response1.getStatus());
+    }
+
+    @Test
+    public void testDeleteFriendDoesNotExist(){
+        Friend friend = new Friend(test1, test2);
+        assertEquals(404, friendController.removeFriend("test1", "test2").getStatus());
     }
 }
