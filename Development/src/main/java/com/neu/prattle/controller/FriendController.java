@@ -38,6 +38,8 @@ public class FriendController {
         try {
             friendService.sendFriendRequest(friend);
         }catch (FriendAlreadyPresentException e){
+            logger.error("Tried to create a Friend that already exists from "
+                    + friend.getSender().getName() + " to " + friend.getRecipient().getName());
             return Response.status(409).build();
         }
         return Response.ok().build();

@@ -105,7 +105,7 @@ public class FriendServiceImpl implements FriendService{
         query.setParameter("user", user);
         try{
             friends = query.getResultList();
-            logger.info(friends.size() + " found for " + user.getName());
+            logger.info(friends.size() + " friends found for " + user.getName());
         }catch (Exception e){
             logger.error(e.getMessage());
         }finally {
@@ -125,10 +125,10 @@ public class FriendServiceImpl implements FriendService{
         query.setParameter("recipient", recipient);
         try{
             Friend friend = (Friend) query.getSingleResult();
-            logger.info("Friend found for " + sender + " and " + recipient);
+            logger.info("Friend found for " + sender.getName() + " and " + recipient.getName());
             return Optional.of(friend);
         }catch (NoResultException e){
-            logger.info("No friend found for " + sender + " and " + recipient);
+            logger.info("No friend found for " + sender.getName() + " and " + recipient.getName());
             return Optional.empty();
         }finally {
             session.disconnect();
@@ -143,8 +143,8 @@ public class FriendServiceImpl implements FriendService{
         try{
             session.delete(friend);
             session.getTransaction().commit();
-            logger.info("Friend for " + friend.getSender()
-                    + " and " + friend.getRecipient() + " deleted");
+            logger.info("Friend for " + friend.getSender().getName()
+                    + " and " + friend.getRecipient().getName() + " deleted");
         }catch (Exception e){
             logger.error(e.getMessage());
         }finally {
