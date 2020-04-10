@@ -17,8 +17,8 @@ import org.codehaus.jackson.map.ObjectMapper;
 import java.io.IOError;
 import java.io.IOException;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -38,7 +38,7 @@ public class GroupController {
     // Usually Dependency injection will be used to inject the service at run-time
     private UserServiceWithGroups accountService = UserServiceWithGroupsImpl.getInstance();
     private UserService userService = UserServiceImpl.getInstance();
-    private Logger logger = Logger.getLogger(this.getClass().getName());
+    private Logger logger = LogManager.getLogger();
 
     /***
      * Handles a HTTP POST request for group creation
@@ -57,7 +57,7 @@ public class GroupController {
             message.append(e.getMessage());
             return Response.status(409).type(MediaType.TEXT_PLAIN_TYPE).entity(message.toString()).build();
         } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage());
+            logger.error(e.getMessage());
             message.append("Failed connecting to Database. Try again later.");
             return Response.status(409).type(MediaType.TEXT_PLAIN_TYPE).entity(message.toString()).build();
         }
@@ -103,7 +103,7 @@ public class GroupController {
         } catch (SenderNotAuthorizedException e) {
             return Response.status(409).type(MediaType.TEXT_PLAIN_TYPE).entity(e.getMessage()).build();
         } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage());
+            logger.error(e.getMessage());
             message.append("Failed connecting to Database. Try again later.");
             return Response.status(409).type(MediaType.TEXT_PLAIN_TYPE).entity(message.toString()).build();
         }
@@ -137,7 +137,7 @@ public class GroupController {
             message.append(e.getMessage());
             return Response.status(409).type(MediaType.TEXT_PLAIN_TYPE).entity(message.toString()).build();
         } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage());
+            logger.error(e.getMessage());
             message.append("Failed connecting to Database. Try again later.");
             return Response.status(409).type(MediaType.TEXT_PLAIN_TYPE).entity(message.toString()).build();
         }
@@ -173,7 +173,7 @@ public class GroupController {
             message.append(e.getMessage());
             return Response.status(409).type(MediaType.TEXT_PLAIN_TYPE).entity(message.toString()).build();
         } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage());
+            logger.error(e.getMessage());
             message.append("Failed connecting to Database. Try again later.");
             return Response.status(409).type(MediaType.TEXT_PLAIN_TYPE).entity(message.toString()).build();
         }
@@ -211,7 +211,7 @@ public class GroupController {
             message.append(e.getMessage());
             return Response.status(410).type(MediaType.TEXT_PLAIN_TYPE).entity(message.toString()).build();
         } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage());
+            logger.error(e.getMessage());
             message.append("Failed connecting to Database. Try again later.");
             return Response.status(411).type(MediaType.TEXT_PLAIN_TYPE).entity(message.toString()).build();
         }
@@ -249,7 +249,7 @@ public class GroupController {
             message.append(e.getMessage());
             return Response.status(409).type(MediaType.TEXT_PLAIN_TYPE).entity(e.getMessage()).build();
         } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage());
+            logger.error(e.getMessage());
             message.append("Failed connecting to Database. Try again later.");
             return Response.status(409).type(MediaType.TEXT_PLAIN_TYPE).entity(message.toString()).build();
         }
