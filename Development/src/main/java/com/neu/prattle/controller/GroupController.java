@@ -6,7 +6,7 @@ import com.neu.prattle.exceptions.SenderNotAuthorizedException;
 import com.neu.prattle.exceptions.UserAlreadyPresentException;
 import com.neu.prattle.model.BasicGroup;
 
-import com.neu.prattle.model.Request.GroupRequest;
+import com.neu.prattle.model.request.GroupRequest;
 import com.neu.prattle.model.User;
 import com.neu.prattle.service.UserService;
 import com.neu.prattle.service.UserServiceImpl;
@@ -14,7 +14,6 @@ import com.neu.prattle.service.UserServiceWithGroups;
 import com.neu.prattle.service.UserServiceWithGroupsImpl;
 import org.codehaus.jackson.map.ObjectMapper;
 
-import java.io.IOError;
 import java.io.IOException;
 import java.util.*;
 import org.apache.logging.log4j.LogManager;
@@ -34,7 +33,9 @@ import javax.ws.rs.core.Response;
  */
 @Path(value = "/group")
 public class GroupController {
-
+    private String databaseConnectionErrorMsg = "Failed connecting to Database. Try again later.";
+    private String lostMsg = "you have been lost";
+    private String notFoundMsg = " not found.\n";
     // Usually Dependency injection will be used to inject the service at run-time
     private UserServiceWithGroups accountService = UserServiceWithGroupsImpl.getInstance();
     private UserService userService = UserServiceImpl.getInstance();
@@ -58,7 +59,7 @@ public class GroupController {
             return Response.status(409).type(MediaType.TEXT_PLAIN_TYPE).entity(message.toString()).build();
         } catch (Exception e) {
             logger.error(e.getMessage());
-            message.append("Failed connecting to Database. Try again later.");
+            message.append(databaseConnectionErrorMsg);
             return Response.status(409).type(MediaType.TEXT_PLAIN_TYPE).entity(message.toString()).build();
         }
         message.append("Group Created: ");
@@ -86,11 +87,11 @@ public class GroupController {
         //check if found, send error if not
         boolean allClear = true;
         if (!sender.isPresent()) {
-            message.append("you have been lost");
+            message.append(lostMsg);
             allClear = false;
         }
         if (!foundGroup.isPresent()) {
-            message.append("group ").append(request.getGroup()).append(" not found.\n");
+            message.append("group ").append(request.getGroup()).append(notFoundMsg);
             allClear = false;
         }
         if (!allClear) {
@@ -104,7 +105,7 @@ public class GroupController {
             return Response.status(409).type(MediaType.TEXT_PLAIN_TYPE).entity(e.getMessage()).build();
         } catch (Exception e) {
             logger.error(e.getMessage());
-            message.append("Failed connecting to Database. Try again later.");
+            message.append(databaseConnectionErrorMsg);
             return Response.status(409).type(MediaType.TEXT_PLAIN_TYPE).entity(message.toString()).build();
         }
         message.append("Group Deleted: ");
@@ -138,7 +139,7 @@ public class GroupController {
             return Response.status(409).type(MediaType.TEXT_PLAIN_TYPE).entity(message.toString()).build();
         } catch (Exception e) {
             logger.error(e.getMessage());
-            message.append("Failed connecting to Database. Try again later.");
+            message.append(databaseConnectionErrorMsg);
             return Response.status(409).type(MediaType.TEXT_PLAIN_TYPE).entity(message.toString()).build();
         }
 
@@ -174,7 +175,7 @@ public class GroupController {
             return Response.status(409).type(MediaType.TEXT_PLAIN_TYPE).entity(message.toString()).build();
         } catch (Exception e) {
             logger.error(e.getMessage());
-            message.append("Failed connecting to Database. Try again later.");
+            message.append(databaseConnectionErrorMsg);
             return Response.status(409).type(MediaType.TEXT_PLAIN_TYPE).entity(message.toString()).build();
         }
 
@@ -212,7 +213,7 @@ public class GroupController {
             return Response.status(410).type(MediaType.TEXT_PLAIN_TYPE).entity(message.toString()).build();
         } catch (Exception e) {
             logger.error(e.getMessage());
-            message.append("Failed connecting to Database. Try again later.");
+            message.append(databaseConnectionErrorMsg);
             return Response.status(411).type(MediaType.TEXT_PLAIN_TYPE).entity(message.toString()).build();
         }
 
@@ -250,7 +251,7 @@ public class GroupController {
             return Response.status(409).type(MediaType.TEXT_PLAIN_TYPE).entity(e.getMessage()).build();
         } catch (Exception e) {
             logger.error(e.getMessage());
-            message.append("Failed connecting to Database. Try again later.");
+            message.append(databaseConnectionErrorMsg);
             return Response.status(409).type(MediaType.TEXT_PLAIN_TYPE).entity(message.toString()).build();
         }
 
@@ -274,7 +275,7 @@ public class GroupController {
         //check if found, send error if not
         boolean allClear = true;
         if (!sender.isPresent()) {
-            message.append("you have been lost");
+            message.append(lostMsg);
             allClear = false;
         }
         if (!allClear) {
@@ -284,7 +285,7 @@ public class GroupController {
         Collection<BasicGroup> groups = sender.get().getGroups();
         List<BasicGroup> out = new ArrayList<>();
 
-        if (groups.size() != 0) {
+        if (! groups.isEmpty()) {
             for (BasicGroup group : groups) {
                     Optional<BasicGroup> groupE = accountService.findGroupByName(sender.get().getName(), group.getName());
                 groupE.ifPresent(out::add);
@@ -324,15 +325,15 @@ public class GroupController {
             //check if found
             allClear = true;
             if (!user.isPresent()) {
-                message.append("user ").append(request.getUser()).append(" not found.\n");
+                message.append("user ").append(request.getUser()).append(notFoundMsg);
                 allClear = false;
             }
             if (!group.isPresent()) {
-                message.append("group ").append(request.getGroup()).append(" not found.\n");
+                message.append("group ").append(request.getGroup()).append(notFoundMsg);
                 allClear = false;
             }
             if (!sender.isPresent()) {
-                message.append("you have been lost");
+                message.append(lostMsg);
                 allClear = false;
             }
         }

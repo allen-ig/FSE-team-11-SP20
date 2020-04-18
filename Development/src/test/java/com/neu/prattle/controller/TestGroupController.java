@@ -1,8 +1,7 @@
 package com.neu.prattle.controller;
 
 import com.neu.prattle.model.BasicGroup;
-import com.neu.prattle.model.Group;
-import com.neu.prattle.model.Request.GroupRequest;
+import com.neu.prattle.model.request.GroupRequest;
 import com.neu.prattle.model.User;
 import com.neu.prattle.service.UserService;
 import com.neu.prattle.service.UserServiceImpl;
@@ -14,12 +13,10 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 
 import static org.junit.Assert.assertTrue;

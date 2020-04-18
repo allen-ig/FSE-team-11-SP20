@@ -31,6 +31,8 @@ public class UserServiceImpl implements UserService {
   private SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
   private boolean isTest;
   private Logger logger = LogManager.getLogger();
+  private String user = "User ";
+  private String online = "online";
 
   /***
    * UserServiceImpl is a Singleton class.
@@ -82,7 +84,7 @@ public class UserServiceImpl implements UserService {
       User result = (User) findUserByNameQuery(name, session);
       return Optional.of(result);
     } catch (NoResultException ex) {
-      logger.warn("User " + name + " was searched for, but does not exist");
+      logger.warn(user + name + " was searched for, but does not exist");
       return Optional.empty();
     } finally {
       session.disconnect();
@@ -124,7 +126,7 @@ public class UserServiceImpl implements UserService {
     try {
       session.save(user);
       session.getTransaction().commit();
-      logger.info("User " + user.getName() + " was added");
+      logger.info(user + user.getName() + " was added");
     } catch (Exception e) {
       logger.error(e.getMessage());
     } finally {
@@ -139,7 +141,7 @@ public class UserServiceImpl implements UserService {
       try{
         session.delete(user);
         session.getTransaction().commit();
-        logger.info("User " + user.getName() + " was deleted.");
+        logger.info(user + user.getName() + " was deleted.");
       } catch(Exception e){
         logger.error(e.getMessage());
       } finally{
@@ -174,7 +176,7 @@ public class UserServiceImpl implements UserService {
       user.setStatus(status);
       session.saveOrUpdate(user);
       session.getTransaction().commit();
-      logger.info("User " + username + " updated their status to " + status);
+      logger.info(user + username + " updated their status to " + status);
     } catch (NoResultException e) {
       throw new UserNotFoundException("User could not be found");
     } catch (Exception e) {
@@ -197,7 +199,7 @@ public class UserServiceImpl implements UserService {
     session.beginTransaction();
     String strQuery = "SELECT u FROM User u  WHERE u.isOnline = :online";
     Query query = session.createQuery(strQuery).setFirstResult(0).setMaxResults(maxResults);
-    query.setParameter("online", "online");
+    query.setParameter(this.online, this.online);
     online = query.getResultList();
     session.close();
     return online;
@@ -210,7 +212,7 @@ public class UserServiceImpl implements UserService {
 
     try {
       User user = (User) findUserByNameQuery(username, session);
-      user.setIsOnline(isOnline ? "online" : "offline");
+      user.setIsOnline(isOnline ? online : "offline");
       session.saveOrUpdate(user);
       session.getTransaction().commit();
     } catch (NoResultException e) {

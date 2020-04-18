@@ -129,9 +129,9 @@ public class UserController {
         List<Message> messages = messageService.getDirectMessages(user, sender);
         messages.addAll(messageService.getDirectMessages(sender, user));
         //Timsort should work well enough.
-        messages.sort(new messageSorter());
+        messages.sort(new MessageSorter());
 
-        if (messages.size() != 0) {
+        if (! messages.isEmpty()) {
             try {
                 String out = mapper.writeValueAsString(messages);
                 return Response.ok().type(MediaType.APPLICATION_JSON).entity(out).build();
@@ -155,7 +155,7 @@ public class UserController {
         ObjectMapper mapper = new ObjectMapper();
         StringBuilder message = new StringBuilder();
         List<Message> messages = messageService.getGroupMessages(user, group);
-        messages.sort(new messageSorter());
+        messages.sort(new MessageSorter());
         if (messages.size() != 0) {
             try {
                 String out = mapper.writeValueAsString(messages);
@@ -181,7 +181,7 @@ public class UserController {
         ObjectMapper mapper = new ObjectMapper();
         StringBuilder message = new StringBuilder();
         List<User> online = accountService.getAllUsersOnline(maxResults);
-        if (online.size() != 0) {
+        if (! online.isEmpty()) {
             try {
                 String out = mapper.writeValueAsString(online);
                 return Response.ok().type(MediaType.APPLICATION_JSON).entity(out).build();
@@ -199,7 +199,7 @@ public class UserController {
 /**
  * Simple comparator for messages.
  */
-class messageSorter implements Comparator<Message> {
+class MessageSorter implements Comparator<Message> {
     @Override
     public int compare(Message m1, Message m2) {
         return m1.getTimestamp().compareTo(m2.getTimestamp());
