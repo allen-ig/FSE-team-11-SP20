@@ -137,7 +137,7 @@ function switchTabGroup() {
         })
         .catch(function (error) {
             console.log("Service: Error - ", error);
-        });Document
+        });
     document.getElementById("linkGroup").innerText = group;
     document.getElementById("usr").value = group;
     openTabGroup(document.getElementById("linkGroup"));
