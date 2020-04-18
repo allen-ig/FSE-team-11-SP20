@@ -86,6 +86,9 @@ function switchTabUser() {
     document.getElementById("linkUser").innerText = user;
     document.getElementById("usr").value = user;
     openTabUser(document.getElementById("linkUser"));
+    openInputSend(document.getElementById("linkSend"));
+    document.getElementById("msg").focus();
+    document.getElementById("msg").select();
 }
 
 function switchTabGroup() {
@@ -138,6 +141,9 @@ function switchTabGroup() {
     document.getElementById("linkGroup").innerText = group;
     document.getElementById("usr").value = group;
     openTabGroup(document.getElementById("linkGroup"));
+    openInputSend(document.getElementById("linkSend"));
+    document.getElementById("msg").focus();
+    document.getElementById("msg").select();
 }
 
 function openTabService(e) {
@@ -224,4 +230,48 @@ function openOnline(e) {
     document.getElementsByClassName("contentOnline").item(0).style.display = "block";
     e.style.backgroundColor = "#ccc";
 
+}
+
+function openInputSearch(e) {
+
+    let btLinks = document.getElementsByClassName("bottomTabLink");
+    for (i = 0; i < btLinks.length; i++) {
+        btLinks[i].style.backgroundColor = "";
+    }
+
+    document.getElementsByClassName("searchInputContainer").item(0).style.display = "none";
+    document.getElementsByClassName("sendInputContainter").item(0).style.display = "none";
+    document.getElementsByClassName("groupInputContainer").item(0).style.display = "none";
+    document.getElementsByClassName("searchInputContainer").item(0).style.display = "block";
+
+    e.style.backgroundColor = "#ccc";
+}
+
+function openInputSend(e) {
+
+    let btLinks = document.getElementsByClassName("bottomTabLink");
+    for (i = 0; i < btLinks.length; i++) {
+        btLinks[i].style.backgroundColor = "";
+    }
+
+    document.getElementsByClassName("searchInputContainer").item(0).style.display = "none";
+    document.getElementsByClassName("sendInputContainter").item(0).style.display = "none";
+    document.getElementsByClassName("groupInputContainer").item(0).style.display = "none";
+    document.getElementsByClassName("sendInputContainter").item(0).style.display = "block";
+
+    e.style.backgroundColor = "#ccc";
+}
+
+function openInputGroups(e) {
+
+    let btLinks = document.getElementsByClassName("bottomTabLink");
+    for (i = 0; i < btLinks.length; i++) {
+        btLinks[i].style.backgroundColor = "";
+    }
+    
+    document.getElementsByClassName("searchInputContainer").item(0).style.display = "none";
+    document.getElementsByClassName("sendInputContainter").item(0).style.display = "none";
+    document.getElementsByClassName("groupInputContainer").item(0).style.display = "block";
+
+    e.style.backgroundColor = "#ccc";
 }
