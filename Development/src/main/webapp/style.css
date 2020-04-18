@@ -611,3 +611,8 @@ textarea {
 .emojiButton:hover {
     cursor: pointer;
 }
+
+.signOff {
+    font-size: 10px;
+    color: #6E7376;
+}
