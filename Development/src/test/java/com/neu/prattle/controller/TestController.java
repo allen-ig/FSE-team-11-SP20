@@ -3,16 +3,23 @@ package com.neu.prattle.controller;
 import com.neu.prattle.model.BasicGroup;
 import com.neu.prattle.model.Message;
 import com.neu.prattle.model.User;
-import com.neu.prattle.service.*;
+import com.neu.prattle.service.MessageService;
+import com.neu.prattle.service.MessageServiceImpl;
+import com.neu.prattle.service.UserService;
+import com.neu.prattle.service.UserServiceImpl;
+import com.neu.prattle.service.UserServiceWithGroups;
+import com.neu.prattle.service.UserServiceWithGroupsImpl;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.ws.rs.core.Response;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 
-import java.util.*;
+import javax.ws.rs.core.Response;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -222,7 +229,7 @@ public class TestController {
     Response res3 = uc.getDirectMessages(tggm1.getName(), tggmg2.getName());
     Response res4 = uc.getDirectMessages(tggm3.getName(), "rando");
 
-    Assert.assertEquals(res1.getStatus(), 203);
+    Assert.assertEquals(res1.getStatus(), 200);
     Assert.assertEquals(res2.getStatus(), 203);
     Assert.assertEquals(res3.getStatus(), 203);
     Assert.assertEquals(res4.getStatus(), 203);
