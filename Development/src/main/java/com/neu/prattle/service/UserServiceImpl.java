@@ -108,6 +108,12 @@ public class UserServiceImpl implements UserService {
     }
   }
 
+  /**
+   * A helper method to generate a Query to find a User by username
+   * @param name is the username of the user
+   * @param session is a Session
+   * @return the query result
+   */
   static Object findUserByNameQuery(String name, Session session) {
     String strQuery = "SELECT u FROM User u WHERE u.name = :name";
     Query query = session.createQuery(strQuery);
@@ -135,6 +141,7 @@ public class UserServiceImpl implements UserService {
     }
   }
 
+   @Override
     public synchronized void deleteUser(User user){
       Session session = sessionFactory.openSession();
       session.beginTransaction();

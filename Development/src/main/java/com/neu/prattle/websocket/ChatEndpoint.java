@@ -318,6 +318,10 @@ public class ChatEndpoint {
     }
   }
 
+  /**
+   * Ends a message from a User who is masking their identity
+   * @param message is the message to send
+   */
   private void sendSecretMessage(Message message) {
     String[] instructions = message.getTo().trim().split(" ");
 
@@ -363,7 +367,7 @@ public class ChatEndpoint {
   /**
    * Send message with an alias to a group. Only with one group.
    *
-   * @param message
+   * @param message is the message to send
    */
   private void sendSecretGroupMessage(Message message) {
     //get groups

@@ -24,12 +24,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 
-/***
- * A Resource class responsible for handling CRUD operations
- * on User objects.
- *
- * @author CS5500 Fall 2019 Teaching staff
- * @version dated 2019-10-06
+/**
+ * Handles all HTTP Requests involving the Group model and UserServiceWithGroupsImpl service
  */
 @Path(value = "/group")
 public class GroupController {
@@ -263,6 +259,11 @@ public class GroupController {
     }
 
 
+    /**
+     * Returns all the Groups that a User belongs to
+     * @param request is a GroupRequest
+     * @return the Groups that a User belongs to, if there are any
+     */
     @PUT
     @Path("/getGroups")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -314,6 +315,10 @@ public class GroupController {
         private Optional<BasicGroup> group;
         private StringBuilder message;
 
+        /**
+         * Creates a new ProcessedRequest
+         * @param request is a GroupRequest
+         */
         ProcessedRequest(GroupRequest request) {
             message = new StringBuilder();
 
@@ -338,22 +343,42 @@ public class GroupController {
             }
         }
 
+        /**
+         * Returns the value of allClear
+         * @return the value of allClear
+         */
         boolean getAllClear() {
             return allClear;
         }
 
+        /**
+         * Returns the value of message
+         * @return the value of message
+         */
         StringBuilder getMessage() {
             return message;
         }
 
+        /**
+         * Returns the value of sender if it exists, otherwise returns null
+         * @return the value of sender
+         */
         User getSender() {
             return sender.orElse(null);
         }
 
+        /**
+         * Returns the value of user if it exists, otherwise returns null
+         * @return the value of user
+         */
         User getUser() {
             return user.orElse(null);
         }
 
+        /**
+         * Returns the group if it exists, otherwise null
+         * @return the value of group
+         */
         BasicGroup getGroup() {
             return group.orElse(null);
         }

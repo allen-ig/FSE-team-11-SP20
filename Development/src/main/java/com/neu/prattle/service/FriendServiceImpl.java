@@ -15,6 +15,9 @@ import java.util.Optional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * An implementation of FriendService
+ */
 public class FriendServiceImpl implements FriendService{
   
     private SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
