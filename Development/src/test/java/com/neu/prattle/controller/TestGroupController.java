@@ -109,7 +109,7 @@ public class TestGroupController {
 
     BasicGroup noUsers = BasicGroup.groupBuilder().setName("no users").build();
     Response last = gc.createGroup(noUsers);
-    Assert.assertEquals(last.getStatus(), 409);
+    Assert.assertEquals(409, last.getStatus());
   }
 
   @Test
@@ -368,7 +368,7 @@ public class TestGroupController {
     //proper
     GroupRequest request = GroupRequest.groupRequestBuilder().setSender(sender).setUser(user).setGroup(gName).build();
     Response response = gc.removeModerator(request);
-    Assert.assertEquals(response.getStatus(), 200);
+    Assert.assertEquals(200, response.getStatus());
     Assert.assertEquals("moderator of rmga removed: rma", response.getEntity());
 
     //remove last member and delete
