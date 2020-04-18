@@ -32,7 +32,7 @@ public class UserServiceImpl implements UserService {
   private boolean isTest;
   private Logger logger = LogManager.getLogger();
   private String userStr = "User ";
-  private String onlineStr = "onlineStr";
+  private String onlineStr = "online";
 
   /***
    * UserServiceImpl is a Singleton class.
@@ -197,9 +197,9 @@ public class UserServiceImpl implements UserService {
     List<User> online;
     Session session = sessionFactory.openSession();
     session.beginTransaction();
-    String strQuery = "SELECT u FROM User u  WHERE u.isOnline = :onlineStr";
+    String strQuery = "SELECT u FROM User u  WHERE u.isOnline = :online";
     Query query = session.createQuery(strQuery).setFirstResult(0).setMaxResults(maxResults);
-    query.setParameter(this.onlineStr, this.onlineStr);
+    query.setParameter("online", "online");
     online = query.getResultList();
     session.close();
     return online;
@@ -212,7 +212,7 @@ public class UserServiceImpl implements UserService {
 
     try {
       User user = (User) findUserByNameQuery(username, session);
-      user.setIsOnline(isOnline ? onlineStr : "offline");
+      user.setIsOnline(isOnline ? "online" : "offline");
       session.saveOrUpdate(user);
       session.getTransaction().commit();
     } catch (NoResultException e) {
