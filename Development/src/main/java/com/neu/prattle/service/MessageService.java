@@ -42,5 +42,12 @@ public interface MessageService {
   List<Message> getDirectMessages(String user, String sender);
 
   List<Message> getGroupMessages(String user, String group);
-
+  
+  /**
+   * Returns a List of all Messages sent by a User
+   *
+   * @param username
+   * @return A List of all messages sent by a User
+   */
+  List<Message> getOutgoingMessages(String username);
 }

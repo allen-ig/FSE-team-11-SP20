@@ -8,7 +8,8 @@ import com.neu.prattle.main.HibernateUtil;
 import com.neu.prattle.model.BasicGroup;
 import com.neu.prattle.model.User;
 
-import org.hibernate.Hibernate;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
@@ -16,8 +17,6 @@ import org.hibernate.query.Query;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import javax.persistence.NoResultException;
 
@@ -224,7 +223,7 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
       session.getTransaction().commit();
     } catch (Exception e) {
       logger.error(e.getMessage());
-      throw new UserAlreadyPresentException("failed connecting to database");
+      throw new IllegalStateException("failed connecting to database");
     } finally {
       session.disconnect();
       session.close();

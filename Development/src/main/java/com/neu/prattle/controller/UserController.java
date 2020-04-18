@@ -156,7 +156,7 @@ public class UserController {
         StringBuilder message = new StringBuilder();
         List<Message> messages = messageService.getGroupMessages(user, group);
         messages.sort(new messageSorter());
-        if (messages.size() != 0) {
+        if (messages.isEmpty()) {
             try {
                 String out = mapper.writeValueAsString(messages);
                 return Response.ok().type(MediaType.APPLICATION_JSON).entity(out).build();

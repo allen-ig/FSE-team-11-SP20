@@ -3,14 +3,13 @@ package com.neu.prattle.service;
 import com.neu.prattle.main.HibernateUtil;
 import com.neu.prattle.model.Message;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 
 import java.util.List;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class MessageServiceImpl implements MessageService {
 
@@ -147,7 +146,7 @@ public class MessageServiceImpl implements MessageService {
    * @param username - sender of messages
    * @return - list of messages
    */
-  //@Override
+  @Override
   public List<Message> getOutgoingMessages(String username) {
     List<Message> userMessages;
     Session session = sessionFactory.openSession();

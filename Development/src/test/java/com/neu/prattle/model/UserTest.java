@@ -5,8 +5,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -130,5 +132,24 @@ public class UserTest {
         User alice = new User("alice");
         alice.setIsOnline("online");
         assertEquals("online", alice.getIsOnline());
+    }
+    
+    @Test
+    public void testEquals() {
+      User alice = new User("alice");
+      assertEquals(alice, alice);
+    }
+    
+    @Test
+    public void testSetGroupsForAndSetModeratorsFor() {
+      User alice = new User("alice");
+      BasicGroup group = new BasicGroup();
+      Set<BasicGroup> groups = new HashSet<>();
+      groups.add(group);
+      
+      alice.setGroups(groups);
+      alice.setModeratorFor(groups);
+      assertEquals(1, alice.getGroups().size());
+      assertEquals(1, alice.getModeratorFor().size());
     }
 }

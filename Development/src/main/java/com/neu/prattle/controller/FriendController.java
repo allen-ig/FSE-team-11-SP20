@@ -7,18 +7,27 @@ import com.neu.prattle.service.FriendService;
 import com.neu.prattle.service.FriendServiceImpl;
 import com.neu.prattle.service.UserService;
 import com.neu.prattle.service.UserServiceImpl;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.PATCH;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 @Path(value = "/friend")
 public class FriendController {
@@ -68,7 +77,7 @@ public class FriendController {
             } catch (IOException e) {
                 logger.error(e.getMessage());
             }
-        }else {
+        } else {
             resString = "Could not find the target user " + username;
         }
         return Response.status(404).type(MediaType.APPLICATION_JSON).entity(resString).build();

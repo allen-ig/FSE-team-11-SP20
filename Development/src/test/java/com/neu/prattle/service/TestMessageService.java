@@ -1,8 +1,6 @@
 package com.neu.prattle.service;
 
 import com.neu.prattle.model.Message;
-import com.neu.prattle.service.MessageService;
-import com.neu.prattle.service.MessageServiceImpl;
 
 import org.junit.After;
 import org.junit.Before;
@@ -11,6 +9,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
@@ -75,7 +74,7 @@ public class TestMessageService {
 
   @Test
   public void testDelete(){
-   builder = Message.messageBuilder();
+    builder = Message.messageBuilder();
     builder.setTo("You");
     builder.setFrom("Me");
     builder.setMessageContent("Hello");
@@ -83,6 +82,16 @@ public class TestMessageService {
     messageService.deleteMessage(newMessage);
     List<Message> youMessages = messageService.getUserMessages("You");
     assertFalse(youMessages.contains(newMessage));
+  }
+  
+  @Test
+  public void testGetOutgoingMessages() {
+    addMessages();
+    List<Message> actualJaneMessage = messageService.getOutgoingMessages("jane");
+    
+    for (Message m : actualJaneMessage){
+      assertEquals("jane", m.getFrom());
+    }
   }
 
 }
