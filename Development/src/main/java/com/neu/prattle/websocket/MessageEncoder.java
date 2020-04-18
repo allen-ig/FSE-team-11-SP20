@@ -65,12 +65,5 @@ public class MessageEncoder implements Encoder.Text<Message> {
   public void destroy() {
     // Close resources
   }
-  
-  private static void setObjectMapper(ObjectMapper objectMapper) {
-    MessageEncoder.objectMapper = objectMapper;
-  }
-  
-  private static ObjectMapper getObjectMapper() {
-    return objectMapper;
-  }
+
 }

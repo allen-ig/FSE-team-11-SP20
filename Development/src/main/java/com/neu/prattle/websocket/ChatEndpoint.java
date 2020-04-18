@@ -46,6 +46,8 @@ public class ChatEndpoint {
   private UserServiceWithGroups groupService = UserServiceWithGroupsImpl.getInstance();
   private UserService userService = UserServiceImpl.getInstance();
   private MessageService messageService = MessageServiceImpl.getInstance();
+  private String userStr = "User ";
+  private String sys = "SYSTEM";
 
 
   /**
@@ -69,13 +71,6 @@ public class ChatEndpoint {
    */
   private static Logger logger = LogManager.getLogger();
 
-  private void setAccountService(UserServiceWithGroups groupService) {
-    this.groupService = groupService;
-  }
-
-  private void setSession(Session session) {
-    this.session = session;
-  }
 
   /**
    * On open.
@@ -101,7 +96,7 @@ public class ChatEndpoint {
           .setMessageContent(String.format("User %s could not be found", username))
           .build();
        session.getBasicRemote().sendObject(error);
-      logger.error("User " + username + " attempted to sign in, but does not exist.");
+      logger.error(userStr + username + " attempted to sign in, but does not exist.");
       return;
     }
     addEndpoint(session, username);
@@ -143,7 +138,7 @@ public class ChatEndpoint {
     chatEndpoints.put(username, this);
     /* users is a hashmap between session ids and users */
     users.put(session.getId(), username);
-    logger.info("User " + username + " signed in.");
+    logger.info(userStr + username + " signed in.");
   }
 
   /**
@@ -169,7 +164,7 @@ public class ChatEndpoint {
       case "GROUP":
         sendGroupMessage(message);
         break;
-      case "NEWGROUP": //Depreciated
+      case "NEWGROUP": //Deprecated
         addGroup(message);
         break;
       case "ALIAS":
@@ -199,7 +194,7 @@ public class ChatEndpoint {
     message.setFrom(users.get(session.getId()));
     message.setContent("Disconnected!");
     broadcast(message);
-    logger.info("User " + users.get(session.getId()) + " has disconnected.");
+    logger.info(userStr + users.get(session.getId()) + " has disconnected.");
     userService.setUserIsOnline(users.get(session.getId()), false);
   }
 
@@ -323,11 +318,15 @@ public class ChatEndpoint {
     }
   }
 
+  /**
+   * Ends a message from a User who is masking their identity
+   * @param message is the message to send
+   */
   private void sendSecretMessage(Message message) {
     String[] instructions = message.getTo().trim().split(" ");
 
     if (instructions.length == 2) {
-      List<String> newInst = new ArrayList<String>(Arrays.asList(instructions));
+      List<String> newInst = new ArrayList<>(Arrays.asList(instructions));
       newInst.remove(" ");
       newInst.add("anonymous");
       instructions = newInst.toArray(instructions);
@@ -340,7 +339,7 @@ public class ChatEndpoint {
     ChatEndpoint senderEndpoint = chatEndpoints.get(message.getFrom());
     if (!chatEndpoints.containsKey(instructions[1])) {
       Message errorMessage = new Message();
-      errorMessage.setFrom("SYSTEM");
+      errorMessage.setFrom(sys);
       errorMessage.setContent("The recipient does not exist or is currently offline");
       try {
         senderEndpoint.session.getBasicRemote()
@@ -368,14 +367,14 @@ public class ChatEndpoint {
   /**
    * Send message with an alias to a group. Only with one group.
    *
-   * @param message
+   * @param message is the message to send
    */
   private void sendSecretGroupMessage(Message message) {
     //get groups
     String[] instructions = message.getTo().trim().split(" ");
 
     if (instructions.length == 2 || instructions[2].equalsIgnoreCase(" ")) {
-      List<String> newInst = new ArrayList<String>(Arrays.asList(instructions));
+      List<String> newInst = new ArrayList<>(Arrays.asList(instructions));
       newInst.remove(" ");
       newInst.add("anonymous");
       instructions = newInst.toArray(instructions);
@@ -388,7 +387,7 @@ public class ChatEndpoint {
       sender = op.get();
     } else {
       Message errorMessage = new Message();
-      errorMessage.setFrom("SYSTEM");
+      errorMessage.setFrom(sys);
       errorMessage.setContent("Cannot authenticate your account");
     }
 
@@ -441,7 +440,7 @@ public class ChatEndpoint {
         } catch (IOException | EncodeException e) {
           logger.error(e.getMessage());
         } finally{
-          logger.warn("User " + message.getFrom() + " attemped to form a group with no members.");
+          logger.warn(userStr + message.getFrom() + " attemped to form a group with no members.");
         }
       }
     }
