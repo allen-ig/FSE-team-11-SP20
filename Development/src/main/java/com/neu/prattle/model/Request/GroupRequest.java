@@ -1,6 +1,5 @@
-package com.neu.prattle.model.Request;
+package com.neu.prattle.model.request;
 
-import com.neu.prattle.model.BasicGroup.GroupBuilder;
 
 /**
  * POJO for communications from client to controller. String holder for @Consumes JSON.

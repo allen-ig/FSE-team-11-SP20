@@ -8,7 +8,6 @@ import com.neu.prattle.main.HibernateUtil;
 import com.neu.prattle.model.BasicGroup;
 import com.neu.prattle.model.User;
 
-import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
@@ -34,6 +33,7 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
   
   private static UserServiceWithGroupsImpl accountService;
   private static UserServiceWithGroupsImpl testingUserService;
+  private String group = "Group ";
   
   static {
     accountService = new UserServiceWithGroupsImpl();
@@ -70,7 +70,7 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
     
     try {
       BasicGroup result = (BasicGroup) findGroupByNameQuery(groupName, session);
-      logger.info("Group " + groupName + " found");
+      logger.info(group + groupName + " found");
       return Optional.of(result);
     } catch (NoResultException ex) {
       logger.info("No Group called " + groupName + " found");
@@ -138,7 +138,7 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
     try {
       session.saveOrUpdate(group);
       session.getTransaction().commit();
-      logger.info("Group " + group.getName()
+      logger.info(group + group.getName()
               + " created with " + updatedMembers.size() + " members");
     } catch (Exception e) {
       logger.error(e.getMessage());
@@ -168,7 +168,7 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
    * @param group - BasicGroup group to be removed.
    * @throws SenderNotAuthorizedException - If sender is not a moderator.
    */
-  public synchronized void deleteGroup(User sender, BasicGroup group) throws SenderNotAuthorizedException {
+  public synchronized void deleteGroup(User sender, BasicGroup group){
     Session session = sessionFactory.openSession();
     session.beginTransaction();
     
@@ -183,7 +183,7 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
     try {
       session.remove(group);
       session.getTransaction().commit();
-      logger.info("Group " + group.getName() + " deleted");
+      logger.info(group + group.getName() + " deleted");
     } catch (Exception e) {
       logger.error(e.getMessage());
     } finally {
@@ -202,7 +202,7 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
    * @throws SenderNotAuthorizedException - if sender is not a member.
    * @throws UserAlreadyPresentException - if user is already in the group.
    */
-  public synchronized void extendUsers(User sender, User user, BasicGroup group) throws SenderNotAuthorizedException, UserAlreadyPresentException {
+  public synchronized void extendUsers(User sender, User user, BasicGroup group) {
     //check if sender is member
     Set<User> members = group.getMembers();
     if (!members.contains(sender)) {
@@ -241,7 +241,7 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
    * @throws SenderNotAuthorizedException - if sender is not a moderator.
    * @throws UserAlreadyPresentException - if user is already a moderator.
    */
-  public synchronized void extendModerators(User sender, User user, BasicGroup group) throws SenderNotAuthorizedException, UserAlreadyPresentException {
+  public synchronized void extendModerators(User sender, User user, BasicGroup group) {
     //check if sender is member
     Set<User> members = group.getMembers();
     Set<User> moderators = group.getModerators();
@@ -283,7 +283,7 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
    * @param group - Basic group to be changed.
    * @throws SenderNotAuthorizedException - if sender is not a moderator or deleted user.
    */
-  public synchronized void removeUser(User sender, User user, BasicGroup group) throws SenderNotAuthorizedException {
+  public synchronized void removeUser(User sender, User user, BasicGroup group) {
     //check if sender is member
     Set<User> members = group.getMembers();
     Set<User> moderators = group.getModerators();
@@ -329,7 +329,7 @@ public class UserServiceWithGroupsImpl implements UserServiceWithGroups {
    * @param group - Basic group to be changed.
    * @throws SenderNotAuthorizedException - if sender is not a moderator.
    */
-  public synchronized void removeModerator(User sender, User user, BasicGroup group) throws SenderNotAuthorizedException {
+  public synchronized void removeModerator(User sender, User user, BasicGroup group) {
 
     Set<User> moderators = group.getModerators();
     if ( !(moderators.contains(sender)) || !(moderators.contains(user)) ) {

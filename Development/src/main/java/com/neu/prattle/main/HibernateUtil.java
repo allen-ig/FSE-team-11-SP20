@@ -13,8 +13,8 @@ import org.hibernate.service.ServiceRegistry;
 public class HibernateUtil {
   private static SessionFactory sessionFactory;
   private static SessionFactory testSessionFactory;
-  private static final String testHibernateConfig = "testing-hibernate.cfg.xml";
-  private static final String hibernateConfig = "hibernate.cfg.xml";
+  private static final String TEST_HIBERNATE_CONFIG = "testing-hibernate.cfg.xml";
+  private static final String HIBERNATE_CONFIG = "hibernate.cfg.xml";
   
   private HibernateUtil() {
   
@@ -23,7 +23,7 @@ public class HibernateUtil {
   public static SessionFactory getSessionFactory() {
     if (sessionFactory == null) {
       // loads configuration and mappings
-      Configuration configuration = new Configuration().configure(hibernateConfig)
+      Configuration configuration = new Configuration().configure(HIBERNATE_CONFIG)
         .addAnnotatedClass(User.class).addAnnotatedClass(BasicGroup.class)
         .addAnnotatedClass(Friend.class).addAnnotatedClass(Message.class);
       ServiceRegistry serviceRegistry
@@ -40,7 +40,7 @@ public class HibernateUtil {
   public static SessionFactory getTestSessionFactory() {
     if (testSessionFactory == null) {
       // loads configuration and mappings
-      Configuration configuration = new Configuration().configure(testHibernateConfig)
+      Configuration configuration = new Configuration().configure(TEST_HIBERNATE_CONFIG)
         .addAnnotatedClass(User.class).addAnnotatedClass(BasicGroup.class)
         .addAnnotatedClass(Friend.class).addAnnotatedClass(Message.class);
       ServiceRegistry serviceRegistry

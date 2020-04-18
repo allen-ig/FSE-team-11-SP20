@@ -19,7 +19,7 @@ import javax.persistence.NoResultException;
 /***
  * Implementation of {@link UserService}
  *
- * It stores the user accounts in a MYSQL database
+ * It stores the userStr accounts in a MYSQL database
  * It is capable of storing data in an actual database or a temporary,
  * im-memory database that will be deleted upon completion of code execution
  *
@@ -31,6 +31,8 @@ public class UserServiceImpl implements UserService {
   private SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
   private boolean isTest;
   private Logger logger = LogManager.getLogger();
+  private String userStr = "User ";
+  private String onlineStr = "online";
 
   /***
    * UserServiceImpl is a Singleton class.
@@ -71,7 +73,7 @@ public class UserServiceImpl implements UserService {
 
   /***
    *
-   * @param name -> The name of the user.
+   * @param name -> The name of the userStr.
    * @return An optional wrapper supplying the User if it exists empty if it does not.
    */
   @Override
@@ -82,7 +84,7 @@ public class UserServiceImpl implements UserService {
       User result = (User) findUserByNameQuery(name, session);
       return Optional.of(result);
     } catch (NoResultException ex) {
-      logger.warn("User " + name + " was searched for, but does not exist");
+      logger.warn(userStr + name + " was searched for, but does not exist");
       return Optional.empty();
     } finally {
       session.disconnect();
@@ -124,7 +126,7 @@ public class UserServiceImpl implements UserService {
     try {
       session.save(user);
       session.getTransaction().commit();
-      logger.info("User " + user.getName() + " was added");
+      logger.info(user + user.getName() + " was added");
     } catch (Exception e) {
       logger.error(e.getMessage());
     } finally {
@@ -139,7 +141,7 @@ public class UserServiceImpl implements UserService {
       try{
         session.delete(user);
         session.getTransaction().commit();
-        logger.info("User " + user.getName() + " was deleted.");
+        logger.info(user + user.getName() + " was deleted.");
       } catch(Exception e){
         logger.error(e.getMessage());
       } finally{
@@ -174,7 +176,7 @@ public class UserServiceImpl implements UserService {
       user.setStatus(status);
       session.saveOrUpdate(user);
       session.getTransaction().commit();
-      logger.info("User " + username + " updated their status to " + status);
+      logger.info(user + username + " updated their status to " + status);
     } catch (NoResultException e) {
       throw new UserNotFoundException("User could not be found");
     } catch (Exception e) {
@@ -187,7 +189,7 @@ public class UserServiceImpl implements UserService {
   }
 
   /**
-   * Returns first 500 users online.
+   * Returns first 500 users onlineStr.
    * @return
    */
   @Override
@@ -195,9 +197,9 @@ public class UserServiceImpl implements UserService {
     List<User> online;
     Session session = sessionFactory.openSession();
     session.beginTransaction();
-    String strQuery = "SELECT u FROM User u  WHERE u.isOnline = :online";
+    String strQuery = "SELECT u FROM User u  WHERE u.isOnline = :" + this.onlineStr;
     Query query = session.createQuery(strQuery).setFirstResult(0).setMaxResults(maxResults);
-    query.setParameter("online", "online");
+    query.setParameter(this.onlineStr, this.onlineStr);
     online = query.getResultList();
     session.close();
     return online;
@@ -210,7 +212,7 @@ public class UserServiceImpl implements UserService {
 
     try {
       User user = (User) findUserByNameQuery(username, session);
-      user.setIsOnline(isOnline ? "online" : "offline");
+      user.setIsOnline(isOnline ? this.onlineStr : "offline");
       session.saveOrUpdate(user);
       session.getTransaction().commit();
     } catch (NoResultException e) {
