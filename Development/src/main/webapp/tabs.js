@@ -141,7 +141,7 @@ function switchTabGroup() {
     document.getElementById("linkGroup").innerText = group;
     document.getElementById("usr").value = group;
     openTabGroup(document.getElementById("linkGroup"));
-    openInputSend(document.getElementById("linkGroupInput"));
+    openInputSend(document.getElementById("linkSend"));
     document.getElementById("msg").focus();
     document.getElementById("msg").select();
 }
