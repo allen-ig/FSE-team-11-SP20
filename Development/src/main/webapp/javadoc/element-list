@@ -1,0 +1,8 @@
+com.neu.prattle
+com.neu.prattle.controller
+com.neu.prattle.exceptions
+com.neu.prattle.main
+com.neu.prattle.model
+com.neu.prattle.model.request
+com.neu.prattle.service
+com.neu.prattle.websocket
