@@ -15,6 +15,8 @@ window.onclick = function(event) {
   }
 };
 
-function addEmoji(e) {
-  document.getElementById("msg").value += e.innerText;
+function addEmoji(String) {
+  console.log(String);
+  let emoji = '&' + '#' + String
+  document.getElementById("msg").value += emoji;
 }
