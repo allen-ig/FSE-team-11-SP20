@@ -197,9 +197,9 @@ public class UserServiceImpl implements UserService {
     List<User> online;
     Session session = sessionFactory.openSession();
     session.beginTransaction();
-    String strQuery = "SELECT u FROM User u  WHERE u.isOnline = :online";
+    String strQuery = "SELECT u FROM User u  WHERE u.isOnline = :" + this.onlineStr;
     Query query = session.createQuery(strQuery).setFirstResult(0).setMaxResults(maxResults);
-    query.setParameter("online", "online");
+    query.setParameter(this.onlineStr, this.onlineStr);
     online = query.getResultList();
     session.close();
     return online;
@@ -212,7 +212,7 @@ public class UserServiceImpl implements UserService {
 
     try {
       User user = (User) findUserByNameQuery(username, session);
-      user.setIsOnline(isOnline ? "online" : "offline");
+      user.setIsOnline(isOnline ? this.onlineStr : "offline");
       session.saveOrUpdate(user);
       session.getTransaction().commit();
     } catch (NoResultException e) {
