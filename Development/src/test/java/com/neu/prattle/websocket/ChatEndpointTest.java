@@ -315,7 +315,7 @@ public class ChatEndpointTest {
     }
   }
 
-  
+
   @Test
   public void testPrivateSendMessage(){
     Mockito.when(this.mockSession.getId()).thenReturn("sessionId");

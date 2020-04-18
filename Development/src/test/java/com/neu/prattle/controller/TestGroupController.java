@@ -131,25 +131,25 @@ public class TestGroupController {
     String send2 = "not there";
     GroupRequest req2 = GroupRequest.groupRequestBuilder().setSender(send2).setUser(user).setGroup(gName).build();
     Response res2 = gc.deleteGroup(req2);
-    Assert.assertEquals(res2.getStatus(), 409);
+    Assert.assertEquals(409, res2.getStatus());
 
     //no group
     String g2 = "not there";
     GroupRequest req4 = GroupRequest.groupRequestBuilder().setSender(sender).setUser(user).setGroup(g2).build();
     Response res4 = gc.deleteGroup(req4);
-    Assert.assertEquals(res4.getStatus(), 409);
+    Assert.assertEquals(409, res4.getStatus());
 
     //user not in mods
     User db = new User("db");
     userService.addUser(db);
     GroupRequest req5 = GroupRequest.groupRequestBuilder().setSender(db.getName()).setUser(user).setGroup(gName).build();
     Response res5 = gc.deleteGroup(req5);
-    Assert.assertEquals(res5.getStatus(), 409);
+    Assert.assertEquals(409, res5.getStatus());
 
     //normal delete
     GroupRequest req6 = GroupRequest.groupRequestBuilder().setSender(sender).setUser(user).setGroup(gName).build();
     Response res6 = gc.deleteGroup(req6);
-    Assert.assertEquals(res6.getStatus(), 200);
+    Assert.assertEquals(200, res6.getStatus());
   }
 
 
@@ -174,37 +174,37 @@ public class TestGroupController {
 
     GroupRequest request = GroupRequest.groupRequestBuilder().setSender(sender).setUser(user).setGroup(gName).build();
     Response response = gc.extendGroup(request);
-    Assert.assertEquals(response.getStatus(), 200);
-    Assert.assertEquals(response.getEntity(), "members of ga appended: b");
+    Assert.assertEquals(200, response.getStatus());
+    Assert.assertEquals("members of ga appended: b", response.getEntity());
 
     //no sender
     String send2 = "not there";
     GroupRequest req2 = GroupRequest.groupRequestBuilder().setSender(send2).setUser(user).setGroup(gName).build();
     Response res2 = gc.extendGroup(req2);
-    Assert.assertEquals(res2.getStatus(), 409);
+    Assert.assertEquals(409, res2.getStatus());
 
     //no user
     String u2 = "not there";
     GroupRequest req3 = GroupRequest.groupRequestBuilder().setSender(sender).setUser(u2).setGroup(gName).build();
     Response res3 = gc.extendGroup(req3);
-    Assert.assertEquals(res3.getStatus(), 409);
+    Assert.assertEquals(409, res3.getStatus());
 
     //no group
     String g2 = "not there";
     GroupRequest req4 = GroupRequest.groupRequestBuilder().setSender(sender).setUser(user).setGroup(g2).build();
     Response res4 = gc.extendGroup(req4);
-    Assert.assertEquals(res4.getStatus(), 409);
+    Assert.assertEquals(409, res4.getStatus());
 
     //user already exists
     Response res5 = gc.extendGroup(request);
-    Assert.assertEquals(res5.getStatus(), 409);
+    Assert.assertEquals(409, res5.getStatus());
 
     //new non member
     User nm = new User("nm");
     userService.addUser(nm);
     GroupRequest req6 = GroupRequest.groupRequestBuilder().setSender(nm.getName()).setUser(user).setGroup(gName).build();
     Response res6 = gc.extendGroup(req6);
-    Assert.assertEquals(res6.getStatus(), 409);
+    Assert.assertEquals(409, res6.getStatus());
   }
 
   @Test
@@ -228,31 +228,31 @@ public class TestGroupController {
 
     GroupRequest request = GroupRequest.groupRequestBuilder().setSender(sender).setUser(user).setGroup(gName).build();
     Response response = gc.extendModerators(request);
-    Assert.assertEquals(response.getStatus(), 200);
-    Assert.assertEquals(response.getEntity(), "moderators of mga appended: mb");
+    Assert.assertEquals(200, response.getStatus());
+    Assert.assertEquals("moderators of mga appended: mb", response.getEntity());
 
     //no sender
     String send2 = "not there";
     GroupRequest req2 = GroupRequest.groupRequestBuilder().setSender(send2).setUser(user).setGroup(gName).build();
     Response res2 = gc.extendModerators(req2);
-    Assert.assertEquals(res2.getStatus(), 409);
+    Assert.assertEquals(409, res2.getStatus());
 
     //no user
     String u2 = "not there";
     GroupRequest req3 = GroupRequest.groupRequestBuilder().setSender(sender).setUser(u2).setGroup(gName).build();
     Response res3 = gc.extendModerators(req3);
-    Assert.assertEquals(res3.getStatus(), 409);
+    Assert.assertEquals(409, res3.getStatus());
 
     //no group
     String g2 = "not there";
     GroupRequest req4 = GroupRequest.groupRequestBuilder().setSender(sender).setUser(user).setGroup(g2).build();
     Response res4 = gc.extendModerators(req4);
-    Assert.assertEquals(res4.getStatus(), 409);
+    Assert.assertEquals(409, res4.getStatus());
 
     //user already exists
     Response res5 = gc.extendModerators(request);
-    Assert.assertEquals(res5.getStatus(), 409);
-    Assert.assertEquals(res5.getEntity(), "Group already has this moderator");
+    Assert.assertEquals( 409, res5.getStatus());
+    Assert.assertEquals("Group already has this moderator", res5.getEntity());
   }
 
   @Test
@@ -278,19 +278,19 @@ public class TestGroupController {
     String send2 = "not there";
     GroupRequest req2 = GroupRequest.groupRequestBuilder().setSender(send2).setUser(user).setGroup(gName).build();
     Response res2 = gc.removeUser(req2);
-    Assert.assertEquals(res2.getStatus(), 409);
+    Assert.assertEquals( 409, res2.getStatus());
 
     //no user
     String u2 = "not there";
     GroupRequest req3 = GroupRequest.groupRequestBuilder().setSender(sender).setUser(u2).setGroup(gName).build();
     Response res3 = gc.removeUser(req3);
-    Assert.assertEquals(res3.getStatus(), 409);
+    Assert.assertEquals(409, res3.getStatus());
 
     //no group
     String g2 = "not there";
     GroupRequest req4 = GroupRequest.groupRequestBuilder().setSender(sender).setUser(user).setGroup(g2).build();
     Response res4 = gc.removeUser(req4);
-    Assert.assertEquals(res4.getStatus(), 409);
+    Assert.assertEquals(409, res4.getStatus());
 
     //not a moderator
     User r3 = new User("r3");
@@ -298,20 +298,20 @@ public class TestGroupController {
     String nonMod = r3.getName();
     GroupRequest req5 = GroupRequest.groupRequestBuilder().setSender(nonMod).setUser(user).setGroup(gName).build();
     Response res5 = gc.removeUser(req5);
-    Assert.assertEquals(res5.getStatus(), 410);
+    Assert.assertEquals(410, res5.getStatus());
 
     //proper
     GroupRequest request = GroupRequest.groupRequestBuilder().setSender(sender).setUser(user).setGroup(gName).build();
     Response response = gc.removeUser(request);
-    Assert.assertEquals(response.getStatus(), 200);
-    Assert.assertEquals(response.getEntity(), "member of rga removed: rb");
+    Assert.assertEquals(200, response.getStatus());
+    Assert.assertEquals("member of rga removed: rb", response.getEntity());
 
     Optional<BasicGroup> found = us.findGroupByName(sender, rga.getName());
 
     //remove last member and delete
     GroupRequest req6 = GroupRequest.groupRequestBuilder().setSender(found.get().getModerators().iterator().next().getName()).setUser(ra.getName()).setGroup(gName).build();
     Response res6 = gc.removeUser(req6);
-    Assert.assertEquals(res6.getStatus(), 410);
+    Assert.assertEquals(410, res6.getStatus());
   }
 
   @Test
@@ -346,40 +346,40 @@ public class TestGroupController {
     String send2 = "not there";
     GroupRequest req2 = GroupRequest.groupRequestBuilder().setSender(send2).setUser(user).setGroup(gName).build();
     Response res2 = gc.removeModerator(req2);
-    Assert.assertEquals(res2.getStatus(), 409);
+    Assert.assertEquals(409, res2.getStatus());
 
     //no user
     String u2 = "not there";
     GroupRequest req3 = GroupRequest.groupRequestBuilder().setSender(sender).setUser(u2).setGroup(gName).build();
     Response res3 = gc.removeModerator(req3);
-    Assert.assertEquals(res3.getStatus(), 409);
+    Assert.assertEquals(409, res3.getStatus());
 
     //no group
     String g2 = "not there";
     GroupRequest req4 = GroupRequest.groupRequestBuilder().setSender(sender).setUser(user).setGroup(g2).build();
     Response res4 = gc.removeModerator(req4);
-    Assert.assertEquals(res4.getStatus(), 409);
+    Assert.assertEquals(409, res4.getStatus());
 
     //wrong user
     GroupRequest wrUserReq = GroupRequest.groupRequestBuilder().setSender(rmc.getName()).setUser(rmb.getName()).setGroup(gName).build();
     Response wrUser = gc.removeModerator(wrUserReq);
-    Assert.assertEquals(wrUser.getStatus(), 409);
+    Assert.assertEquals(409, wrUser.getStatus());
 
     //proper
     GroupRequest request = GroupRequest.groupRequestBuilder().setSender(sender).setUser(user).setGroup(gName).build();
     Response response = gc.removeModerator(request);
     Assert.assertEquals(response.getStatus(), 200);
-    Assert.assertEquals(response.getEntity(), "moderator of rmga removed: rma");
+    Assert.assertEquals("moderator of rmga removed: rma", response.getEntity());
 
     //remove last member and delete
     GroupRequest req6 = GroupRequest.groupRequestBuilder().setSender("rmb").setUser("rmb").setGroup(gName).build();
     Response res6 = gc.removeUser(req6);
-    Assert.assertEquals(res6.getStatus(), 200);
+    Assert.assertEquals(200, res6.getStatus());
 
     //remove last member and delete
     GroupRequest req7 = GroupRequest.groupRequestBuilder().setSender("rmb").setUser("rmb").setGroup(gName).build();
     Response res7 = gc.removeUser(req7);
-    Assert.assertEquals(res7.getStatus(), 409);
+    Assert.assertEquals(409, res7.getStatus());
   }
 
   @Test
@@ -407,17 +407,17 @@ public class TestGroupController {
     //not allClear
     GroupRequest req1 = GroupRequest.groupRequestBuilder().setSender("randoo").build();
     Response res1 = gc.getGroups(req1);
-    Assert.assertEquals(res1.getStatus(), 409);
+    Assert.assertEquals(409, res1.getStatus());
 
     //zero size
     GroupRequest req2 = GroupRequest.groupRequestBuilder().setSender(ggc.getName()).build();
     Response res2 = gc.getGroups(req2);
-    Assert.assertEquals(res2.getStatus(), 201);
+    Assert.assertEquals(201, res2.getStatus());
 
     //proper
     GroupRequest req = GroupRequest.groupRequestBuilder().setSender(gga.getName()).build();
     Response res3 = gc.getGroups(req);
-    Assert.assertEquals(res3.getStatus(), 200);
+    Assert.assertEquals(200, res3.getStatus());
   }
 
 }
