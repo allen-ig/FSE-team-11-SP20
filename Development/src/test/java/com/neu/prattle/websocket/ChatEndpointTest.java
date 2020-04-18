@@ -589,21 +589,21 @@ public class ChatEndpointTest {
     }
   }
 
-  @Test
-  public void testPrivateSetterSession() {
-    Method privateMethod = null;
-    try {
-      privateMethod = ChatEndpoint.class.getDeclaredMethod("setSession", Session.class);
-    } catch (NoSuchMethodException e) {
-      e.printStackTrace();
-    }
-    privateMethod.setAccessible(true);
-    try {
-      privateMethod.invoke(chatEndpoint, mockSession);
-    } catch (IllegalAccessException | InvocationTargetException e) {
-      e.printStackTrace();
-    }
-  }
+//  @Test
+//  public void testPrivateSetterSession() {
+//    Method privateMethod = null;
+//    try {
+//      privateMethod = ChatEndpoint.class.getDeclaredMethod("setSession", Session.class);
+//    } catch (NoSuchMethodException e) {
+//      e.printStackTrace();
+//    }
+//    privateMethod.setAccessible(true);
+//    try {
+//      privateMethod.invoke(chatEndpoint, mockSession);
+//    } catch (IllegalAccessException | InvocationTargetException e) {
+//      e.printStackTrace();
+//    }
+//  }
 
   @Test
   public void testSecretMessage() {
