@@ -570,7 +570,7 @@ p {
 }
 
 @keyframes slideIn {
-    from {bottom: -300px; opacity: 0}Mitali
+    from {bottom: -300px; opacity: 0}
     to {bottom: 0; opacity: 1}
 }
 
