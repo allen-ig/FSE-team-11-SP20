@@ -70,14 +70,28 @@ public class BasicGroup {
   }
 
 
+  /**
+   * Checks if a BasicGroup has a User as a member
+   * @param user is the User to check
+   * @return a boolean representing the User's membership
+   */
   public boolean hasMember(User user) {
     return members.contains(user);
   }
-  
+
+  /**
+   * Checks if a User is a moderator of a BasicGroup
+   * @param user is a User to check
+   * @return a boolean representing a User's being a moderator
+   */
   public boolean hasModerator(User user) {
     return moderators.contains(user);
   }
 
+  /**
+   * Returns the number of members of the BasicGroup
+   * @return size of membership
+   */
   public int size() {
     return members.size();
   }
@@ -111,7 +125,11 @@ public class BasicGroup {
   public void setModerators(Set<User> moderators) {
     this.moderators = moderators;
   }
-  
+
+  /**
+   * Returns a copy of a BasicGroup
+   * @return the copy
+   */
   public BasicGroup copy(){
     return groupBuilder().setName(name).setMembers(members).setModerators(moderators).build();
   }

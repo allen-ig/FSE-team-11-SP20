@@ -3,6 +3,9 @@ package com.neu.prattle.model;
 import javax.persistence.*;
 import java.util.Objects;
 
+/**
+ * A Friend represents a potential relationship between two Users
+ */
 @Entity
 @Table(name = "friend")
 public class Friend {

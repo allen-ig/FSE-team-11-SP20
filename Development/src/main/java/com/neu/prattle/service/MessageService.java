@@ -39,8 +39,20 @@ public interface MessageService {
    */
   List<Message> getUserMessages(String username);
 
+  /**
+   * Returns a List of all messages sent to a User from another User
+   * @param user is the username of the User who is the recipient of messages
+   * @param sender is the username of the User who is the sender of messages
+   * @return a List of messages sent from sender to user if there are any
+   */
   List<Message> getDirectMessages(String user, String sender);
 
+  /**
+   * Returns a List of all messages sent to a User from a Group
+   * @param user is the username of the recipient
+   * @param group is the name of the sending group
+   * @return a List of messages if sent from a Group to a User
+   */
   List<Message> getGroupMessages(String user, String group);
 
 }
