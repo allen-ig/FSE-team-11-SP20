@@ -1,152 +1,309 @@
 <html>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
 <head>
-    <title>Chat</title>
-    <link rel="stylesheet" type="text/css" href="style.css">
+  <title>Chat</title>
+  <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
 <table>
-    <tr>
-        <img src="NuSlackClearEnvelope.jpg">
-    </tr>
-    <tr id="connect">
-        <td colspan="2">
-            <input type="text" id="username" placeholder="Username"/>
-            <button type="button" onclick="connect();">Connect</button>
-            <button type="button" id="frButton"class="dontShow">Friend Requests</button>
-            <!-- <button type="button" onclick="getFriendList();">My Friends</button> -->
+  <tr>
+    <img src="NuSlackWithoutBackground.png">
+  </tr>
+  <tr id="connect">
+    <td colspan="2">
+      <input type="text" id="username" placeholder="Username"/>
+      <button class="basicbutton" type="button" onclick="connect();">&#x1F30E</button>
+      <button type="button" id="frButton" class="basicbutton dontShow">Friend Requests</button>
+      <!-- <button type="button" onclick="getFriendList();">My Friends</button> -->
+    </td>
+  </tr>
+  <tr>
+    <table id="display">
+      <tr bgcolor="#f1f1f1">
+        <th width="60%" align="left" id="lefthead">
+          Chat:
+        </th>
+        <th width="40%" align="left" id="righthead">
+          Info:
+        </th>
+      </tr>
+      <tr class="allTheTabs">
+        <td width="60%" id="leftDisplayTab">
+          <div class="messageTab">
+            <button class="messageTabLink" id="linkAll" onclick="openTabAll(this)">All</button>
+            <button class="messageTabLink" id="linkUser" onclick="openTabUser(this)">User</button>
+            <button class="messageTabLink" id="linkGroup" onclick="openTabGroup(this)">Group
+            </button>
+          </div>
         </td>
-    </tr>
-    <tr>
-        <table id="display">
-            <tr bgcolor="#f1f1f1" height="100%" width="100%">
-                <th align="left" id="lefthead">
-                    Chat:
-                </th>
-                <th align="left" id="righthead">
-                    Info:
-                </th>
-            </tr>
-            <td width="60%" id="leftDisplay">
-                <div class="messageTab">
-                    <button class="messageTabLink" id="linkAll" onclick="openTabAll(this)">All</button>
-                    <button class="messageTabLink" id="linkUser" onclick="openTabUser(this)">User</button>
-                    <button class="messageTabLink" id="linkGroup" onclick="openTabGroup(this)">Group</button>
-                </div>
-                <div id="all" class="messageTabContentAll">
-                    <textarea readonly="true"  rows="10" cols="54" id="log"></textarea>
-                </div>
-                <div id="user" class="messageTabContentUser">
-                    <textarea readonly="true" rows="10" cols="54" id="userLog"></textarea>
-                </div>
-                <div id="group" class="messageTabContentGroup">
-                    <textarea readonly="true" rows="10" cols="54" id="groupLog"></textarea>
-                </div>
-            </td>
-            <td width="40%" id="rightDisplay">
-                <div class="serviceTab">
-                    <button class="serviceTabLink" id="linkServ" onclick="openTabService(this)">Service</button>
-                    <button class="serviceTabLink" id="linkFriends" onclick="openTabFriends(this)">Friends</button>
-                    <button class="serviceTabLink" id="linkGroups" onclick="openTabMyGroups(this)">Groups</button>
-                    <button class="serviceTabLink" id="linkOnline" onclick="openOnline(this)">Online</button>
-                </div>
-                <div id="service" class="contentService">
-                    <textarea readonly="true" rows="10" cols="35" id="serviceLog"></textarea>
-                </div>
-                <div id="friends" class="contentFriends">
-                    <textarea readonly="true" rows="10" cols="35" id="friendsLog"></textarea>
-                </div>
-                <div id="groups" class="contentGroups">
-                    <textarea readonly="true" wrap="off" rows="10" cols="35" id="groupsLog"></textarea>
-                </div>
-                <div id="online" class="contentOnline">
-                    <textarea readonly="true" wrap="off" rows="10" cols="35" id="onlineLog"></textarea>
-                </div>
-            </td>
-        </table>
-        <table>
-            <tr>
-                <td id="searchAndFriend">
-                    <input type="text" size="51" id="search" placeholder="User/Group..."/>
-                    <div class="dropup">
-                        <button type="button">Search</button>
-                        <div class="dropup-content">
-                            <button type="button" onclick="switchTabUser();">Select User</button>
-                            <button type="button" onclick="switchTabGroup();">Select Group</button>
-                            <button type="button" onclick="search();">Search for User</button>
-                        </div>
-                    </div>
-                    <button type="button" onclick="addFriend();" id="addFriend" class="dontShow">Send Friend
-                        Request
-                    </button>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <input type="text" size="12" id="usr" placeholder="Recipient"/>
-                    <input type="text" size="31" id="msg" placeholder="Message"/>
-                    <div class="dropup">
-                        <button type="button">Send</button>
-                        <div class="dropup-content">
-                            <button type="button" id="statusButton" onclick="addStatus()">Set a Status</button>
-                            <button type="button" id="aliasButton">Send as Alias</button>
-                            <button type="button" onclick="sendGroup();">Send to Group</button>
-                            <button type="button" onclick="send();">Send to User</button>
-                        </div>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <input type="text" size="12" id="gfGroup" placeholder="Group"/>
-                    <input type="text" size="12" id="gfUser" placeholder="User"/>
-                    <input type="text" size="11" id="gfModerator" placeholder="Mod"/>
-                    <div class="dropup">
-                        <button type="button">Group</button>
-                        <div class="dropup-content">
-                            <button type="button" onclick="addGroup();">Create Group</button>
-                            <button type="button" onclick="addMember();">Add Member</button>
-                            <button type="button" onclick="addMod();">Add Moderator</button>
-                            <button type="button" onclick="removeMember();">Delete Member</button>
-                            <button type="button" onclick="removeMod();">Delete Moderator</button>
-                            <button type="button" onclick="deleteGroup();">Delete Group</button>
-                        </div>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <input type="text" size="20" id="removeFriend" placeholder="friend to remove">
-                    <button id="removeFriendBtn" onclick="removeFriend()">remove</button>
-                </td>
-            </tr>
-        </table>
-    </tr>
+        <td width="40%" id="rightDisplayTab">
+          <div class="serviceTab">
+            <button class="serviceTabLink" id="linkServ" onclick="openTabService(this)">
+              Service
+            </button>
+            <button class="serviceTabLink" id="linkFriends" onclick="openTabFriends(this)">Friends
+            </button>
+            <button class="serviceTabLink" id="linkGroups" onclick="openTabMyGroups(this)">Groups
+            </button>
+            <button class="serviceTabLink" id="linkOnline" onclick="openOnline(this)">Online
+            </button>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td width="60%" id="leftDisplay">
+          <div id="all" class="messageTabContentAll">
+            <textarea readonly="true" rows="10" cols="54" id="log"></textarea>
+          </div>
+          <div id="user" class="messageTabContentUser">
+            <textarea readonly="true" rows="10" cols="54" id="userLog"></textarea>
+          </div>
+          <div id="group" class="messageTabContentGroup">
+            <textarea readonly="true" rows="10" id="groupLog"></textarea>
+          </div>
+        </td>
+        <td width="40%" id="rightDisplay">
+          <div id="service" class="contentService">
+            <textarea readonly="true" id="serviceLog"></textarea>
+          </div>
+          <div id="friends" class="contentFriends">
+            <textarea readonly="true" id="friendsLog"></textarea>
+          </div>
+          <div id="groups" class="contentGroups">
+            <textarea readonly="true" wrap="off" id="groupsLog"></textarea>
+          </div>
+          <div id="online" class="contentOnline">
+            <textarea readonly="true" id="onlineLog"></textarea>
+          </div>
+        </td>
+      </tr>
+    </table>
+    <table id="inputsTable">
+      <tr>
+        <td id="inputBar">
+          <div class="searchInputContainer">
+            <input type="text" size="51" id="search" placeholder="User/Group..."/>
+            <div class="dropup">
+              <button class="basicbutton" type="button">Search</button>
+              <div class="dropup-content">
+                <button class="basicbutton" type="button" id="removeFriendBtn" onclick="removeFriend()">Remove Friend</button>
+                <button class="basicbutton" type="button" onclick="switchTabUser();">Select User</button>
+                <button class="basicbutton" type="button" onclick="switchTabGroup();">Select Group</button>
+                <button class="basicbutton" type="button" onclick="search();">Search for User</button>
+              </div>
+            </div>
+            <button type="button" onclick="addFriend();" id="addFriend" class="basicbutton dontShow">Add as Friend</button>
+          </div>
+          <div class="sendInputContainter">
+            <input type="text" size="12" id="usr" placeholder="Recipient"/>
+            <input type="text" size="31" id="msg" placeholder="Message"/>
+            <button class="emojiButton" id="emojiButton">&#x1F61C</button>
+            <div class="dropup">
+              <button class="basicbutton" type="button">Send</button>
+              <div class="dropup-content">
+                <button class="basicbutton" type="button" id="statusButton" onclick="addStatus()">Set a Status</button>
+                <button class="basicbutton" type="button" id="aliasButton">Send as Alias</button>
+                <button class="basicbutton" type="button" onclick="sendGroup();">Send to Group</button>
+                <button class="basicbutton" type="button" onclick="send();">Send to User</button>
+              </div>
+            </div>
+          </div>
+          <div class="groupInputContainer">
+            <input type="text" size="12" id="gfGroup" placeholder="Group"/>
+            <input type="text" size="12" id="gfUser" placeholder="User"/>
+            <input type="text" size="11" id="gfModerator" placeholder="Mod"/>
+            <div class="dropup">
+              <button class="basicbutton" type="button">Group</button>
+              <div class="dropup-content">
+                <button class="basicbutton" type="button" onclick="addGroup();">Create Group</button>
+                <button class="basicbutton" type="button" onclick="addMember();">Add Member</button>
+                <button class="basicbutton" type="button" onclick="addMod();">Add Moderator</button>
+                <button class="basicbutton" type="button" onclick="removeMember();">Delete Member</button>
+                <button class="basicbutton" type="button" onclick="removeMod();">Delete Moderator</button>
+                <button class="basicbutton" type="button" onclick="deleteGroup();">Delete Group</button>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr class="allTheTabs">
+        <td width="100%" id="bottomTabs">
+          <div class="serviceTab">
+            <button class="bottomTabLink" id="linkSearch" onclick="openInputSearch(this);">
+              <i class="material-icons">search</i>
+            </button>
+            <button class="bottomTabLink" id="linkSend" onclick="openInputSend(this);">
+              <i class="material-icons">send</i>
+            </button>
+            <button class="bottomTabLink" id="linkGroupInput" onclick="openInputGroups(this);">
+              <i class="material-icons">group_add</i>
+            </button>
+          </div>
+        </td>
+      </tr>
+    </table>
+
+    <!--
+    <table>
+      <tr>
+        <td id="searchAndFriend">
+          <input type="text" size="51" id="search" placeholder="User/Group..."/>
+          <div class="dropup">
+            <button type="button">Search</button>
+            <div class="dropup-content">
+              <button type="button" onclick="switchTabUser();">Select User</button>
+              <button type="button" onclick="switchTabGroup();">Select Group</button>
+              <button type="button" onclick="search();">Search for User</button>
+            </div>
+          </div>
+          <button type="button" onclick="addFriend();" id="addFriend" class="dontShow">Send Friend
+            Request
+          </button>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <input type="text" size="12" id="usr" placeholder="Recipient"/>
+          <input type="text" size="31" id="msg" placeholder="Message"/>
+          <div class="dropup">
+            <button type="button">Send</button>
+            <div class="dropup-content">
+              <button type="button" id="statusButton" onclick="addStatus()">Set a Status</button>
+              <button type="button" id="aliasButton">Send as Alias</button>
+              <button type="button" onclick="sendGroup();">Send to Group</button>
+              <button type="button" onclick="send();">Send to User</button>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <input type="text" size="12" id="gfGroup" placeholder="Group"/>
+          <input type="text" size="12" id="gfUser" placeholder="User"/>
+          <input type="text" size="11" id="gfModerator" placeholder="Mod"/>
+          <div class="dropup">
+            <button type="button">Group</button>
+            <div class="dropup-content">
+              <button type="button" onclick="addGroup();">Create Group</button>
+              <button type="button" onclick="addMember();">Add Member</button>
+              <button type="button" onclick="addMod();">Add Moderator</button>
+              <button type="button" onclick="removeMember();">Delete Member</button>
+              <button type="button" onclick="removeMod();">Delete Moderator</button>
+              <button type="button" onclick="deleteGroup();">Delete Group</button>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <input type="text" size="20" id="removeFriend" placeholder="friend to remove">
+          <button id="removeFriendBtn" onclick="removeFriend()">remove</button>
+        </td>
+      </tr>
+    </table>
+    -->
+
+  </tr>
 </table>
 <div id="friendsPopUp" class="popup">
-    <div class="friendsPopupContent">
-        <div class="popupHead">
-            <span id="closePopup" class="closePopup">&times;</span>
-            <h2>Friend Requests</h2>
-        </div>
-        <div id="popUpBody" class="popupBody">
-        </div>
+  <div class="friendsPopupContent">
+    <div class="popupHead">
+      <span id="closePopup" class="closePopup">&times;</span>
+      <h2>Friend Requests</h2>
     </div>
+    <div id="popUpBody" class="popupBody">
+    </div>
+  </div>
 </div>
 <div id="aliasPopUp" class="popupAlias">
-    <div id="aliasContent" class="aliasPopupContent">
-        <div id="aliasHead" class="aliasHead">
-            <span id="closeAlias" class="closeAlias">&times;</span>
-            <h2>Pick an Alias</h2>
-        </div>
-        <div id="aliasbody" class="aliasBody">
-            <input type="text" size="51" id="alias" placeholder="Alias"/>
-            <button type="button" onclick="sendAlias();" id="sendAliasButton">Send</button>
-            <button type="button" onclick="groupAlias()" id="groupAliasButton">Send to Group</button>
-        </div>
+  <div id="aliasContent" class="aliasPopupContent">
+    <div id="aliasHead" class="aliasHead">
+      <span id="closeAlias" class="closeAlias">&times;</span>
+      <h2>Pick an Alias</h2>
     </div>
+    <div id="aliasbody" class="aliasBody">
+      <input type="text" size="51" id="alias" placeholder="Alias"/>
+      <button type="button" onclick="sendAlias();" id="sendAliasButton">Send</button>
+      <button type="button" onclick="groupAlias()" id="groupAliasButton">Send to Group</button>
+    </div>
+  </div>
+</div>
+<div id="emojiPopUp" class="popupEmoji">
+  <div id="emojiContent" class="emojiPopupContent">
+    <div id="emojiHead" class="emojiHead">
+      <span id="closeEmoji" class="closeEmoji">&times;</span>
+      <h2>Select Emoji</h2>
+    </div>
+    <div id="emojibody" class="emojiBody">
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F600</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F601</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F602</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F604</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F605</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F606</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F607</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F608</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F609</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F60A</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F60B</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F60C</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F60D</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F60E</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F60F</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F610</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F611</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F612</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F613</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F614</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F615</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F616</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F617</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F618</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F619</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F61A</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F61B</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F61C</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F61D</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F61E</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F61F</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F620</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F621</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F622</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F623</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F624</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F625</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F626</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F627</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F628</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F629</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F62A</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F62B</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F62C</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F62D</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F62E</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F62F</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F630</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F631</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F632</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F633</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F634</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F635</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F636</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F637</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F641</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F642</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F643</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F644</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F645</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F646</button>
+      <button class="emojiButton" onclick="addEmoji(this)">&#x1F647</button>
+    </div>
+  </div>
 </div>
 </body>
 
+<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 <script src="websocket.js"></script>
 <script src="groupfunc.js"></script>
 <script src="tabs.js"></script>
@@ -154,5 +311,6 @@
 <script src="friendReqPopUp.js"></script>
 <script src="aliasPopup.js"></script>
 <script src="status.js"></script>
+<script src="emojiPopup.js"></script>
 
 </html>

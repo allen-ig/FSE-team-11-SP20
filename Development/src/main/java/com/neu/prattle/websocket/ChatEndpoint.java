@@ -177,6 +177,7 @@ public class ChatEndpoint {
         break;
       case "GROUPALIAS":
         sendSecretGroupMessage(message);
+        break;
       default:
         sendMessage(message);
         break;
