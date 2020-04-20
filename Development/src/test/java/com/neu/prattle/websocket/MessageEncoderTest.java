@@ -105,39 +105,6 @@ public class MessageEncoderTest {
   }
   
   @Test
-  public void testPrivateSetterObjectMapper() {
-    Method privateMethod = null;
-    try {
-      privateMethod = MessageEncoder.class.getDeclaredMethod("setObjectMapper", ObjectMapper.class);
-    } catch (NoSuchMethodException e) {
-      e.printStackTrace();
-    }
-    privateMethod.setAccessible(true);
-    try {
-      privateMethod.invoke(messageEncoder, new ObjectMapper());
-    } catch (IllegalAccessException | InvocationTargetException e) {
-      e.printStackTrace();
-    }
-  }
-  
-  @Test
-  public void testPrivateGetterObjectMapper() {
-    Method privateMethod = null;
-    try {
-      privateMethod = MessageEncoder.class.getDeclaredMethod("getObjectMapper");
-    } catch (NoSuchMethodException e) {
-      e.printStackTrace();
-    }
-    privateMethod.setAccessible(true);
-    try {
-      ObjectMapper obj = (ObjectMapper) privateMethod.invoke(messageEncoder);
-      assertNotNull(obj);
-    } catch (IllegalAccessException | InvocationTargetException e) {
-      e.printStackTrace();
-    }
-  }
-  
-  @Test
   public void testInit() {
     messageEncoder.init(null);
   }

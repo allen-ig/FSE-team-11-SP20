@@ -15,6 +15,9 @@ import java.util.Optional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * An implementation of FriendService
+ */
 public class FriendServiceImpl implements FriendService{
   
     private SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
@@ -26,6 +29,7 @@ public class FriendServiceImpl implements FriendService{
 
     private static FriendServiceImpl friendService;
     private static FriendServiceImpl testingFriendService;
+    private String and = " and ";
     
     
     static {
@@ -54,8 +58,8 @@ public class FriendServiceImpl implements FriendService{
         if (findFriendByUsers(friend.getSender(), friend.getRecipient()).isPresent() ||
                 findFriendByUsers(friend.getRecipient(), friend.getSender()).isPresent()){
             throw new FriendAlreadyPresentException(
-                    String.format("Friend relationship between %s and %s already present!",
-                            friend.getSender().getName(), friend.getRecipient().getName()));
+                    String.format("Friend relationship between %s %s %s already present!",
+                            friend.getSender().getName(), and, friend.getRecipient().getName()));
         }
         Session session = sessionFactory.openSession();
         session.beginTransaction();
@@ -125,10 +129,10 @@ public class FriendServiceImpl implements FriendService{
         query.setParameter("recipient", recipient);
         try{
             Friend friend = (Friend) query.getSingleResult();
-            logger.info("Friend found for " + sender.getName() + " and " + recipient.getName());
+            logger.info("Friend found for " + sender.getName() + and + recipient.getName());
             return Optional.of(friend);
         }catch (NoResultException e){
-            logger.info("No friend found for " + sender.getName() + " and " + recipient.getName());
+            logger.info("No friend found for " + sender.getName() + and + recipient.getName());
             return Optional.empty();
         }finally {
             session.disconnect();
@@ -144,7 +148,7 @@ public class FriendServiceImpl implements FriendService{
             session.delete(friend);
             session.getTransaction().commit();
             logger.info("Friend for " + friend.getSender().getName()
-                    + " and " + friend.getRecipient().getName() + " deleted");
+                    + and + friend.getRecipient().getName() + " deleted");
         }catch (Exception e){
             logger.error(e.getMessage());
         }finally {

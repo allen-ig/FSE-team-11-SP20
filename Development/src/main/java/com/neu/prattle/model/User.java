@@ -51,6 +51,7 @@ public class User {
         groups = new HashSet<>();
         moderatorFor = new HashSet<>();
         this.status = "";
+        this.isOnline = "offline";
     }
 
     public User(String name) {
@@ -58,6 +59,7 @@ public class User {
         groups = new HashSet<>();
         moderatorFor = new HashSet<>();
         this.status = "";
+        this.isOnline = "offline";
     }
 
     @JsonIgnore

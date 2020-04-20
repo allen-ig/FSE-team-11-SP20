@@ -315,6 +315,7 @@ public class ChatEndpointTest {
     }
   }
 
+
   @Test
   public void testPrivateSendMessage(){
     Mockito.when(this.mockSession.getId()).thenReturn("sessionId");
@@ -566,40 +567,6 @@ public class ChatEndpointTest {
     privateMethod.setAccessible(true);
     try {
       privateMethod.invoke(chatEndpoint, messageWithWrongFrom);
-    } catch (IllegalAccessException | InvocationTargetException e) {
-      e.printStackTrace();
-    }
-  }
-
-  @Test
-  public void testPrivateSetterUserService() {
-    Method privateMethod = null;
-    try {
-      privateMethod = ChatEndpoint.class
-          .getDeclaredMethod("setAccountService", UserServiceWithGroups.class);
-    } catch (NoSuchMethodException e) {
-      e.printStackTrace();
-    }
-    assert privateMethod != null;
-    privateMethod.setAccessible(true);
-    try {
-      privateMethod.invoke(chatEndpoint, UserServiceWithGroupsImpl.getInstance());
-    } catch (IllegalAccessException | InvocationTargetException e) {
-      e.printStackTrace();
-    }
-  }
-
-  @Test
-  public void testPrivateSetterSession() {
-    Method privateMethod = null;
-    try {
-      privateMethod = ChatEndpoint.class.getDeclaredMethod("setSession", Session.class);
-    } catch (NoSuchMethodException e) {
-      e.printStackTrace();
-    }
-    privateMethod.setAccessible(true);
-    try {
-      privateMethod.invoke(chatEndpoint, mockSession);
     } catch (IllegalAccessException | InvocationTargetException e) {
       e.printStackTrace();
     }
