@@ -1,6 +1,5 @@
 package com.neu.prattle.controller;
 
-import com.neu.prattle.exceptions.FriendAlreadyPresentException;
 import com.neu.prattle.model.Friend;
 import com.neu.prattle.model.User;
 import com.neu.prattle.service.FriendService;
@@ -52,6 +51,14 @@ public class TestFriendController {
         Response response = friendController.sendFriendRequest(friend);
         assertEquals(response.getStatus(), Response.status(200).build().getStatus());
         friendService.deleteFriend(friend);
+    }
+  
+    @Test
+    public void testSendFriendRequestAddSelf(){
+      Friend friend = new Friend(test1, test1);
+      Response response = friendController.sendFriendRequest(friend);
+      assertEquals(response.getStatus(), Response.status(405).build().getStatus());
+      friendService.deleteFriend(friend);
     }
 
     @Test
@@ -138,5 +145,12 @@ public class TestFriendController {
     public void testDeleteFriendDoesNotExist(){
         Friend friend = new Friend(test1, test2);
         assertEquals(404, friendController.removeFriend("test1", "test2").getStatus());
+    }
+    
+    @Test
+    public void removeFriend() {
+      User userNotInDatabase = new User("UserNotInDb");
+      Response response1 = friendController.removeFriend("test1", "UserNotInDb");
+      assertEquals(404, response1.getStatus());
     }
 }

@@ -54,7 +54,7 @@ public class BasicGroup {
   )
   private Set<User> moderators;
 
-  private BasicGroup () {
+  public BasicGroup () {
     name = "not set";
     moderators = new HashSet<>();
     members = new HashSet<>();

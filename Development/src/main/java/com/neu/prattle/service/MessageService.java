@@ -54,5 +54,12 @@ public interface MessageService {
    * @return a List of messages if sent from a Group to a User
    */
   List<Message> getGroupMessages(String user, String group);
-
+  
+  /**
+   * Returns a List of all Messages sent by a User
+   *
+   * @param username
+   * @return A List of all messages sent by a User
+   */
+  List<Message> getOutgoingMessages(String username);
 }
