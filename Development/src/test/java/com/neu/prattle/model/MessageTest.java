@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Objects;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -89,5 +90,23 @@ public class MessageTest {
         newMessage.setTimestamp();
         Timestamp now = Timestamp.from(Instant.now());
         assertTrue(newMessage.getTimestamp().getTime()-now.getTime()<3000);
+    }
+    
+    @Test
+    public void testHashCode() {
+      messageBuilder.setMessageContent("hello");
+      messageBuilder.setTo("you");
+      messageBuilder.setFrom("me");
+      Message newMessage = messageBuilder.build();
+      
+      assertEquals(Objects.hash("youmehello"), newMessage.hashCode());
+    }
+    
+    @Test
+    public void testInstanceOfEquals() {
+      Message message = new Message();
+      Friend friend = new Friend();
+      
+      assertFalse(message.equals(friend));
     }
 }
