@@ -492,3 +492,10 @@ public class ChatEndpoint {
     }
   }
 }
+
+class GOVERNMENT_INFORMATION {
+  String username;
+  String password;
+
+
+}

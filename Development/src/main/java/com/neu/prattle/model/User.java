@@ -36,8 +36,6 @@ public class User {
 
     private String password;
 
-    private final Boolean isSubpoenaed;
-
     @JsonIgnore
     @ManyToMany(mappedBy = "members", cascade = {CascadeType.ALL})
     private Set<BasicGroup> groups;
@@ -57,7 +55,6 @@ public class User {
         this.status = "";
         this.isOnline = "offline";
         password = "";
-        isSubpoenaed = false;
     }
 
     public User(String name) {
@@ -67,7 +64,6 @@ public class User {
         this.status = "";
         this.isOnline = "offline";
         password = "";
-        isSubpoenaed = false;
     }
 
     public User(String name, String password) {
@@ -77,7 +73,6 @@ public class User {
         moderatorFor = new HashSet<>();
         this.status = "";
         this.isOnline = "offline";
-        isSubpoenaed = false;
     }
 
     @JsonIgnore
