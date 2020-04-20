@@ -1,5 +1,8 @@
 package com.neu.prattle.service;
+
 import com.neu.prattle.exceptions.GroupAlreadyPresentException;
+import com.neu.prattle.exceptions.GroupDeletedException;
+import com.neu.prattle.exceptions.SenderNotAuthorizedException;
 import com.neu.prattle.exceptions.UserAlreadyPresentException;
 import com.neu.prattle.model.BasicGroup;
 import com.neu.prattle.model.User;
@@ -116,5 +119,60 @@ public class TestUserServiceWithGroups {
     assertEquals(Optional.of(newGroup).get(), found.get());
   }
 
-
+  @Test(expected = GroupDeletedException.class)
+  public void testRemoveModerator() {
+    User nU = new User("ThisIsANewUserRemoveModerator");
+    userService.addUser(nU);
+  
+    Set<User> mems = new HashSet<>();
+    mems.add(nU);
+  
+    BasicGroup newGroup = BasicGroup.groupBuilder().setName("ThisIsASecondGroupRemoveModerator").setMembers(mems).build();
+    us.addGroup(newGroup);
+    
+    us.removeModerator(nU, nU, newGroup);
+  }
+  
+  @Test(expected = SenderNotAuthorizedException.class)
+  public void testExtendModerators() {
+    User testU = new User("TestGroupsExtendModerators");
+    User nU = new User("ThisIsANewUserExtendModerators");
+    userService.addUser(testU);
+    userService.addUser(nU);
+  
+    Set<User> members = new HashSet<>();
+    members.add(nU);
+    members.add(testU);
+    Set<User> moderators = new HashSet<>();
+    moderators.add(testU);
+  
+    BasicGroup newGroup = BasicGroup.groupBuilder().setName("ThisIsASecondGroupExtendModerators")
+      .setMembers(members).setModerators(moderators).build();
+    us.addGroup(newGroup);
+    
+    us.extendModerators(nU, nU, newGroup);
+  }
+  
+  @Test
+  public void testAddModeratorToMemberListGroup() {
+    User testU = new User("TestGroups2");
+    User nU = new User("ThisIsANewUserModeratorButNotMember");
+    userService.addUser(testU);
+    userService.addUser(nU);
+  
+    Set<User> members = new HashSet<>();
+    members.add(nU);
+    Set<User> moderators = new HashSet<>();
+    moderators.add(testU);
+  
+    BasicGroup newGroup = BasicGroup.groupBuilder().setName("GroupName2")
+      .setMembers(members).setModerators(moderators).build();
+    us.addGroup(newGroup);
+    
+    Optional<BasicGroup> group = us.findGroupByName
+      ("ThisIsANewUserModeratorButNotMember", "GroupName2");
+    group.ifPresent(basicGroup -> assertTrue(basicGroup.hasMember(testU)));
+    
+    
+  }
 }
