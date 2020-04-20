@@ -65,6 +65,11 @@ public class UserController {
         return Response.ok().build();
     }
 
+  /**
+   * Returns a User object given the User's username
+   * @param name is the username of a User
+   * @return a Resposne indicating the success of finding the User
+   */
     @GET
     @Path("/{name}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -82,6 +87,11 @@ public class UserController {
         return Response.ok().type(MediaType.APPLICATION_JSON).entity(jsonString).build();
     }
 
+  /**
+   * Updates the status of a User
+   * @param user is a User whose status is to updated
+   * @return a Response indicating the success of updating the User's status
+   */
     @POST
     @Path("/status")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -98,6 +108,11 @@ public class UserController {
         return Response.ok().type(MediaType.TEXT_PLAIN).entity("Status updated").build();
     }
 
+  /**
+   * Returns a User's status
+   * @param username is the username of the User whose status should be retrieved
+   * @return a Response indicating the success of the operation
+   */
     @GET
     @Path("/{username}/status")
     @Produces(MediaType.APPLICATION_JSON)
@@ -117,6 +132,12 @@ public class UserController {
         return Response.ok().type(MediaType.APPLICATION_JSON).entity(gson.toJson(user)).build();
     }
 
+  /**
+   * Returns a User's direct messages
+   * @param user is the User for which to retrieve the direct messages
+   * @param sender is the User who sent the direct messages to the User
+   * @return
+   */
     @GET
     @Path("/getDirectMessages/{username}/{sender}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -129,9 +150,9 @@ public class UserController {
         List<Message> messages = messageService.getDirectMessages(user, sender);
         messages.addAll(messageService.getDirectMessages(sender, user));
         //Timsort should work well enough.
-        messages.sort(new messageSorter());
+        messages.sort(new MessageSorter());
 
-        if (messages.size() != 0) {
+        if (! messages.isEmpty()) {
             try {
                 String out = mapper.writeValueAsString(messages);
                 return Response.ok().type(MediaType.APPLICATION_JSON).entity(out).build();
@@ -145,6 +166,12 @@ public class UserController {
         }
     }
 
+  /**
+   * Returns a User's Group messages
+   * @param user is the User for which to retrieve the Group messages
+   * @param group is the Group that sent the messages to retrieve
+   * @return a Response indicating the success of the operation
+   */
     @GET
     @Path("/getGroupMessages/{username}/{group}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -155,8 +182,8 @@ public class UserController {
         ObjectMapper mapper = new ObjectMapper();
         StringBuilder message = new StringBuilder();
         List<Message> messages = messageService.getGroupMessages(user, group);
-        messages.sort(new messageSorter());
-        if (messages.isEmpty()) {
+        messages.sort(new MessageSorter());
+        if (! messages.isEmpty()) {
             try {
                 String out = mapper.writeValueAsString(messages);
                 return Response.ok().type(MediaType.APPLICATION_JSON).entity(out).build();
@@ -181,7 +208,7 @@ public class UserController {
         ObjectMapper mapper = new ObjectMapper();
         StringBuilder message = new StringBuilder();
         List<User> online = accountService.getAllUsersOnline(maxResults);
-        if (online.size() != 0) {
+        if (! online.isEmpty()) {
             try {
                 String out = mapper.writeValueAsString(online);
                 return Response.ok().type(MediaType.APPLICATION_JSON).entity(out).build();
@@ -199,7 +226,7 @@ public class UserController {
 /**
  * Simple comparator for messages.
  */
-class messageSorter implements Comparator<Message> {
+class MessageSorter implements Comparator<Message> {
     @Override
     public int compare(Message m1, Message m2) {
         return m1.getTimestamp().compareTo(m2.getTimestamp());

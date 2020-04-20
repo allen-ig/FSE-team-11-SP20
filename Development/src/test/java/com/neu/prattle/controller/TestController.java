@@ -85,15 +85,6 @@ public class TestController {
     assertEquals(404, response.getStatus());
   }
 
-//  @Test
-//  public void testGetUserStatusError() {
-//    Response response = uc.createUserAccount(new User("New_User"));
-//    assertEquals(response.getStatus(), Response.ok().build().getStatus());
-//
-//    response = uc.getUserStatus("Non_Existent_User");
-//    assertEquals(404, response.getStatus());
-//  }
-
   @Test
   public void basicControllerTest() {
     Response responce = uc.createUserAccount(newUser);
@@ -176,10 +167,10 @@ public class TestController {
     Response res3 = uc.getDirectMessages(tgdm1.getName(), tgdm3.getName());
     Response res4 = uc.getDirectMessages(tgdm3.getName(), "rando");
 
-    Assert.assertEquals(res1.getStatus(), 200);
-    Assert.assertEquals(res2.getStatus(), 200);
-    Assert.assertEquals(res3.getStatus(), 203);
-    Assert.assertEquals(res4.getStatus(), 203);
+    Assert.assertEquals(200, res1.getStatus());
+    Assert.assertEquals(200, res2.getStatus());
+    Assert.assertEquals(203, res3.getStatus());
+    Assert.assertEquals(203, res4.getStatus());
   }
 
   @Test
@@ -229,11 +220,10 @@ public class TestController {
     Response res3 = uc.getDirectMessages(tggm1.getName(), tggmg2.getName());
     Response res4 = uc.getDirectMessages(tggm3.getName(), "rando");
 
-    Assert.assertEquals(res1.getStatus(), 200);
-    Assert.assertEquals(res2.getStatus(), 203);
-    Assert.assertEquals(res3.getStatus(), 203);
-    Assert.assertEquals(res4.getStatus(), 203);
-
+    Assert.assertEquals(203, res1.getStatus());
+    Assert.assertEquals(203, res2.getStatus());
+    Assert.assertEquals(203, res3.getStatus());
+    Assert.assertEquals(203, res4.getStatus());
   }
 
   @Test
@@ -241,14 +231,7 @@ public class TestController {
     Response res1 = uc.getAllUsersOnline(0);
     Response res2 = uc.getAllUsersOnline(500);
 
-    Assert.assertEquals(res1.getEntity().toString(), "no users currently online");
-    Assert.assertEquals(res1.getStatus(), 203);
-    //Assert.assertEquals(res2.getStatus(), 200);
+    Assert.assertEquals( "no users currently online", res1.getEntity().toString());
+    Assert.assertEquals(203, res1.getStatus());
   }
-
-
-
-
-
-
 }

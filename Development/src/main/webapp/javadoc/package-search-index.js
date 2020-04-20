@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"com.neu.prattle"},{"l":"com.neu.prattle.controller"},{"l":"com.neu.prattle.exceptions"},{"l":"com.neu.prattle.main"},{"l":"com.neu.prattle.model"},{"l":"com.neu.prattle.model.request"},{"l":"com.neu.prattle.service"},{"l":"com.neu.prattle.websocket"}]

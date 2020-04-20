@@ -28,6 +28,7 @@ public class MessageTest {
         assertTrue(messageService.isTest());
     }
 
+    
     @After
     public void tearDown(){
         System.setProperty("testing", "false");

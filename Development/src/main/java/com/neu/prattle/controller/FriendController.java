@@ -29,6 +29,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+/**
+ * Handles all incoming HTTP requests for the Friend model and FriendService
+ */
 @Path(value = "/friend")
 public class FriendController {
 
@@ -37,6 +40,11 @@ public class FriendController {
 
     private static Logger logger = LogManager.getLogger();
 
+    /**
+     * Sends a friend request, which is represented as a Friend object
+     * @param friend is the friend request
+     * @return a response indicating the success of the friend request
+     */
     @POST
     @Path("/create")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -54,6 +62,11 @@ public class FriendController {
         return Response.ok().build();
     }
 
+    /**
+     * Returns all of a User's Friends
+     * @param username is the username of a User
+     * @return a List of a User's Friends if that User has any, otherwise Optional.Empty()
+     */
     @GET
     @Path("/{username}/friends")
     @Produces(MediaType.APPLICATION_JSON)
@@ -83,6 +96,14 @@ public class FriendController {
         return Response.status(404).type(MediaType.APPLICATION_JSON).entity(resString).build();
     }
 
+    /**
+     * Allows a User to respond to a friend request
+     * @param sender is the username of the sender of the friend request
+     * @param recipient is the username of the recipient of the friend request
+     * @param isApproved is a String prepresenting whether the recipient approves of the friend
+     *                   request or not
+     * @return a Response indicating the success of the approval
+     */
     @PATCH
     @Path("/{sender}/{recipient}/{isApproved}")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -102,6 +123,12 @@ public class FriendController {
         return Response.status(404).entity(message.toString()).build();
     }
 
+    /**
+     * Allows a User to remove a Friend
+     * @param sender is the username of the User wanting to remove a Friend
+     * @param recipient is the username of the User to be removed as a Friend
+     * @return a Response indicating the success of the removal
+     */
     @DELETE
     @Path("/{sender}/{recipient}/remove")
     @Consumes(MediaType.APPLICATION_JSON)
