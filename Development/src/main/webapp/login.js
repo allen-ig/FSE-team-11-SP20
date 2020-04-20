@@ -46,7 +46,6 @@ async function authenticate(username, password) {
       console.log("relic user account found");
       return true;
     } else {
-      console.log(response.password);
       return response.password === password;
     }
   })
@@ -71,7 +70,7 @@ function goToCreate() {
   document.getElementById('newUserWindow').style.display='block';
 }
 
-function startCreateUser() {
+async function startCreateUser() {
   document.getElementById("newPassConf").style.backgroundColor = "white";
   document.getElementById("newUser").placeholder = 'Username';
 
@@ -83,11 +82,11 @@ function startCreateUser() {
     if (newPass === null) {
       newPass = "";
     }
-    let success = createUser(newUserName, newPass);
-    console.log(success);
-    if(success) {
+    let success = await createUser(newUserName, newPass);
+    if(success === true) {
       goToLogin();
     } else {
+      document.getElementById("newUser").value = "";
       document.getElementById("newUser").placeholder = 'Name taken, try another';
     }
   } else {
