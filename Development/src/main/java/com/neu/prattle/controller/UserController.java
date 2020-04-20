@@ -68,7 +68,7 @@ public class UserController {
   /**
    * Returns a User object given the User's username
    * @param name is the username of a User
-   * @return a Resposne indicating the success of finding the User
+   * @return a Response indicating the success of finding the User
    */
     @GET
     @Path("/{name}")

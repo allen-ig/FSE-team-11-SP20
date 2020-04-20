@@ -34,6 +34,10 @@ public class User {
 
     private String isOnline;
 
+    private String password;
+
+    private final Boolean isSubpoenaed;
+
     @JsonIgnore
     @ManyToMany(mappedBy = "members", cascade = {CascadeType.ALL})
     private Set<BasicGroup> groups;
@@ -52,6 +56,8 @@ public class User {
         moderatorFor = new HashSet<>();
         this.status = "";
         this.isOnline = "offline";
+        password = "";
+        isSubpoenaed = false;
     }
 
     public User(String name) {
@@ -60,6 +66,18 @@ public class User {
         moderatorFor = new HashSet<>();
         this.status = "";
         this.isOnline = "offline";
+        password = "";
+        isSubpoenaed = false;
+    }
+
+    public User(String name, String password) {
+        this.name = name;
+        this.password = password;
+        groups = new HashSet<>();
+        moderatorFor = new HashSet<>();
+        this.status = "";
+        this.isOnline = "offline";
+        isSubpoenaed = false;
     }
 
     @JsonIgnore
@@ -152,4 +170,8 @@ public class User {
     public void setIsOnline(String isOnline) {
         this.isOnline = isOnline;
     }
+
+    public void setPassword(String password) {this.password = password;}
+
+    public String getPassword() {return this.password;}
 }

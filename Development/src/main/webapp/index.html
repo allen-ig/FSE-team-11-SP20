@@ -8,12 +8,18 @@
 <body>
 <table>
   <tr>
+    <td>
     <img src="NuSlackWithoutBackground.png">
+    </td>
   </tr>
   <tr id="connect">
-    <td colspan="2">
-      <input type="text" id="username" placeholder="Username"/>
-      <button class="basicbutton" type="button" onclick="connect();">&#x1F30E</button>
+    <td>
+      <button class="basicbutton" type="button" onclick="goToLogin();">
+        <i class="material-icons">fingerprint</i>
+      </button>
+      <button class="basicbutton" type="button" onclick="goToCreate();">
+        <i class="material-icons">add</i>
+      </button>
       <button type="button" id="frButton" class="basicbutton dontShow">Friend Requests</button>
       <!-- <button type="button" onclick="getFriendList();">My Friends</button> -->
     </td>
@@ -23,6 +29,8 @@
       <tr bgcolor="#f1f1f1">
         <th width="60%" align="left" id="lefthead">
           Chat:
+          &nbsp;
+          <span id="connectedAs" class="connectedAs dontShow"></span>
         </th>
         <th width="40%" align="left" id="righthead">
           Info:
@@ -148,67 +156,6 @@
         </td>
       </tr>
     </table>
-
-    <!--
-    <table>
-      <tr>
-        <td id="searchAndFriend">
-          <input type="text" size="51" id="search" placeholder="User/Group..."/>
-          <div class="dropup">
-            <button type="button">Search</button>
-            <div class="dropup-content">
-              <button type="button" onclick="switchTabUser();">Select User</button>
-              <button type="button" onclick="switchTabGroup();">Select Group</button>
-              <button type="button" onclick="search();">Search for User</button>
-            </div>
-          </div>
-          <button type="button" onclick="addFriend();" id="addFriend" class="dontShow">Send Friend
-            Request
-          </button>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <input type="text" size="12" id="usr" placeholder="Recipient"/>
-          <input type="text" size="31" id="msg" placeholder="Message"/>
-          <div class="dropup">
-            <button type="button">Send</button>
-            <div class="dropup-content">
-              <button type="button" id="statusButton" onclick="addStatus()">Set a Status</button>
-              <button type="button" id="aliasButton">Send as Alias</button>
-              <button type="button" onclick="sendGroup();">Send to Group</button>
-              <button type="button" onclick="send();">Send to User</button>
-            </div>
-          </div>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <input type="text" size="12" id="gfGroup" placeholder="Group"/>
-          <input type="text" size="12" id="gfUser" placeholder="User"/>
-          <input type="text" size="11" id="gfModerator" placeholder="Mod"/>
-          <div class="dropup">
-            <button type="button">Group</button>
-            <div class="dropup-content">
-              <button type="button" onclick="addGroup();">Create Group</button>
-              <button type="button" onclick="addMember();">Add Member</button>
-              <button type="button" onclick="addMod();">Add Moderator</button>
-              <button type="button" onclick="removeMember();">Delete Member</button>
-              <button type="button" onclick="removeMod();">Delete Moderator</button>
-              <button type="button" onclick="deleteGroup();">Delete Group</button>
-            </div>
-          </div>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <input type="text" size="20" id="removeFriend" placeholder="friend to remove">
-          <button id="removeFriendBtn" onclick="removeFriend()">remove</button>
-        </td>
-      </tr>
-    </table>
-    -->
-
   </tr>
 </table>
 <div id="friendsPopUp" class="popup">
@@ -315,6 +262,65 @@
     <a href="javadoc/index.html" style="color: blue;">Documentation</a>
     </button>
 </div>
+
+<div id="startWindow" class="startWindow">
+  <span onclick="document.getElementById('startWindow').style.display='none'" class="close" title="Close">&times;</span>
+  <div class="startWindowContent">
+      <img src="NuSlackWithoutBackground.png">
+    <br>
+    <br>
+    <br>
+    <button class="basicbutton" id="loginStart" type="button" onclick="goToLogin();">
+      <i class="material-icons">fingerprint</i>
+    </button>
+    <br>
+    <br>
+    <button class="basicbutton" id="addUserStart" type="button" onclick="goToCreate();">
+      <i class="material-icons">add</i>
+    </button>
+  </div>
+</div>
+
+<div id="connectWindow" class="startWindow">
+  <span onclick="document.getElementById('connectWindow').style.display='none'" class="close" title="Close">&times;</span>
+  <div class="startWindowContent">
+    <img src="NuSlackWithoutBackground.png">
+    <br>
+    <br>
+    <input type="text" id="username" placeholder="Username"/>
+    <br>
+    <br>
+    <input type="text" id="password" placeholder="Password"/>
+    <br>
+    <br>
+    <br>
+    <button class="basicbutton" type="button" onclick="connect();">
+      <i class="material-icons">fingerprint</i>
+    </button>
+  </div>
+</div>
+
+<div id="newUserWindow" class="startWindow">
+  <span onclick="document.getElementById('newUserWindow').style.display='none'" class="close" title="Close">&times;</span>
+  <div class="startWindowContent">
+    <img src="NuSlackWithoutBackground.png">
+    <br>
+    <br>
+    <input type="text" id="newUser" placeholder="Username"/>
+    <br>
+    <br>
+    <input type="text" id="newPass" placeholder="Password"/>
+    <br>
+    <br>
+    <input type="text" id="newPassConf" placeholder="Confirm Password"/>
+    <br>
+    <br>
+    <br>
+    <button class="basicbutton" type="button" onclick="startCreateUser();">
+      <i class="material-icons">add</i>
+    </button>
+  </div>
+</div>
 </body>
 
 <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
@@ -326,5 +332,6 @@
 <script src="aliasPopup.js"></script>
 <script src="status.js"></script>
 <script src="emojiPopup.js"></script>
+<script src="login.js"></script>
 
 </html>
