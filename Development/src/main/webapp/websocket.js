@@ -5,8 +5,20 @@ var recipientObj;
 var sender;
 var numRequests = 0;
 
-function connect() {
+async function connect() {
+  document.getElementById("password").style.backgroundColor = "white";
   var username = document.getElementById("username").value;
+  let password = document.getElementById("password").value;
+  success = await authenticate(username, password);
+  console.log(success);
+  if (success === false) {
+    document.getElementById("password").style.backgroundColor = "#db524d";
+    return;
+  }
+  document.getElementById("connectedAs").innerHTML = "Connected: " + username;
+  document.getElementById("connectedAs").classList.remove("dontShow");
+  document.getElementById("connectWindow").style.display='none';
+
   sender = document.getElementById("username").value;
 
   var host = document.location.host;
@@ -285,13 +297,41 @@ $(document).keypress(function (e) {
         && document.getElementById("msg").value !== "") {
       console.log("Sending to Usr")
       send();
-      document.getElementById("msg").value ="";
+      document.getElementById("msg").value = "";
     } else if (document.getElementById("linkGroup").innerText ===
         document.getElementById("usr").value
         && document.getElementById("msg").value !== "") {
       console.log("Sending to Group")
       sendGroup();
-      document.getElementById("msg").value ="";
+      document.getElementById("msg").value = "";
     }
   }
 });
+
+window.onclick = function(event) {
+  if (event.target == popupAlias) {
+    popupAlias.style.display = "none";
+  }
+
+  if (event.target == popupEmoji) {
+    popupEmoji.style.display = "none";
+  }
+
+  if (event.target == friendsPopup) {
+    friendsPopup.style.display = "none";
+  }
+
+  if (event.target == startWindow) {
+    startWindow.style.display = "none";
+  }
+
+  if (event.target == connectWindow) {
+    connectWindow.style.display = "none";
+  }
+
+  if (event.target == newUserWindow) {
+    newUserWindow.style.display = "none";
+  }
+
+
+};

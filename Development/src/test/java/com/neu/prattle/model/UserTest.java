@@ -152,4 +152,13 @@ public class UserTest {
       assertEquals(1, alice.getGroups().size());
       assertEquals(1, alice.getModeratorFor().size());
     }
+    
+    @Test
+    public void testPasswordSetterAndGetter() {
+        User alice = new User("alice", "alice");
+        assertEquals("alice", alice.getPassword());
+        
+        alice.setPassword("wonderland");
+        assertEquals("wonderland", alice.getPassword());
+    }
 }
