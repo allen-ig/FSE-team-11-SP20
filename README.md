@@ -1,5 +1,10 @@
-# project-testing
-thomasadohle
-mitalishroff
-tgladyshev
-yanchi 
+# FSE SP2020 Team 11
+Thomas Dohle - thomasadohle
+Mitali Shroff - mitalishroff
+Tim Gladyshev - tgladyshev
+Yanchi Li - yanchi 
+
+[NuSlack - Our System](http://128.31.24.167:8080/prattle/)
+
+[System Demo](https://www.youtube.com/watch?v=e-L6BbHih9o)
+[Presentation](www.google.com)
