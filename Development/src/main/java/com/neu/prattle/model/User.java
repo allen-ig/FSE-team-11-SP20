@@ -55,6 +55,7 @@ public class User {
         this.status = "";
         this.isOnline = "offline";
         password = "";
+        
     }
 
     public User(String name) {
