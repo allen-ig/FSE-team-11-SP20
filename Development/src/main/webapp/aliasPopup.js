@@ -8,9 +8,3 @@ btnAlias.onclick = function() {
 spanAlias.onclick = function() {
     popupAlias.style.display = "none";
 };
-
-window.onclick = function(event) {
-    if (event.target == popupAlias) {
-        popupAlias.style.display = "none";
-    }
-};

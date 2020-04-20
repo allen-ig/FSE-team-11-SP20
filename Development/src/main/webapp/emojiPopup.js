@@ -9,12 +9,6 @@ spanEmoji.onclick = function() {
   popupEmoji.style.display = "none";
 };
 
-window.onclick = function(event) {
-  if (event.target == popupEmoji) {
-    popupEmoji.style.display = "none";
-  }
-};
-
 function addEmoji(String) {
   console.log(String);
   let emoji = '&' + '#' + String

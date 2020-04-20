@@ -122,6 +122,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+
   public synchronized void addUser(User user) {
     if (findUserByName(user.getName()).isPresent()) {
       throw new UserAlreadyPresentException(
