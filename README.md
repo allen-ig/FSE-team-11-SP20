@@ -9,11 +9,11 @@ Yanchi Li - yanchi
 
 * [System Demo](https://www.youtube.com/watch?v=e-L6BbHih9o)<br>
 * [Presentation](https://www.youtube.com/watch?v=X1B2IU4v0ng)
-* Report (to be added)
+* [Report](https://github.ccs.neu.edu/cs5500-fse/team-11-SP20/blob/master/Documentation/final/presentation.pdf)
 
 Other:
 * [User Manual](https://github.ccs.neu.edu/cs5500-fse/team-11-SP20/blob/master/Documentation/Basic%20User%20Manual.pdf)
-* [Presentation slides](https://github.ccs.neu.edu/cs5500-fse/team-11-SP20/blob/master/Documentation/final/presentation.pdf)
-* [UML diagrams](https://github.ccs.neu.edu/cs5500-fse/team-11-SP20/blob/master/Documentation/final/uml.pdf)
+* [Presentation Slides](https://github.ccs.neu.edu/cs5500-fse/team-11-SP20/blob/master/Documentation/final/presentation.pdf)
+* [UML Diagrams](https://github.ccs.neu.edu/cs5500-fse/team-11-SP20/blob/master/Documentation/final/uml.pdf)
 * [Sprint Review Presentations](https://github.ccs.neu.edu/cs5500-fse/team-11-SP20/blob/master/Documentation/Sprint_presentations))
 
