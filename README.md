@@ -13,6 +13,7 @@ Yanchi Li - yanchi
 
 Other:
 * [User Manual](https://github.ccs.neu.edu/cs5500-fse/team-11-SP20/blob/master/Documentation/Basic%20User%20Manual.pdf)
-* [Presentation slides](https://github.ccs.neu.edu/cs5500-fse/team-11-SP20/blob/master/final/presentation.pdf)
-* [UML diagrams](https://github.ccs.neu.edu/cs5500-fse/team-11-SP20/blob/master/final/uml.pdf)
+* [Presentation slides](https://github.ccs.neu.edu/cs5500-fse/team-11-SP20/blob/master/Documentation/final/presentation.pdf)
+* [UML diagrams](https://github.ccs.neu.edu/cs5500-fse/team-11-SP20/blob/master/Documentation/final/uml.pdf)
+* [Sprint Review Presentations](https://github.ccs.neu.edu/cs5500-fse/team-11-SP20/blob/master/Documentation/Sprint_presentations))
 
